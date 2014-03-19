@@ -1,17 +1,17 @@
 
-; RXVT settings
+! RXVT settings
 *Rxvt*foreground: white
 *Rxvt*background: black
-; -- make scrollbars look like traditional xterm
+! -- make scrollbars look like traditional xterm
 *Rxvt*scrollstyle: plain
-; -- shortcut ctrl+b for big font
+! -- shortcut ctrl+b for big font
 *Rxvt.keysym.Control-b: command:\033]50;xft:Ubuntu Mono:pixelsize=24,style=regular\007
-; -- shortcut ctrl+B for not as big font
+! -- shortcut ctrl+B for not as big font
 *Rxvt.keysym.Control-B: command:\033]50;xft:Ubuntu Mono:pixelsize=14,style=regular\007
 *Rxvt.iso14755 : false
 
 
-; XTERM settings
-; xterm ignores synthetic events, allow them:
+! XTERM settings
+! xterm ignores synthetic events, allow them:
 *Xterm*allowSendEvents: true
-; fixme: see if urxvt also ignores them...
+! fixme: see if urxvt also ignores them...
