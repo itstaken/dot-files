@@ -245,6 +245,8 @@ Mouse 3 FSTW 4 Resize-or-not
 # Bind Win+Left Mouse to Moving, raising, and lowering actions
 Mouse 1 FSTW 4 Move-Raise-or-Lower
 
+Key M A 4 Move
+
 # Move up or down by a page when win+k or win+j are held
 Key k A 4 GoToPage +0p -1p
 Key j A 4 GoToPage +0p +1p
@@ -414,8 +416,12 @@ AddToFunc StartFunction
 *FvwmEvent: add_window WindowAdded
 *FvwmEvent: PassId
 
+# Make the newly added window transparent
+# but don't make Firefox transparent
 DestroyFunc WindowAdded
 AddToFunc WindowAdded
++ I ThisWindow ( Firefox ) break
++ I ThisWindow ( Chromium-browser ) break
 + I Exec exec transset -i $0 0.9
 
 # I have a ButtonBar on the right edge of the screen
@@ -608,7 +614,7 @@ Style "*" !FPGrabFocus, GrabFocusOff
 # Transparent Windows on Restart
 DestroyFunc Retransit
 AddToFunc Retransit
-+ I All Exec exec transset -i $[w.id] 0.9
++ I All WindowAdded $[w.id]
 
 # Put a paperclip icon (I-2) in the upper right of the active window
 AddButtonStyle $[fvwm_title_button_clip] Active (Pixmap attachment.svg:14x14 -- flat)
