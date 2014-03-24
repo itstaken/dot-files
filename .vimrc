@@ -41,3 +41,10 @@ set nowrap
 " setting enables me to still use tags and `gf` shortcuts while editing from
 " such a top level.
 set path=src/,usr/include,.
+
+"\l to list buffers and start reading input of which to jump
+nnoremap <leader>l :ls<CR>:b<space>
+
+"Put a line at the right margin so I know when I exceed the right half of the
+"screen.
+set colorcolumn=81
