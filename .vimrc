@@ -45,6 +45,15 @@ set path=src/,usr/include,.
 "\l to list buffers and start reading input of which to jump
 nnoremap <leader>l :ls<CR>:b<space>
 
+" I can't decide which of these I like better, a constant right margin or a
+" margin that only shows up when the line goes too long.
+"
+"
 "Put a line at the right margin so I know when I exceed the right half of the
 "screen.
-set colorcolumn=81
+"set colorcolumn=81
+
+call matchadd('ColorColumn', '\%81v', 100)
+"exec 'set colorcolumn=' . join(range(2,80,3), ',')
+" to set the color of the column:
+" highlight ColorColumn ctermbg=magenta
