@@ -57,3 +57,7 @@ call matchadd('ColorColumn', '\%81v', 100)
 "exec 'set colorcolumn=' . join(range(2,80,3), ',')
 " to set the color of the column:
 " highlight ColorColumn ctermbg=magenta
+
+if has("autocmd")
+    au FileType java set helpfile=~/.vim/lang-doc/java/
+endif
