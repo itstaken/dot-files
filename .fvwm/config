@@ -132,6 +132,8 @@ Style "xcalc" MiniIcon calculate.svg:24x24
 Style "XClipboard" MiniIcon paste2.svg:24x24
 Style "*xterm*" MiniIcon console.svg:24x24
 
+Style "FightTheDragon" NoTitle
+
 
 # Bind left clicking I-1 to the options menu, but double-click should close the
 # window.  More specifically, double click will close, single clicking will
@@ -395,7 +397,7 @@ AddToFunc ImageBrowser
 DestroyFunc ChangeWallpaper
 AddToFunc ChangeWallpaper
 + I Exec exec echo "$0" > $[fvwm_wallpaper_preference]
-+ I LoadWallpaper
++ I Schedule 250 LoadWallpaper
 
 # This function loads the wallpaper from the preference file
 DestroyFunc LoadWallpaper
@@ -420,9 +422,12 @@ AddToFunc StartFunction
 # but don't make Firefox transparent
 DestroyFunc WindowAdded
 AddToFunc WindowAdded
-+ I ThisWindow ( Firefox ) break
-+ I ThisWindow ( Chromium-browser ) break
-+ I Exec exec transset -i $0 0.9
++ I ThisWindow ( URxvt ) MakeTrans
++ I ThisWindow ( xterm ) MakeTrans
+
+DestroyFunc MakeTrans
+AddToFunc MakeTrans
++ I Exec exec transset -i $[w.id] 0.9
 
 # I have a ButtonBar on the right edge of the screen
 #   ┌─────────┐  that is comprised of a pager, a system
