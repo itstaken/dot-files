@@ -60,6 +60,7 @@ call matchadd('ColorColumn', '\%81v', 100)
 " to set the color of the column:
 " highlight ColorColumn ctermbg=magenta
 
+" This one isn't quite right, yet...
 "if has("autocmd")
 "    au FileType java set helpfile=~/.vim/lang-doc/java/
 "    au FileType cpp set helpfile=~/.vim/lang-doc/cppreference/
@@ -69,3 +70,22 @@ call matchadd('ColorColumn', '\%81v', 100)
 " look for a .vimrc file in the directory from where vim is launched and use
 " the settings found there
 set exrc
+
+" When editing Chinese text, I'd like it to wrap like English text does.
+set formatexpr+=m
+
+" Some colorsets are better about contrast if they know the terminal is dark.
+set background=dark
+
+" This enables some unicode characters to highlight features, but doesn't
+" effect line content.
+set list
+" This sets the specific characters used for 
+set lcs=eol:◀,tab:▷◁,extends:▶,trail:ﬆ
+" end of line shows a left arrow
+" tab is replaced by ▷◁◁◁
+" if text extends beyond the right side of the screen show right arrow
+" trailing whitespace shows ﬆ character
+
+" Enable bundles
+execute pathogen#infect()
