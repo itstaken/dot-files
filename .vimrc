@@ -80,7 +80,8 @@ set background=dark
 " This enables some unicode characters to highlight features, but doesn't
 " effect line content.
 set list
-" This sets the specific characters used for 
+
+" This sets the specific characters used for previous command
 set lcs=eol:◀,tab:▷◁,extends:▶,trail:ﬆ
 " end of line shows a left arrow
 " tab is replaced by ▷◁◁◁
