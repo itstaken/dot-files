@@ -60,11 +60,15 @@ call matchadd('ColorColumn', '\%81v', 100)
 " to set the color of the column:
 " highlight ColorColumn ctermbg=magenta
 
+if has("autocmd")
 " This one isn't quite right, yet...
-"if has("autocmd")
 "    au FileType java set helpfile=~/.vim/lang-doc/java/
 "    au FileType cpp set helpfile=~/.vim/lang-doc/cppreference/
-"endif
+
+    " enforce word wrap if the file type is markdown
+    aut FileType markdown set tw=79
+endif
+
 
 " Project specific settings - 
 " look for a .vimrc file in the directory from where vim is launched and use
@@ -90,3 +94,20 @@ set lcs=eol:◀,tab:▷◁,extends:▶,trail:ﬆ
 
 " Enable bundles
 execute pathogen#infect()
+
+" This requires tagbar
+let g:tagbar_type_markdown = {
+    \ 'ctagstype': 'markdown',
+    \ 'ctagsbin' : '~/.vim/markdown2ctags.py',
+    \ 'ctagsargs' : '-f - --sort=yes',
+    \ 'kinds' : [
+        \ 's:sections',
+        \ 'i:images'
+    \ ],
+    \ 'sro' : '|',
+    \ 'kind2scope' : {
+        \ 's' : 'section',
+    \ },
+    \ 'sort': 0,
+\ }
+
