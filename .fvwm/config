@@ -4,6 +4,12 @@ SetEnv GTK_IM_MODULE ibus
 SetEnv XMODIFIERS @im=ibus
 SetEnv QT_IM_MODULE ibus
 
+# Icons on the desk will be this size:
+SetEnv ICON_SIZE 64x64
+
+# Icons in title bars will be this size:
+SetEnv MINI_ICON_SIZE 24x24
+
 # These are used to avoid hard-coded paths in the config file.
 SetEnv fvwm_wallpapers_dir $[FVWM_USERDIR]/wallpapers/
 SetEnv fvwm_preferences_dir $[FVWM_USERDIR]/preferences/
@@ -36,8 +42,8 @@ Test (!x $[fvwm_preferences_dir]) Exec exec mkdir -p $[fvwm_preferences_dir]
 # │┄┄┄┄┄│  don't like the mouse making the page scroll when the
 # │  1  │  edge of the screen is reached, I do like being able
 # │┄┄┄┄┄│  to drag windows across pages and have the page switch
-# │  2  │  while doing so.  
-# │┄┄┄┄┄│                                                        
+# │  2  │  while doing so.
+# │┄┄┄┄┄│
 # │  3  │  I also think the Geometry Window that displays X and
 # │┄┄┄┄┄│  Y coordinates while dragging a window is really only
 # │  4  │  useful in a handful of situations, so I hide that.
@@ -52,33 +58,39 @@ HideGeometryWindow Always
 OpaqueMoveSize unlimited
 
 # ┌─────┬─────────────────────────────────────────────────────────┬─────┬─────┐
-# │ I-1 │                           Title                         │ I-4 │ I-2 │      
+# │ I-1 │                           Title                         │ I-4 │ I-2 │
 # └─────┴─────────────────────────────────────────────────────────┴─────┴─────┘
 # This block defines how windows and menus are decorated and colored.
 #
 # Window titles are a blueish color with white text and inactive windows have a
 # gray title.  The blue really looks better with transparency turned on (ala
 # xcompmgr.)  All titles have a flat look with no 3D bevels.
-# 
+#
 # Icon 1 is a mini icon for the window that pops up a dynamic options list and
 # Icon 2 is a paper clip icon that toggles window stickiness.  Additionally,
 # Icon 2 is only displayed when for the currently active window.
 # Icon 4 is n up arrow that does a custom maximize (see CustomMax function).
 #
 # In case I should ever toggle a border back on, handles are disabled (and set
-# to width 0 just in case).
-# 
+# to width zero just in case).
+#
 # Menus would also be flat, but some damned thing is making them have a 3D
-# border.
+# border, so I set that to zero to hide the ugliness.
 ColorSet 0 bg #4A516A, fg gray
-ColorSet 1 RootTransparent Buffer, Tint #4A516A 50, bg #4A516A, fg white
-BorderStyle -- Sunk
+ColorSet 1 Tint #4A516A 50, bg #4A516A, fg white
+BorderStyle -- flat
 ButtonStyle All (Colorset 0 -- flat)
 AddButtonStyle $[fvwm_title_button_miniicon] Active MiniIcon (HiddenHandles NoInset Hilight3Doff -- flat)
 TitleStyle (Colorset 0 -- flat)
 Style * NoHandles, BorderWidth 0, SloppyFocus, MinOverlapPlacement, \
       SnapAttraction 3 SameType Screen, Colorset 0, HilightFore white, \
-      HilightBack white
+      HilightBack #4A516A, \
+      IconTitleRelief 0, IconBackgroundRelief 0, IconTitleColorset 0, \
+      IconBackgroundPadding 1, HilightIconTitleColorset 1
+#      IconBackgroundColorset 0,  specify a colorset to add a background
+
+Style * IconBox 1920x1080, IconFill Bottom Left
+
 
 Mouse 1 $[fvwm_title_button_arrow_up] N CustomMax
 
@@ -100,37 +112,37 @@ Mouse 1 $[fvwm_title_button_arrow_up] N CustomMax
 #  │ i  │           ⋮              │
 #  │ c  │           ⋮              │
 #  └────┴──────────────────────────┘
-#  
 #
-MenuStyle * MenuColorset 1, ItemFormat "%s %| %i %l %|% %> ", \
+#
+MenuStyle * MenuColorset 1, BorderWidth 0, ItemFormat "%s %| %i %l %|% %> ", \
           PopupOffset 0 100, Hilight3DOff, ActiveFore Black, ForeGround Black, \
           HilightBack white
 
 # Set up icons for stuff...
-Style "Android SDK Manager" MiniIcon download.svg:24x24, EWMHMiniIconOverride, DecorateTransient
-Style "Apvlv" MiniIcon file-pdf.svg:24x24
-Style blobwars MiniIcon radio-unchecked.svg:24x24
-Style "* - Chat" MiniIcon bubble2.svg:24x24, EWMHMiniIconOverride
-Style "Chromium-browser" MiniIcon chrome.svg:24x24, EWMHMiniIconOverride
-Style "Firefox" MiniIcon firefox.svg:24x24, EWMHMiniIconOverride
-Style Freeciv MiniIcon office.svg:24x24
-Style "Friends" MiniIcon bubbles4.svg:24x24, EWMHMiniIconOverride
-Style FvwmIdent MiniIcon question.svg:24x24
-Style Gimp MiniIcon image2.svg:24x24, EWMHMiniIconOverride
-Style Inkscape MiniIcon crop.svg:24x24, EWMHMiniIconOverride
-Style "Layers - Brushes" MiniIcon images.svg:24x24, EWMHMiniIconOverride
-Style MPlayer MiniIcon play2.svg:24x24
-Style "*nautilus*" MiniIcon folder.svg:24x24, EWMHMiniIconOverride
-Style POWDER MiniIcon wand.svg:24x24
-Style "*rox*" MiniIcon folder.svg:24x24, EWMHMiniIconOverride
-Style "Steam" NoIcon, MiniIcon steam.svg:24x24, EWMHMiniIconOverride
-Style "Toolbox*" MiniIcon hammer.svg:24x24, EWMHMiniIconOverride
-Style "URxvt" MiniIcon console.svg:24x24
-Style "Vim *" MiniIcon code.svg:24x24
-Style "Vim" MiniIcon code.svg:24x24
-Style "xcalc" MiniIcon calculate.svg:24x24
-Style "XClipboard" MiniIcon paste2.svg:24x24
-Style "*xterm*" MiniIcon console.svg:24x24
+Style "Android SDK Manager" Icon download.svg:$[ICON_SIZE], MiniIcon download.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride, DecorateTransient
+Style "Apvlv" MiniIcon file-pdf.svg:$[MINI_ICON_SIZE]
+Style blobwars Icon radio-unchecked.svg:$[ICON_SIZE], MiniIcon radio-unchecked.svg:$[MINI_ICON_SIZE]
+Style "* - Chat" MiniIcon bubble2.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style "Chromium-browser" Icon chrome.svg:$[ICON_SIZE], MiniIcon chrome.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style "Firefox" MiniIcon firefox.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style Freeciv Icon office.svg:$[ICON_SIZE], MiniIcon office.svg:$[MINI_ICON_SIZE]
+Style "Friends" MiniIcon bubbles4.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style FvwmIdent Icon question.svg:$[ICON_SIZE], MiniIcon question.svg:$[MINI_ICON_SIZE]
+Style Gimp MiniIcon image2.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style Inkscape Icon crop.svg:$[ICON_SIZE], MiniIcon crop.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style "Layers - Brushes" MiniIcon images.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style MPlayer Icon play2.svg:$[ICON_SIZE], MiniIcon play2.svg:$[MINI_ICON_SIZE]
+Style "*nautilus*" MiniIcon folder.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style POWDER Icon wand.svg:$[ICON_SIZE], MiniIcon wand.svg:$[MINI_ICON_SIZE]
+Style "*rox*" MiniIcon folder.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style "Steam" NoIcon, Icon steam.svg:$[ICON_SIZE], MiniIcon steam.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style "Toolbox*" MiniIcon hammer.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style "URxvt" Icon console.svg:$[ICON_SIZE], Icon console.svg:$[ICON_SIZE], MiniIcon console.svg:$[MINI_ICON_SIZE]
+Style "Vim *" MiniIcon code.svg:$[MINI_ICON_SIZE]
+Style "Vim" Icon code.svg:$[ICON_SIZE], MiniIcon code.svg:$[MINI_ICON_SIZE]
+Style "xcalc" MiniIcon calculate.svg:$[MINI_ICON_SIZE]
+Style "XClipboard" Icon paste2.svg:$[ICON_SIZE], MiniIcon paste2.svg:$[MINI_ICON_SIZE]
+Style "*rxvt*" MiniIcon console.svg:$[MINI_ICON_SIZE]
 
 Style "FightTheDragon" NoTitle
 
@@ -138,18 +150,19 @@ Style "FightTheDragon" NoTitle
 # Bind left clicking I-1 to the options menu, but double-click should close the
 # window.  More specifically, double click will close, single clicking will
 # display a menu, holding the mouse down will display a menu, and moving the
-# mouse while holding it will do nothing.
+# mouse while clicking it will move the window.
 Mouse 1 $[fvwm_title_button_miniicon] N Ops-or-Close
 DestroyFunc Ops-or-Close
 AddToFunc Ops-or-Close
 + D Close
 + C Menu DynamicWindowOpsMenu
 + H Menu DynamicWindowOpsMenu
-+ M Nop
++ M Move
 
 # The root menu consists of the following:
 # ┌─────────────────┐
 # │ Apps          ▷ │
+# │ Games         ▷ │
 # │ Console         │
 # │ Wallpaper     ▷ │
 # │ Screen shots  ▷ │
@@ -161,19 +174,19 @@ AddToFunc Ops-or-Close
 # └─────────────────┘
 DestroyMenu MenuFvwmRoot
 AddToMenu MenuFvwmRoot
-+ "%enter.svg:24x24%Apps" Popup DynamicAppMenu
-#+ "Scripts" Popup ScriptMenu
-+ "%console.svg:24x24%Console" FvwmConsole
++ "%enter.svg:$[MINI_ICON_SIZE]%Apps" Popup DynamicAppMenu
++ "%play2.svg:$[MINI_ICON_SIZE]%Games" Popup DynamicGameMenu #+ "Scripts" Popup ScriptMenu
++ "%console.svg:$[MINI_ICON_SIZE]%Console" FvwmConsole
 + MissingSubmenuFunction WallpaperBrowser
 + "Screen shots" Popup Screenshots
-+ "%images.svg:24x24%Wallpapers" Popup $[fvwm_wallpapers_dir]
++ "%images.svg:$[MINI_ICON_SIZE]%Wallpapers" Popup $[fvwm_wallpapers_dir]
 + "" Nop
-+ "%loop2.svg:24x24%Reload" Restart
++ "%loop2.svg:$[MINI_ICON_SIZE]%Reload" Restart
 # Put a lock icon in the menu if xautolock is present
-Test (x xautolock) AddToMenu MenuFvwmRoot "%lock.svg:24x24%Lock" Exec exec xautolock -locknow 
+Test (x xautolock) AddToMenu MenuFvwmRoot "%lock.svg:$[MINI_ICON_SIZE]%Lock" Exec exec xautolock -locknow 
 # Put the exit option at the end of the menu
 AddToMenu MenuFvwmRoot
-+ "%exit.svg:24x24%Exit" FvwmForm FvwmForm-QuitVerify
++ "%exit.svg:$[MINI_ICON_SIZE]%Exit" FvwmForm FvwmForm-QuitVerify
 Style FvwmForm-QuitVerify !Title
 
 # The screen shots menu provides an automatic menu of the content in the screen
@@ -182,10 +195,10 @@ Style FvwmForm-QuitVerify !Title
 DestroyMenu Screenshots
 AddToMenu Screenshots
 + MissingSubmenuFunction ScreenshotBrowser
-Test (x eog) AddToMenu Screenshots "%folder-open.svg:24x24%Browse (eog)" Exec exec eog $[fvwm_screenshots_dir]
-Test (x rox) AddToMenu Screenshots "%folder-open.svg:24x24%Browse (rox)" Exec exec rox $[fvwm_screenshots_dir]
-Test (x nautilus) AddToMenu Screenshots "%folder-open.svg:24x24%Browse (Nautilus)" Exec exec nautilus --no-desktop $[fvwm_screenshots_dir]
-+ "%image.svg:24x24%Screenshots" Popup $[fvwm_screenshots_dir]
+Test (x eog) AddToMenu Screenshots "%folder-open.svg:$[MINI_ICON_SIZE]%Browse (eog)" Exec exec eog $[fvwm_screenshots_dir]
+Test (x rox) AddToMenu Screenshots "%folder-open.svg:$[MINI_ICON_SIZE]%Browse (rox)" Exec exec rox $[fvwm_screenshots_dir]
+Test (x nautilus) AddToMenu Screenshots "%folder-open.svg:$[MINI_ICON_SIZE]%Browse (Nautilus)" Exec exec nautilus --no-desktop $[fvwm_screenshots_dir]
++ "%image.svg:$[MINI_ICON_SIZE]%Screenshots" Popup $[fvwm_screenshots_dir]
 
 
 # maybe some day...
@@ -194,58 +207,66 @@ Test (x nautilus) AddToMenu Screenshots "%folder-open.svg:24x24%Browse (Nautilus
 
 # Dynamic App Menu Generation
 # If they exist, put rxvt, xterm, rox, and nautilus in Apps menu:
-Test (x rxvt) AddToMenu DynamicAppMenu "%console.svg:24x24%RXvt" Exec exec rxvt
-Test (x xterm) AddToMenu DynamicAppMenu "%console.svg:24x24%XTerm" Exec exec xterm
-Test (x rox) AddToMenu DynamicAppMenu "%folder-open.svg:24x24%Rox Filer" Exec exec rox
-Test (x nautilus) AddToMenu DynamicAppMenu "%folder-open.svg:24x24%Nautilus" Exec exec nautilus --no-desktop
+Test (x rxvt) AddToMenu DynamicAppMenu "%console.svg:$[MINI_ICON_SIZE]%RXvt" Exec exec rxvt
+Test (x xterm) AddToMenu DynamicAppMenu "%console.svg:$[MINI_ICON_SIZE]%XTerm" Exec exec xterm
+Test (x rox) AddToMenu DynamicAppMenu "%folder-open.svg:$[MINI_ICON_SIZE]%Rox Filer" Exec exec rox
+Test (x nautilus) AddToMenu DynamicAppMenu "%folder-open.svg:$[MINI_ICON_SIZE]%Nautilus" Exec exec nautilus --no-desktop
 
 # Internet-related stuff
 # If they exist, put firefox, chromium, and steam into the Apps menu:
-Test (x firefox) AddToMenu DynamicAppMenu "%firefox.svg:24x24%Firefox" Exec exec firefox
-Test (x chromium-browser) AddToMenu DynamicAppMenu "%chrome.svg:24x24%Chromium" Exec exec chromium-browser
-Test (x steam) AddToMenu DynamicAppMenu "%steam.svg:24x24%Steam" Exec exec steam
-Test (x steam) AddToMenu DynamicAppMenu "%bubbles4.svg:24x24%Steam Friends" Exec exec steam "steam://open/friends"
-Test (x steam) AddToMenu DynamicAppMenu "%steam.svg:24x24%Steam Library" Exec exec steam "steam://open/games"
+Test (x firefox) AddToMenu DynamicAppMenu "%firefox.svg:$[MINI_ICON_SIZE]%Firefox" Exec exec firefox
+Test (x chromium-browser) AddToMenu DynamicAppMenu "%chrome.svg:$[MINI_ICON_SIZE]%Chromium" Exec exec chromium-browser
+Test (x steam) AddToMenu DynamicAppMenu "%steam.svg:$[MINI_ICON_SIZE]%Steam" Exec exec steam
+Test (x steam) AddToMenu DynamicAppMenu "%bubbles4.svg:$[MINI_ICON_SIZE]%Steam Friends" Exec exec steam "steam://open/friends"
+Test (x steam) AddToMenu DynamicAppMenu "%steam.svg:$[MINI_ICON_SIZE]%Steam Library" Exec exec steam "steam://open/games"
 
 # Games
 # If they exist, put various games in the Apps menu:
-Test (x abe) AddToMenu DynamicGameMenu "%hammer.svg:24x24%Abe's Amazing Adventure" Exec exec abe
-Test (x blobwars) AddToMenu DynamicGameMenu "%radio-unchecked.svg:24x24%Blobwars: Metal Blob Solid" Exec exec blobwars
-Test (x freeciv) AddToMenu DynamicGameMenu "%office.svg:24x24%FreeCiv" Exec exec freeciv
-Test (x freecol) AddToMenu DynamicGameMenu "%globe.svg:24x24%FreeCol" Exec exec freecol
-Test (x freedink) AddToMenu DynamicGameMenu "%lab.svg:24x24%Dink Smallwood" Exec exec freedink
-Test (x freedroidRPG) AddToMenu DynamicGameMenu "%question.svg:24x24%FreeDroid RPG" Exec exec freedroidRPG
-Test (x nethack,x x-terminal-emulator) AddToMenu DynamicGameMenu "%at.svg:24x24%Nethack (console)" Exec exec x-terminal-emulator -e nethack
-Test (x powder) AddToMenu DynamicGameMenu "%wand.svg:24x24%Powder" Exec exec powder
-Test (x slashem,x x-terminal-emulator) AddToMenu DynamicGameMenu "%bug.svg:!24x24%Slashem (console)" Exec exec x-terminal-emulator -e slashem
-Test (x tmw) AddToMenu DynamicGameMenu "%question.svg:!24x24%The Mana World" Exec exec tmw
+Test (x abe) AddToMenu DynamicGameMenu "%hammer.svg:$[MINI_ICON_SIZE]%Abe's Amazing Adventure" Exec exec abe
+Test (x blobwars) AddToMenu DynamicGameMenu "%radio-unchecked.svg:$[MINI_ICON_SIZE]%Blobwars: Metal Blob Solid" Exec exec blobwars
+Test (x freeciv) AddToMenu DynamicGameMenu "%office.svg:$[MINI_ICON_SIZE]%FreeCiv" Exec exec freeciv
+Test (x freecol) AddToMenu DynamicGameMenu "%globe.svg:$[MINI_ICON_SIZE]%FreeCol" Exec exec freecol
+Test (x freedink) AddToMenu DynamicGameMenu "%lab.svg:$[MINI_ICON_SIZE]%Dink Smallwood" Exec exec freedink
+Test (x freedroidRPG) AddToMenu DynamicGameMenu "%question.svg:$[MINI_ICON_SIZE]%FreeDroid RPG" Exec exec freedroidRPG
+Test (x nethack,x x-terminal-emulator) AddToMenu DynamicGameMenu "%at.svg:$[MINI_ICON_SIZE]%Nethack (console)" Exec exec x-terminal-emulator +sb -e nethack
+Test (x nexuiz) AddToMenu DynamicGameMenu "nexuiz" Exec exec nexuiz
+Test (x powder) AddToMenu DynamicGameMenu "%wand.svg:$[MINI_ICON_SIZE]%Powder" Exec exec powder
+Test (x sauerbraten) AddToMenu DynamicGameMenu "sauerbraten" Exec exec sauerbraten
+Test (x slashem,x x-terminal-emulator) AddToMenu DynamicGameMenu "%bug.svg:!$[MINI_ICON_SIZE]%Slashem (console)" Exec exec x-terminal-emulator +sb -e slashem
+Test (x tmw) AddToMenu DynamicGameMenu "%question.svg:!$[MINI_ICON_SIZE]%The Mana World" Exec exec tmw
 
 # Editors/Utilities
 # If they exist, put various editors into the Apps menu:
-Test (x vim,x x-terminal-emulator) AddToMenu DynamicAppMenu "%code.svg:24x24%Vim" Exec exec x-terminal-emulator -T Vim -e vim
-Test (x gvim) AddToMenu DynamicAppMenu "%code.svg:24x24%GVim" Exec exec gvim
-Test (x gedit) AddToMenu DynamicAppMenu "%file3.svg:24x24%GEdit" Exec exec gedit
-Test (x xclipboard) AddToMenu DynamicAppMenu "%paste2.svg:24x24%Clipboard" Exec exec xclipboard
-Test (x gimp) AddToMenu DynamicAppMenu "%image2.svg:24x24%Gimp" Exec exec gimp
-Test (x inkscape) AddToMenu DynamicAppMenu "%crop.svg:24x24%Inkscape" Exec exec inkscape
+Test (x vim,x x-terminal-emulator) AddToMenu DynamicAppMenu "%code.svg:$[MINI_ICON_SIZE]%Vim" Exec exec x-terminal-emulator +sb -T Vim -e vim
+Test (x gvim) AddToMenu DynamicAppMenu "%code.svg:$[MINI_ICON_SIZE]%GVim" Exec exec gvim
+Test (x gedit) AddToMenu DynamicAppMenu "%file3.svg:$[MINI_ICON_SIZE]%GEdit" Exec exec gedit
+Test (x xclipboard) AddToMenu DynamicAppMenu "%paste2.svg:$[MINI_ICON_SIZE]%Clipboard" Exec exec xclipboard
+Test (x gimp) AddToMenu DynamicAppMenu "%image2.svg:$[MINI_ICON_SIZE]%Gimp" Exec exec gimp
+Test (x inkscape) AddToMenu DynamicAppMenu "%crop.svg:$[MINI_ICON_SIZE]%Inkscape" Exec exec inkscape
 
 # Settings
 # If it exists, put the bluetooth-wizard into the Apps menu
 Test (x bluetooth-wizard) AddToMenu DynamicAppMenu "Bluetooth Wizard" Exec exec bluetooth-wizard
 Test (x blueman-manager) AddToMenu DynamicAppMenu "Bluetooth Manager" Exec exec blueman-manager
-Test (x pavucontrol) AddToMenu DynamicAppMenu "%volume-high.svg:24x24%Volume Control" Exec exec pavucontrol
+Test (x pavucontrol) AddToMenu DynamicAppMenu "%volume-high.svg:$[MINI_ICON_SIZE]%Volume Control" Exec exec pavucontrol
 
 # Resize on win+r
 Key r A 4 Resize Direction SE
 
+# Place again on win+p
+Key p A 4 PlaceAgain
+
 # When Win+T is pressed, open a terminal
-Key t A 4 Exec exec x-terminal-emulator
+Key t A 4 Exec exec x-terminal-emulator +sb
 
 # Bind Win+Right Mouse to resize function
 Mouse 3 FSTW 4 Resize-or-not
 
 # Bind Win+Left Mouse to Moving, raising, and lowering actions
 Mouse 1 FSTW 4 Move-Raise-or-Lower
+
+# Bind Mouse 1 on Icons to DynamicWindowOpsMenu
+Mouse 1 I A Menu DynamicWindowOpsMenu
 
 Key M A 4 Move
 
@@ -261,6 +282,9 @@ Key l A 4 Focus-Next-Window
 Key Escape A 4 Menu MenuFvwmRoot
 
 Key Print A A Screenshot root -screen
+Key F4 A A Screenshot root -screen
+
+Key Tab A 4 Menu NewAltTabMenu
 
 #Use mpc for music controls
 Key XF86AudioPlay A A Exec exec mpc pause
@@ -413,6 +437,8 @@ AddToFunc StartFunction
 + I Test (Restart, x xcompmgr, x transset) Retransit
 + I Test (init, x bluetooth-applet) Exec exec bluetooth-applet
 + I Test (init, x blueman-applet) Exec exec blueman-applet
++ I Test (init, x synclient) Exec exec synclient HorizTwoFingerScroll=1
++ I Test (init, x synclient) Exec exec synclient TapButton3=2
 
 *FvwmEvent: Cmd
 *FvwmEvent: add_window WindowAdded
@@ -487,21 +513,21 @@ AddToFunc DynamicWindowOpsMenuFunction
 + I Test (x xcompmgr, x transset) AddToMenu DynamicWindowOpsMenu "Solidify" Exec exec transset -i $[w.id] 1.0
 + I ThisWindow ("Firefox",!Iconic) AddToMenu DynamicWindowOpsMenu "New Tab" Exec exec firefox -remote "openurl(about:blank,new-tab)"
 + I ThisWindow ("Firefox") AddToMenu DynamicWindowOpsMenu "New Window" Exec exec firefox -remote "openurl(about:blank,new-window)"
-+ I AddToMenu DynamicWindowOpsMenu "" Nop
++ I TestRc (Match) AddToMenu DynamicWindowOpsMenu "" Nop
 + I AddToMenu DynamicWindowOpsMenu "Identify" FvwmIdent
 + I ThisWindow (!Iconic) AddToMenu DynamicWindowOpsMenu "Get Screenshot" Screenshot $[w.id]
 + I ThisWindow (!Iconic) AddToMenu DynamicWindowOpsMenu "Get Screenshot (with borders)" Screenshot $[w.id] -frame
 + I AddToMenu DynamicWindowOpsMenu "" Nop
-+ I ThisWindow (Iconic) AddToMenu DynamicWindowOpsMenu "Deiconify" Iconify
++ I ThisWindow (Iconic) AddToMenu DynamicWindowOpsMenu "Deiconify" Iconify off
 + I ThisWindow (!Iconic) AddToMenu DynamicWindowOpsMenu "Iconify" Iconify
++ I TestRc (Match) AddToMenu DynamicWindowOpsMenu "Resize" Resize
 + I AddToMenu DynamicWindowOpsMenu "Move" Move
-+ I AddToMenu DynamicWindowOpsMenu "Resize" Resize
-+ I ThisWindow (!Maximized) AddToMenu DynamicWindowOpsMenu "Maximize" Maximize
 + I ThisWindow (Maximized) AddToMenu DynamicWindowOpsMenu "Un-Maximize" Maximize
-+ I ThisWindow (!Shaded) AddToMenu DynamicWindowOpsMenu "Shade" WindowShade
++ I TestRc (NoMatch) AddToMenu DynamicWindowOpsMenu "Maximize" Maximize
 + I ThisWindow (Shaded) AddToMenu DynamicWindowOpsMenu "Un-Shade" WindowShade
++ I TestRc (NoMatch) AddToMenu DynamicWindowOpsMenu "Shade" WindowShade
 + I ThisWindow (Sticky) AddToMenu DynamicWindowOpsMenu "Un-Stick" WindowStyle !Sticky
-+ I ThisWindow (!Sticky) AddToMenu DynamicWindowOpsMenu "Stick" WindowStyle Sticky
++ I TestRc (NoMatch) AddToMenu DynamicWindowOpsMenu "Stick" WindowStyle Sticky
 + I AddToMenu DynamicWindowOpsMenu "" Nop
 + I AddToMenu DynamicWindowOpsMenu "Close" Close
 + I AddToMenu DynamicWindowOpsMenu "Kill" Destroy
@@ -525,7 +551,9 @@ AddToFunc DynamicGroupMenuThingyFunction
 + I AddToMenu DynamicGroupMenuThingy "Group: $[w.class]" Title
 + I Current + "Close All" Current All ($[w.class]) Close
 + I Current + "Shade All" Current All ($[w.class], !Shaded) WindowShade True
++ I Current + "Un-Shade All" Current All ($[w.class], !Shaded) WindowShade False
 + I Current + "Iconfiy All" Current All ($[w.class], !Iconic) Iconify
++ I Current + "Deiconfiy All" Current All ($[w.class], Iconic) Iconify off
 + I Current + "List" Popup QuickWindowList
 
 #This is used to build the List option of the group context-menu
@@ -537,13 +565,14 @@ DestroyFunc DynamicQuickWindowListFunction
 AddToFunc DynamicQuickWindowListFunction
 + I DestroyMenu recreate QuickWindowList
 + I AddToMenu QuickWindowList "Desk: $[desk.n]" Title
-+ I Current All ($[w.class], CirculateHit, !Iconic, AcceptsFocus) EvalQuickWindowList QuickWindowList
-## Un-comment to enable listing iconified windows:
-#+ I AddToMenu QuickWindowList "Desk: $[desk.n] (iconic)" Title
-#+ I Current All ($[w.class], CirculateHit, Iconic, AcceptsFocus) EvalQuickWindowListIcons QuickWindowList
++ I ThisWindow (Iconic) Current All ($[w.class], CirculateHit, Iconic, AcceptsFocus) EvalQuickWindowList QuickWindowList
++ I ThisWindow (!Iconic) Current All ($[w.class], CirculateHit, !Iconic, AcceptsFocus) EvalQuickWindowList QuickWindowList
 
 # This creates an alt-tab like menu, but it lists the non-iconified windows and then iconified windows -
 # the iconified windows have their thumbnails displayed, non-iconified display mini-icons
+DestroyMenu NewAltTabMenu
+AddToMenu NewAltTabMenu DynamicPopupAction NewAltTabFunction
+
 DestroyFunc NewAltTabFunction
 AddToFunc NewAltTabFunction
 + I DestroyMenu NewAltTabMenu
@@ -559,16 +588,48 @@ AddToFunc EvalQuickWindowList
 # Used to create a menu of the iconified windows
 DestroyFunc EvalQuickWindowListIcons
 AddToFunc EvalQuickWindowListIcons
-+ I Current AddToMenu $0 %$[temp_icon_dir]/icon.tmp.$[w.id].png%"$[w.class]: $[w.name]" WindowId $[w.id] WindowListSelectFunction
++ I Current AddToMenu $0 %$[w.miniiconfile]:30x30%"(i) $[w.class]: $[w.name]" WindowId $[w.id] Warp-Focus
+#+ I Current AddToMenu $0 %$[temp_icon_dir]/icon.tmp.$[w.id].png%"$[w.class]: $[w.name]" WindowId $[w.id] WindowListSelectFunction
 # Note the above function will not work because I'm not using the temp_icon_dir stuff in this config
 
 # Used to un-iconify windows in the group context menu
 DestroyFunc WindowListSelectFunction
 AddToFunc WindowListSelectFunction
-+ I Iconify
++ I Iconify off
 + I Warp-Focus
 
 
+# CustomMax moves the window through various sizes.
+#
+#  Normal            HalfMax           FullMax
+#  ┌┄┄┄┄┄┄┄┄┄┐       ┌─────┐┄┄┄┐       ┌─────────┐
+#  ┊         ┊       │     │   ┊       │         │
+#  ┌─────┐   ┊       │     │   ┊       │         │
+#  │     │   ┊  ▶▶▶  │     │   ┊  ▶▶▶  │         │
+#  │     │   ┊       │     │   ┊       │         │
+#  └─────┘   ┊       │     │   ┊       │         │
+#  ┊         ┊       │     │   ┊       │         │
+#  └┄┄┄┄┄┄┄┄┄┘       └─────┘┄┄┄┘       └─────────┘
+#  Normal is the default size.
+#
+#                    HalfMax is vertically maximized.
+#
+#                                      FullMax is vertically and horizontally
+#                                      maximized.
+# CustomMax uses a horribly complex set of functions to traverse a state
+# machine to put the window into the various sizes.
+#
+# CustomMax and those other crazy functions use State 1 and State 2 to decide
+# what state to go into.
+# !1, !2 -> HalfMax,  1, !2
+#  1, !2 -> FullMax, !1,  2
+# !1,  2 -> Restore, !1, !2
+#
+# Or, as a sort of grey code truth table:
+#  0 0  -> HalfMax and set (1 0)
+#  1 0  -> FullMax and set (0 1)
+#  0 1  -> Restore and set (0 0)
+#
 Key F A 4 CustomMax
 # Entry-point to custom maximization state machine
 # Transition from initial state to half max (2)
@@ -599,6 +660,7 @@ DestroyFunc HalfMax
 AddToFunc HalfMax
 + I State 1 on
 + I MakePartlyFull
++ I WindowStyle NoTitle
 
 # Called when the state machine is going to state 2
 DestroyFunc MakePartlyFull
@@ -611,6 +673,7 @@ DestroyFunc Restore
 AddToFunc Restore
 + I State 2 off
 + I Maximize off
++ I WindowStyle Title
 
 # Disable Attention Grabbers
 DestroyFunc UrgencyFunc
@@ -624,6 +687,7 @@ AddToFunc Retransit
 # Put a paperclip icon (I-2) in the upper right of the active window
 AddButtonStyle $[fvwm_title_button_clip] Active (Pixmap attachment.svg:14x14 -- flat)
 
+# Put an up arrow (I-4) in the upper right of the active window
 AddButtonStyle $[fvwm_title_button_arrow_up] Active (Pixmap arrow-up2.svg:14x14 -- flat)
 
 # Make clicking the paper clip (I-2) call the toggle sticky function
@@ -635,3 +699,10 @@ AddToFunc ToggleSticky
 + I ThisWindow (Sticky) WindowStyle !Sticky
 + I TestRc (NoMatch) WindowStyle Sticky
 
+#Key F6 A A Exec exec brightness.sh -d
+#Key F7 A A Exec exec brightness.sh -u
+Key F8 A A Exec exec amixer -D pulse sset Master toggle
+Key F9 A A Exec exec amixer -D pulse sset Master 5%-
+Key F10 A A Exec exec amixer -D pulse sset Master 5%+
+
+Key XF86PowerOff A A FvwmForm FvwmForm-QuitVerify

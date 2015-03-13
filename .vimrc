@@ -30,6 +30,10 @@ set expandtab
 " This usually doesn't work, but set title string so that xterms are renamed
 " to Vim - filename
 autocmd BufEnter * let &titlestring = "Vim - " . expand("%:t")
+autocmd FileType markdown set textwidth=79
+" With help docs including the apis, Shift+K will open javadoc  
+" (It's like doing :help Keyword)
+autocmd FileType java set keywordprg=
 
 " This is awesome: enables closing (hiding) buffers with unwritten changes
 " and then when closed buffers are re-opened, the entire undo history is still
@@ -60,6 +64,7 @@ call matchadd('ColorColumn', '\%81v', 100)
 " to set the color of the column:
 " highlight ColorColumn ctermbg=magenta
 
+
 " Project specific settings -
 " look for a .vimrc file in the directory from where vim is launched and use
 " the settings found there
@@ -76,7 +81,7 @@ set background=dark
 set list
 
 " This sets the specific characters used for previous command
-set lcs=eol:◀,tab:▷◁,extends:▶,trail:ﬆ
+set lcs=eol:◀,tab:▷◁,extends:▶,trail:▐
 " end of line shows a left arrow
 " tab is replaced by ▷◁◁◁
 " if text extends beyond the right side of the screen show right arrow
@@ -84,6 +89,25 @@ set lcs=eol:◀,tab:▷◁,extends:▶,trail:ﬆ
 
 " Enable bundles
 execute pathogen#infect()
+
+" Always show status bar
+set laststatus=2
+
+" This requires tagbar
+let g:tagbar_type_markdown = {
+    \ 'ctagstype': 'markdown',
+    \ 'ctagsbin' : '~/.vim/markdown2ctags.py',
+    \ 'ctagsargs' : '-f - --sort=yes',
+    \ 'kinds' : [
+        \ 's:sections',
+        \ 'i:images'
+    \ ],
+    \ 'sro' : '|',
+    \ 'kind2scope' : {
+        \ 's' : 'section',
+    \ },
+    \ 'sort': 0,
+\ }
 
 " Toggle the tag bar with F5
 cnoremap <F5> :Tagbar<CR>
@@ -93,3 +117,15 @@ inoremap <F5> <Esc>:Tagbar<CR>a
 
 " save on switching buffers, consider it mitigation for set hidden
 " set autowrite
+
+" when using the GUI, get rid of the useless toolbar:
+set guioptions-=T
+" get rid of the right-hand scrollbar, too, it takes up too much room
+set guioptions-=r
+
+" Also, set the colorscheme, but only for the gui
+if has("gui_running")
+    colorscheme darkbone
+else
+    set background=dark
+endif
