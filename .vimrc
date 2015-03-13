@@ -60,13 +60,7 @@ call matchadd('ColorColumn', '\%81v', 100)
 " to set the color of the column:
 " highlight ColorColumn ctermbg=magenta
 
-" This one isn't quite right, yet...
-"if has("autocmd")
-"    au FileType java set helpfile=~/.vim/lang-doc/java/
-"    au FileType cpp set helpfile=~/.vim/lang-doc/cppreference/
-"endif
-
-" Project specific settings - 
+" Project specific settings -
 " look for a .vimrc file in the directory from where vim is launched and use
 " the settings found there
 set exrc
@@ -90,3 +84,12 @@ set lcs=eol:◀,tab:▷◁,extends:▶,trail:ﬆ
 
 " Enable bundles
 execute pathogen#infect()
+
+" Toggle the tag bar with F5
+cnoremap <F5> :Tagbar<CR>
+
+" Toggle the tag bar with F5, from insert mode, but go back to insert after
+inoremap <F5> <Esc>:Tagbar<CR>a
+
+" save on switching buffers, consider it mitigation for set hidden
+" set autowrite
