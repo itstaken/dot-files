@@ -25,6 +25,9 @@ SetEnv fvwm_title_button_arrow_up 4
 # in the image search path.
 ImagePath $[fvwm_icons_dir]:+
 
+# Use some of the hicolor icons for apps that have them but no other specificied icons
+Test (x .local/share/icons/hicolor/256x256) ImagePath +:.local/share/icons/hicolor/256x256
+
 # This is where I save the current wallpaper as a path to the background image.
 SetEnv fvwm_wallpaper_preference $[fvwm_preferences_dir]/wallpaper
 
@@ -70,10 +73,11 @@ OpaqueMoveSize unlimited
 # Icon 2 is a paper clip icon that toggles window stickiness.  Additionally,
 # Icon 2 is only displayed when for the currently active window.
 # Icon 4 is n up arrow that does a custom maximize (see CustomMax function).
+# Icons are only displayed for the currently active window.
 #
 # In case I should ever toggle a border back on, handles are disabled (and set
-# to width zero just in case).
-#
+# to width 0 just in case).
+# 
 # Menus would also be flat, but some damned thing is making them have a 3D
 # border, so I set that to zero to hide the ugliness.
 ColorSet 0 bg #4A516A, fg gray
@@ -95,8 +99,8 @@ Style * IconBox 1920x1080, IconFill Bottom Left
 Mouse 1 $[fvwm_title_button_arrow_up] N CustomMax
 
 #
-#  Menu formats are a little tricky to describe, but the FVWM man page does a great
-#  job, search it for ItemFormat.
+#  Menu formats are a little tricky to describe, but the FVWM man page does a
+#  great job, search it for ItemFormat.
 #
 #  ┌────┬──────────────────────────┐┌───┬──────────┐
 #  │ S  │   Active Sub menu      ▷ ││ s │ item     │
@@ -175,7 +179,8 @@ AddToFunc Ops-or-Close
 DestroyMenu MenuFvwmRoot
 AddToMenu MenuFvwmRoot
 + "%enter.svg:$[MINI_ICON_SIZE]%Apps" Popup DynamicAppMenu
-+ "%play2.svg:$[MINI_ICON_SIZE]%Games" Popup DynamicGameMenu #+ "Scripts" Popup ScriptMenu
++ "%happy.svg:$[MINI_ICON_SIZE]%Games" Popup DynamicGameMenu 
+#+ "Scripts" Popup ScriptMenu
 + "%console.svg:$[MINI_ICON_SIZE]%Console" FvwmConsole
 + MissingSubmenuFunction WallpaperBrowser
 + "Screen shots" Popup Screenshots
@@ -221,7 +226,7 @@ Test (x steam) AddToMenu DynamicAppMenu "%bubbles4.svg:$[MINI_ICON_SIZE]%Steam F
 Test (x steam) AddToMenu DynamicAppMenu "%steam.svg:$[MINI_ICON_SIZE]%Steam Library" Exec exec steam "steam://open/games"
 
 # Games
-# If they exist, put various games in the Apps menu:
+# If they exist, put various games in the Games menu:
 Test (x abe) AddToMenu DynamicGameMenu "%hammer.svg:$[MINI_ICON_SIZE]%Abe's Amazing Adventure" Exec exec abe
 Test (x blobwars) AddToMenu DynamicGameMenu "%radio-unchecked.svg:$[MINI_ICON_SIZE]%Blobwars: Metal Blob Solid" Exec exec blobwars
 Test (x freeciv) AddToMenu DynamicGameMenu "%office.svg:$[MINI_ICON_SIZE]%FreeCiv" Exec exec freeciv
@@ -234,6 +239,12 @@ Test (x powder) AddToMenu DynamicGameMenu "%wand.svg:$[MINI_ICON_SIZE]%Powder" E
 Test (x sauerbraten) AddToMenu DynamicGameMenu "sauerbraten" Exec exec sauerbraten
 Test (x slashem,x x-terminal-emulator) AddToMenu DynamicGameMenu "%bug.svg:!$[MINI_ICON_SIZE]%Slashem (console)" Exec exec x-terminal-emulator +sb -e slashem
 Test (x tmw) AddToMenu DynamicGameMenu "%question.svg:!$[MINI_ICON_SIZE]%The Mana World" Exec exec tmw
+
+#I have some shortcuts in ~/bin ending in .exe that invoke wine,
+#if they exist, put these in the Games menu, too.
+Test (x poe.exe) AddToMenu DynamicGameMenu "%hammer.svg:$[MINI_ICON_SIZE]%Path of Exile" Exec exec poe.exe
+Test (x marvel.exe) AddToMenu DynamicGameMenu "Marvel heroes" Exec exec marvel.exe
+Test (x warframe.exe) AddToMenu DynamicGameMenu "Warframe" Exec exec warframe.exe
 
 # Editors/Utilities
 # If they exist, put various editors into the Apps menu:
@@ -322,7 +333,6 @@ AddToFunc Focus-Next-Window
 DestroyFunc Warp-Focus
 AddToFunc Warp-Focus
 + I WarpToWindow 5p 5p
-+ I Focus
 
 # cycle through other windows of the same class
 # similar to gnome/osx but without displaying an icon or list of other windows
@@ -654,6 +664,7 @@ AddToFunc FullMax
 + I State 1 off
 + I State 2 on
 + I Maximize on
++ I WindowStyle NoTitle
 
 # Called when the state machine is going to state 1
 DestroyFunc HalfMax
@@ -692,6 +703,8 @@ AddButtonStyle $[fvwm_title_button_arrow_up] Active (Pixmap arrow-up2.svg:14x14 
 
 # Make clicking the paper clip (I-2) call the toggle sticky function
 Mouse 1 $[fvwm_title_button_clip] N ToggleSticky
+
+Mouse 1 I N Iconify Off
 
 # Makes the window sticky (or removes stickyness)
 DestroyFunc ToggleSticky
