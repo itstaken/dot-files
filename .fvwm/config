@@ -76,8 +76,8 @@ OpaqueMoveSize unlimited
 # Icons are only displayed for the currently active window.
 #
 # In case I should ever toggle a border back on, handles are disabled (and set
-# to width 0 just in case).
-# 
+# to width zero just in case).
+#
 # Menus would also be flat, but some damned thing is making them have a 3D
 # border, so I set that to zero to hide the ugliness.
 ColorSet 0 bg #4A516A, fg gray
@@ -180,7 +180,6 @@ DestroyMenu MenuFvwmRoot
 AddToMenu MenuFvwmRoot
 + "%enter.svg:$[MINI_ICON_SIZE]%Apps" Popup DynamicAppMenu
 + "%happy.svg:$[MINI_ICON_SIZE]%Games" Popup DynamicGameMenu 
-#+ "Scripts" Popup ScriptMenu
 + "%console.svg:$[MINI_ICON_SIZE]%Console" FvwmConsole
 + MissingSubmenuFunction WallpaperBrowser
 + "Screen shots" Popup Screenshots
@@ -269,6 +268,9 @@ Key p A 4 PlaceAgain
 
 # When Win+T is pressed, open a terminal
 Key t A 4 Exec exec x-terminal-emulator +sb
+
+# When Win+S is pressed, shade the window
+Key s A 4 WindowShade
 
 # Bind Win+Right Mouse to resize function
 Mouse 3 FSTW 4 Resize-or-not
@@ -664,7 +666,6 @@ AddToFunc FullMax
 + I State 1 off
 + I State 2 on
 + I Maximize on
-+ I WindowStyle NoTitle
 
 # Called when the state machine is going to state 1
 DestroyFunc HalfMax
