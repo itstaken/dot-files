@@ -1,8 +1,21 @@
+
 # This makes ibus trigger appropriately without having to edit shell
 # environment settings with separate .rc files.
 SetEnv GTK_IM_MODULE ibus
 SetEnv XMODIFIERS @im=ibus
 SetEnv QT_IM_MODULE ibus
+
+# Configurable preference variables -- I set a bunch of variables at the top of
+# my config.  These are all default values for the preference.  To change these
+# values, I create additional configuration files under $[fvwm_preferences_dir]
+# where I over-ride the values set here.
+#
+
+# Color Preferences
+SetEnv FG_COLOR white
+SetEnv FG_COLOR_INACTIVE grey
+SetEnv BG_COLOR #4a516a
+SetEnv BG_COLOR_LIGHTER #7d849d
 
 # Icons on the desk will be this size:
 SetEnv ICON_SIZE 64x64
@@ -10,11 +23,27 @@ SetEnv ICON_SIZE 64x64
 # Icons in title bars will be this size:
 SetEnv MINI_ICON_SIZE 24x24
 
+# Size used in screenshot menu
+SetEnv SCREEN_SHOT_SCALE 256
+
+# Size used in wallpaper menu
+SetEnv WALLPAPER_SCALE 512
+
+SetEnv MENU_FONT_FAMILY "DejaVu Sans Mono"
+SetEnv MENU_FONT_SIZE 20
+
+SetEnv DEFAULT_FONT_FAMILY "Droid Sans Mono"
+SetEnv DEFAULT_FONT_SIZE 12
+
+
 # These are used to avoid hard-coded paths in the config file.
 SetEnv fvwm_wallpapers_dir $[FVWM_USERDIR]/wallpapers/
-SetEnv fvwm_preferences_dir $[FVWM_USERDIR]/preferences/
 SetEnv fvwm_screenshots_dir $[FVWM_USERDIR]/screenshots/
 SetEnv fvwm_icons_dir $[FVWM_USERDIR]/icons/
+
+SetEnv fvwm_preferences_dir $[FVWM_USERDIR]/preferences/
+SetEnv fvwm_color_scheme_preference $[fvwm_preferences_dir]/color_scheme
+SetEnv fvwm_font_preferences $[fvwm_preferences_dir]/font
 
 # These are so it's easier to change titlebar button positions
 SetEnv fvwm_title_button_miniicon 1
@@ -37,6 +66,21 @@ SetEnv fvwm_wallpaper_preference $[fvwm_preferences_dir]/wallpaper
 Test (!x $[fvwm_screenshots_dir]) Exec exec mkdir -p $[fvwm_screenshots_dir]
 Test (!x $[fvwm_preferences_dir]) Exec exec mkdir -p $[fvwm_preferences_dir]
 #Test (!x $[fvwm_icons_dir]) Exec exec mkdir -p $[fvwm_icons_dir]
+
+##
+# Now, read all over-rides from the preferences directory
+# This must happen early in the config so that colorsets and other
+# configurations that use the variables are set early enough.
+Test (f $[fvwm_preferences_dir]) PipeRead 'for f in "$[fvwm_preferences_dir]"*; do \
+    cat $f ; \
+    echo Echo loaded preferences from $f ; \
+    done'
+
+##
+# Font settings are constructed from variables stored as pieces
+SetEnv DEFAULT_FONT "xft:$[DEFAULT_FONT_FAMILY]:size=$[DEFAULT_FONT_SIZE]"
+SetEnv MENU_FONT "xft:$[MENU_FONT_FAMILY]:size=$[MENU_FONT_SIZE]"
+DefaultFont "$[DEFAULT_FONT]"
 
 # This next block contains page size, edge scrolling, and geometry window
 # settings.
@@ -80,21 +124,22 @@ OpaqueMoveSize unlimited
 #
 # Menus would also be flat, but some damned thing is making them have a 3D
 # border, so I set that to zero to hide the ugliness.
-ColorSet 0 bg #4A516A, fg gray
-ColorSet 1 Tint #4A516A 50, bg #4A516A, fg white
+
+
+ColorSet 0 bg $[BG_COLOR], fg $[FG_COLOR_INACTIVE]
+ColorSet 1 Tint $[BG_COLOR] 50, bg $[BG_COLOR], fg $[FG_COLOR], fgsh black
 BorderStyle -- flat
 ButtonStyle All (Colorset 0 -- flat)
 AddButtonStyle $[fvwm_title_button_miniicon] Active MiniIcon (HiddenHandles NoInset Hilight3Doff -- flat)
 TitleStyle (Colorset 0 -- flat)
 Style * NoHandles, BorderWidth 0, SloppyFocus, MinOverlapPlacement, \
       SnapAttraction 3 SameType Screen, Colorset 0, HilightFore white, \
-      HilightBack #4A516A, \
+      HilightBack $[BG_COLOR], \
       IconTitleRelief 0, IconBackgroundRelief 0, IconTitleColorset 0, \
       IconBackgroundPadding 1, HilightIconTitleColorset 1
 #      IconBackgroundColorset 0,  specify a colorset to add a background
 
 Style * IconBox 1920x1080, IconFill Bottom Left
-
 
 Mouse 1 $[fvwm_title_button_arrow_up] N CustomMax
 
@@ -119,8 +164,8 @@ Mouse 1 $[fvwm_title_button_arrow_up] N CustomMax
 #
 #
 MenuStyle * MenuColorset 1, BorderWidth 0, ItemFormat "%s %| %i %l %|% %> ", \
-          PopupOffset 0 100, Hilight3DOff, ActiveFore Black, ForeGround Black, \
-          HilightBack white
+          PopupOffset 0 100, Hilight3DOff, ActiveFore $[FG_COLOR], ForeGround $[FG_COLOR], \
+          HilightBack $[BG_COLOR_LIGHTER], Font "$[MENU_FONT]"
 
 # Set up icons for stuff...
 Style "Android SDK Manager" Icon download.svg:$[ICON_SIZE], MiniIcon download.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride, DecorateTransient
@@ -147,6 +192,7 @@ Style "Vim" Icon code.svg:$[ICON_SIZE], MiniIcon code.svg:$[MINI_ICON_SIZE]
 Style "xcalc" MiniIcon calculate.svg:$[MINI_ICON_SIZE]
 Style "XClipboard" Icon paste2.svg:$[ICON_SIZE], MiniIcon paste2.svg:$[MINI_ICON_SIZE]
 Style "*rxvt*" MiniIcon console.svg:$[MINI_ICON_SIZE]
+Style "Minetest*" NoTitle
 
 Style "FightTheDragon" NoTitle
 
@@ -163,14 +209,14 @@ AddToFunc Ops-or-Close
 + H Menu DynamicWindowOpsMenu
 + M Move
 
+#
 # The root menu consists of the following:
 # ┌─────────────────┐
 # │ Apps          ▷ │
 # │ Games         ▷ │
 # │ Console         │
-# │ Wallpaper     ▷ │
-# │ Screen shots  ▷ │
-# │ Wallpapers    ▷ │
+# │ Screenshots   ▷ │
+# │ Settings      ▷ │
 # ├─────────────────┤
 # │ Reload          │
 # │ Lock            │
@@ -181,9 +227,9 @@ AddToMenu MenuFvwmRoot
 + "%enter.svg:$[MINI_ICON_SIZE]%Apps" Popup DynamicAppMenu
 + "%happy.svg:$[MINI_ICON_SIZE]%Games" Popup DynamicGameMenu 
 + "%console.svg:$[MINI_ICON_SIZE]%Console" FvwmConsole
-+ MissingSubmenuFunction WallpaperBrowser
-+ "Screen shots" Popup Screenshots
-+ "%images.svg:$[MINI_ICON_SIZE]%Wallpapers" Popup $[fvwm_wallpapers_dir]
++ MissingSubmenuFunction ScreenshotBrowser
++ "Screenshots" Popup $[fvwm_screenshots_dir]
++ "Settings" Popup SettingsMenu
 + "" Nop
 + "%loop2.svg:$[MINI_ICON_SIZE]%Reload" Restart
 # Put a lock icon in the menu if xautolock is present
@@ -193,21 +239,39 @@ AddToMenu MenuFvwmRoot
 + "%exit.svg:$[MINI_ICON_SIZE]%Exit" FvwmForm FvwmForm-QuitVerify
 Style FvwmForm-QuitVerify !Title
 
-# The screen shots menu provides an automatic menu of the content in the screen
-# shots and provides options for browsing if eog, rox, or nautilus are
-# installed.
-DestroyMenu Screenshots
-AddToMenu Screenshots
-+ MissingSubmenuFunction ScreenshotBrowser
-Test (x eog) AddToMenu Screenshots "%folder-open.svg:$[MINI_ICON_SIZE]%Browse (eog)" Exec exec eog $[fvwm_screenshots_dir]
-Test (x rox) AddToMenu Screenshots "%folder-open.svg:$[MINI_ICON_SIZE]%Browse (rox)" Exec exec rox $[fvwm_screenshots_dir]
-Test (x nautilus) AddToMenu Screenshots "%folder-open.svg:$[MINI_ICON_SIZE]%Browse (Nautilus)" Exec exec nautilus --no-desktop $[fvwm_screenshots_dir]
-+ "%image.svg:$[MINI_ICON_SIZE]%Screenshots" Popup $[fvwm_screenshots_dir]
+#
+# The settings menu consists of the following:
+# ┌─────────────────┐
+# │ Wallpaper     ▷ │
+# │ Colors        ▷ │
+# │ Fonts         ▷ │
+# └─────────────────┘
+DestroyMenu SettingsMenu
+AddToMenu SettingsMenu
++ MissingSubmenuFunction WallpaperBrowser
++ "%images.svg:$[MINI_ICON_SIZE]%Wallpaper" Popup $[fvwm_wallpapers_dir]
++ "%paint-format.svg:$[MINI_ICON_SIZE]%Colors" Popup ColorMenu
++ "Fonts" Popup FontsMenu
 
 
-# maybe some day...
-#AddToMenu ScriptMenu
-#+ "Scripts" Title
+#
+# These colors are from various wallpapers, they're hideous, but they sort of
+# work.
+DestroyMenu ColorMenu
+AddToMenu ColorMenu
++ "Blue" UpdateColors 4A516A
++ "Cake" UpdateColors 6f4d10
++ "Clouds" UpdateColors 236a64
++ "Swirl" UpdateColors 232323
++ "Zombies" UpdateColors 38512e
+
+#
+# This function calls the color_helper script with a background color and then
+# restarts
+DestroyFunc UpdateColors
+AddToFunc UpdateColors
++ I Exec exec python $[FVWM_USERDIR]/color_helper.py $0 > $[fvwm_color_scheme_preference]
++ I Schedule 250 Restart
 
 # Dynamic App Menu Generation
 # If they exist, put rxvt, xterm, rox, and nautilus in Apps menu:
@@ -262,6 +326,9 @@ Test (x pavucontrol) AddToMenu DynamicAppMenu "%volume-high.svg:$[MINI_ICON_SIZE
 
 # Resize on win+r
 Key r A 4 Resize Direction SE
+
+# Touchpad enable/disable
+Test (x touchpad.sh) Key F5 A 4 Exec exec touchpad.sh
 
 # Place again on win+p
 Key p A 4 PlaceAgain
@@ -354,9 +421,10 @@ AddToFunc Focus-Next-Class
 DestroyFunc WallpaperBrowser
 AddToFunc WallpaperBrowser I PipeRead 'test ! -d "$0/.thumbs" && mkdir "$0/.thumbs"; \
    for i in "$0/"*; do \
-      test -f "$0/.thumbs/${i##*/}" \
-         -a "${i}" -ot "$0/.thumbs/${i##*/}" || { \
-            convert -quality 0 -scale 128 "${i}" "png:$0/.thumbs/${i##*/}" 2>/dev/null \
+      iname=${i##*/} ; \
+      test -f "$0/.thumbs/${iname}" \
+         -a "${i}" -ot "$0/.thumbs/${iname}" || { \
+            convert -quality 0 -scale $[WALLPAPER_SCALE] "${i}" "png:$0/.thumbs/${iname}" 2>/dev/null \
                || continue; \
          }; \
    done; \
@@ -364,24 +432,23 @@ AddToFunc WallpaperBrowser I PipeRead 'test ! -d "$0/.thumbs" && mkdir "$0/.thum
       test -f "$0/${i##*/}" || rm $i ; \
    done'
 + I DestroyMenu $0
-+ I AddToMenu $0 "Change Wallpaper" Title
 + I PipeRead 'for file in "$0/".thumbs/*; do \
       iname=${file##*/} ; \
       echo AddToMenu $0 "\*$0/.thumbs/$iname*$iname" ChangeWallpaper \"$0/$iname\" ;\
       done'
 # Add an option to browse the wallpaper directory with Rox (if installed)
 + I Piperead \
-'which rox >/dev/null && echo \'AddToMenu $0 "\*folder-open.svg:64x64*Browse Directory (rox)" Exec exec rox "$0" \' || echo Nop'
+'which rox >/dev/null && echo \'AddToMenu $0 "\*folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory (rox)" Exec exec rox "$0" \' || echo Nop'
 # Add an option to browse the wallpaper directory with Nautilus (if installed)
 + I Piperead \
-'which nautilus >/dev/null && echo \'AddToMenu $0 "\*folder-open.svg:64x64*Browse Directory (nautilus)" Exec exec nautilus --no-desktop "$0" \' || echo Nop'
+'which nautilus >/dev/null && echo \'AddToMenu $0 "\*folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory (nautilus)" Exec exec nautilus --no-desktop "$0" \' || echo Nop'
 
 DestroyFunc ScreenshotBrowser
 AddToFunc ScreenshotBrowser I PipeRead 'test ! -d "$0/.thumbs" && mkdir "$0/.thumbs"; \
    for i in "$0/"*; do \
       test -f "$0/.thumbs/${i##*/}" \
          -a "${i}" -ot "$0/.thumbs/${i##*/}" || { \
-            convert -quality 0 -scale 128 "${i}" "png:$0/.thumbs/${i##*/}" 2>/dev/null \
+            convert -quality 0 -scale $[SCREEN_SHOT_SCALE] "${i}" "png:$0/.thumbs/${i##*/}" 2>/dev/null \
                || continue; \
          }; \
    done; \
@@ -389,17 +456,16 @@ AddToFunc ScreenshotBrowser I PipeRead 'test ! -d "$0/.thumbs" && mkdir "$0/.thu
       test -f "$0/${i##*/}" || rm $i ; \
    done'
 + I DestroyMenu $0
-+ I AddToMenu $0 "Browse Screenshots" Title
 + I PipeRead 'for file in "$0/".thumbs/*; do \
       iname=${file##*/} ; \
       echo AddToMenu $0 "\*$0/.thumbs/$iname*$iname" Exec exec display \"$0/$iname\" ;\
       done'
 # Add an option to browse the wallpaper directory with Rox (if installed)
 + I Piperead \
-'which rox >/dev/null && echo \'AddToMenu $0 "\*folder-open.svg:64x64*Browse Directory (rox)" Exec exec rox "$0" \' || echo Nop'
+'which rox >/dev/null && echo \'AddToMenu $0 "\*folder-open.svg:$[ICON_SIZE]*Browse Directory (rox)" Exec exec rox "$0" \' || echo Nop'
 # Add an option to browse the wallpaper directory with Nautilus (if installed)
 + I Piperead \
-'which nautilus >/dev/null && echo \'AddToMenu $0 "\*folder-open.svg:64x64*Browse Directory (nautilus)" Exec exec nautilus --no-desktop "$0" \' || echo Nop'
+'which nautilus >/dev/null && echo \'AddToMenu $0 "\*folder-open.svg:$[ICON_SIZE]*Browse Directory (nautilus)" Exec exec nautilus --no-desktop "$0" \' || echo Nop'
 
 DestroyFunc ImageBrowser
 AddToFunc ImageBrowser
@@ -419,10 +485,10 @@ AddToFunc ImageBrowser
     done'
 # Add an option to browse the wallpaper directory with Rox (if installed)
 + I Piperead \
-'which rox >/dev/null && echo \'AddToMenu $0 "\*folder-open.svg:64x64*Browse Directory (rox)" Exec exec rox "$0" \' || echo Nop'
+'which rox >/dev/null && echo \'AddToMenu $0 "\*folder-open.svg:$[ICON_SIZE]*Browse Directory (rox)" Exec exec rox "$0" \' || echo Nop'
 # Add an option to browse the wallpaper directory with Nautilus (if installed)
 + I Piperead \
-'which nautilus >/dev/null && echo \'AddToMenu $0 "\*folder-open.svg:64x64*Browse Directory (nautilus)" Exec exec nautilus --no-desktop "$0" \' || echo Nop'
+'which nautilus >/dev/null && echo \'AddToMenu $0 "\*folder-open.svg:$[ICON_SIZE]*Browse Directory (nautilus)" Exec exec nautilus --no-desktop "$0" \' || echo Nop'
 
 #
 # The user can select different images to use as the wallpaper at any time.
@@ -432,13 +498,14 @@ AddToFunc ImageBrowser
 # This function changes the wallpaper preference to the image file it is passed
 DestroyFunc ChangeWallpaper
 AddToFunc ChangeWallpaper
-+ I Exec exec echo "$0" > $[fvwm_wallpaper_preference]
++ I Exec exec echo SetEnv WALLPAPER "$0" > $[fvwm_wallpaper_preference]
++ I SetEnv WALLPAPER "$0"
 + I Schedule 250 LoadWallpaper
 
 # This function loads the wallpaper from the preference file
 DestroyFunc LoadWallpaper
 AddToFunc LoadWallpaper
-+ I Test (f $[fvwm_wallpaper_preference]) Exec exec fvwm-root -r --dither `cat $[fvwm_wallpaper_preference]`
++ I Test (f $[fvwm_wallpaper_preference]) Exec exec fvwm-root -r --dither $[WALLPAPER]
 
 # Make sure wallpaper loading happens on startup:
 AddToFunc StartFunction
@@ -485,14 +552,14 @@ AddToFunc MakeTrans
 #   ├─────────┤
 #   │ conky   │
 #   └─────────┘
-#   
+#
 
 DestroyModuleConfig RightBar
 *RightBar: Colorset 0
 *RightBar: Rows 22
 *RightBar: (1x18, Swallow (UseOld, NoKill, Respawn) "FvwmPager" FvwmPager)
-*RightBar: (1x1, Swallow (UseOld, NoKill, Respawn) "trayer" "Exec exec trayer --widthtype request --heighttype request --align right")
-*RightBar: (1x3, Swallow (UseOld, NoKill, Respawn) "Conky" "Exec exec conky -o -c $[FVWM_USERDIR]/conkyconf -a top_left")
+*RightBar: (1x1, Swallow (UseOld, NoKill, Respawn) "trayer" "Exec exec trayer --widthtype request --heighttype request --align right 2>/dev/null")
+*RightBar: (1x3, Swallow (UseOld, NoKill, Respawn) "Conky" "Exec exec conky -o -c $[FVWM_USERDIR]/conkyconf -a top_left 2>/dev/null")
 *RightBar: Frame 0
 Style RightBar NoTitle, WindowListSkip, NeverFocus, Sticky
 
@@ -508,10 +575,20 @@ AddToFunc StartFunction
 *FvwmPager: Balloons
 *FvwmPager: BalloonFont "xft:Droid Sans Mono:size=12"
 *FvwmPager: MiniIcons
-*FvwmPager: WindowColors wheat #4A506A white #7A809A
-*FvwmPager: Colorset * 1 
-*FvwmPager: UseSkipList 
+*FvwmPager: WindowColors wheat $[BG_COLOR] white $[BG_COLOR_LIGHTER]
+*FvwmPager: Colorset * 1
+*FvwmPager: UseSkipList
 *FvwmPager: Hilight gray
+
+#DestroyMenu FontsMenu
+#AddToMenu FontsMenu DynamicPopupAction BuildFontsMenu
+
+Test (x $[FVWM_USERDIR]/font_helper.sh) PipeRead '$[FVWM_USERDIR]/font_helper.sh'
+
+DestroyFunc SetFontFamily
+AddToFunc SetFontFamily
++ I Exec exec echo SetEnv DEFAULT_FONT_FAMILY "$0" > $[fvwm_font_preferences]
++ I Schedule 250 Restart
 
 # Window options menu
 DestroyMenu DynamicWindowOpsMenu
