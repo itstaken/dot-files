@@ -227,8 +227,8 @@ AddToMenu MenuFvwmRoot
 + "%happy.svg:$[MINI_ICON_SIZE]%Games" Popup DynamicGameMenu 
 + "%console.svg:$[MINI_ICON_SIZE]%Console" FvwmConsole
 + MissingSubmenuFunction ScreenshotBrowser
-+ "Screenshots" Popup $[fvwm_screenshots_dir]
-+ "Settings" Popup SettingsMenu
++ "%screen.svg:$[MINI_ICON_SIZE]%Screenshots" Popup $[fvwm_screenshots_dir]
++ "%settings.svg:$[MINI_ICON_SIZE]%Settings" Popup SettingsMenu
 + "" Nop
 + "%loop2.svg:$[MINI_ICON_SIZE]%Reload" Restart
 # Put a lock icon in the menu if xautolock is present
@@ -250,7 +250,7 @@ AddToMenu SettingsMenu
 + MissingSubmenuFunction WallpaperBrowser
 + "%images.svg:$[MINI_ICON_SIZE]%Wallpaper" Popup $[fvwm_wallpapers_dir]
 + "%paint-format.svg:$[MINI_ICON_SIZE]%Colors" Popup ColorMenu
-+ "Fonts" Popup FontsMenu
++ "%font.svg:$[MINI_ICON_SIZE]%Fonts" Popup FontsMenu
 
 
 #
@@ -622,6 +622,7 @@ DestroyFunc Screenshot
 AddToFunc Screenshot
 + I Raise
 + I Exec exec import -window $0 $1 $[fvwm_screenshots_dir]/`date +%Y_%b_%d_%H:%M:%S.png`
++ I Schedule 250 ScreenshotBrowser $[fvwm_screenshots_dir]
 
 # This is the context-sensitive group menu 
 DestroyMenu DynamicGroupMenuThingy
