@@ -209,7 +209,6 @@ AddToFunc Ops-or-Close
 + H Menu DynamicWindowOpsMenu
 + M Move
 
-#
 # The root menu consists of the following:
 # ┌─────────────────┐
 # │ Apps          ▷ │
@@ -585,11 +584,6 @@ AddToFunc StartFunction
 
 Test (x $[FVWM_USERDIR]/font_helper.sh) PipeRead '$[FVWM_USERDIR]/font_helper.sh'
 
-DestroyFunc SetFontFamily
-AddToFunc SetFontFamily
-+ I Exec exec echo SetEnv DEFAULT_FONT_FAMILY "$0" > $[fvwm_font_preferences]
-+ I Schedule 250 Restart
-
 # Window options menu
 DestroyMenu DynamicWindowOpsMenu
 AddToMenu DynamicWindowOpsMenu DynamicPopupAction DynamicWindowOpsMenuFunction
@@ -790,6 +784,10 @@ AddToFunc ToggleSticky
 + I ThisWindow (Sticky) WindowStyle !Sticky
 + I TestRc (NoMatch) WindowStyle Sticky
 
+
+
+# media keys
+Key XF86AudioMute A A Exec exec amixer set Master toggle
 #Key F6 A A Exec exec brightness.sh -d
 #Key F7 A A Exec exec brightness.sh -u
 Key F8 A A Exec exec amixer -D pulse sset Master toggle
