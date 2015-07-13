@@ -38,8 +38,8 @@ AddToMenu FontsMenu
 + "Menu Font [$[MENU_FONT_FAMILY]]" Popup MenuFontsMenu
 + "Font Menu Size [$[MENU_FONT_SIZE]]" Popup MenuFontSizeMenu
 
+DestroyFunc SetDefaultFontSize
 AddToFunc SetDefaultFontSize
-AddToMenu SetDefaultFontSize
 + I Exec exec echo SetEnv DEFAULT_FONT_SIZE "$0" > "$[fvwm_preferences_dir]"/default_font_size
 + I Schedule 250 Restart
 
