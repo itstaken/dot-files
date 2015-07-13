@@ -431,6 +431,7 @@ AddToFunc WallpaperBrowser I PipeRead 'test ! -d "$0/.thumbs" && mkdir "$0/.thum
       test -f "$0/${i##*/}" || rm $i ; \
    done'
 + I DestroyMenu $0
++ I AddToMenu $[fvwm_wallpapers_dir] Refresh DestroyMenu $0
 + I PipeRead 'for file in "$0/".thumbs/*; do \
       iname=${file##*/} ; \
       echo AddToMenu $0 "\*$0/.thumbs/$iname*$iname" ChangeWallpaper \"$0/$iname\" ;\
@@ -455,6 +456,7 @@ AddToFunc ScreenshotBrowser I PipeRead 'test ! -d "$0/.thumbs" && mkdir "$0/.thu
       test -f "$0/${i##*/}" || rm $i ; \
    done'
 + I DestroyMenu $0
++ I AddToMenu $[fvwm_screenshots_dir] Refresh DestroyMenu $0
 + I PipeRead 'for file in "$0/".thumbs/*; do \
       iname=${file##*/} ; \
       echo AddToMenu $0 "\*$0/.thumbs/$iname*$iname" Exec exec display \"$0/$iname\" ;\
