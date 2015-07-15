@@ -57,7 +57,7 @@ ImagePath $[fvwm_icons_dir]:+
 # Use some of the hicolor icons for apps that have them but no other specificied icons
 Test (x .local/share/icons/hicolor/256x256) ImagePath +:.local/share/icons/hicolor/256x256
 
-# This is where I save the current wallpaper as a path to the background image.
+# This is where I save the current wallpaper (SetEnv WALLPAPER path.png)
 SetEnv fvwm_wallpaper_preference $[fvwm_preferences_dir]/wallpaper
 
 # This block creates the directories needed for my config to function
@@ -332,8 +332,14 @@ Test (x touchpad.sh) Key F5 A 4 Exec exec touchpad.sh
 # Place again on win+p
 Key p A 4 PlaceAgain
 
+# When Win+Right is pressed, move to the right edge of the screen
+Key Right A 4 AnimatedMove -0 keep Warp
+
+# When Win+Left is pressed, move to the left edge of the screen
+Key Left A 4 AnimatedMove 0 keep Warp
+
 # When Win+T is pressed, open a terminal
-Key t A 4 Exec exec x-terminal-emulator +sb
+Key t A 4 LaunchWarp x-terminal-emulator +sb
 
 # When Win+S is pressed, shade the window
 Key s A 4 WindowShade
@@ -513,7 +519,7 @@ AddToFunc StartFunction
 + I LoadWallpaper
 + I Test (init) Exec exec ibus-daemon -drx
 + I Test (init, x xcompmgr, x transset) Exec exec xcompmgr
-+ I Test (x xcompmgr, x transset) Module FvwmEvent
++ I Module FvwmEvent
 + I Test (Restart, x xcompmgr, x transset) Retransit
 + I Test (init, x bluetooth-applet) Exec exec bluetooth-applet
 + I Test (init, x blueman-applet) Exec exec blueman-applet
@@ -524,12 +530,28 @@ AddToFunc StartFunction
 *FvwmEvent: add_window WindowAdded
 *FvwmEvent: PassId
 
+DestroyFunc LaunchWarp
+AddToFunc LaunchWarp
++ I PipeRead 'if [ -z $WarpCounter ] ; then \
+        echo SetEnv WarpCounter 0 ; \
+    else \
+        echo SetEnv WarpCounter $((WarpCounter+1)) ; \
+    fi'
++ I Exec exec $*
+
 # Make the newly added window transparent
 # but don't make Firefox transparent
 DestroyFunc WindowAdded
 AddToFunc WindowAdded
 + I ThisWindow ( URxvt ) MakeTrans
 + I ThisWindow ( xterm ) MakeTrans
++ I Test (EnvIsSet WarpCounter) WarpToWindow
++ I Test (EnvIsSet WarpCounter) PipeRead '\
+    if [ $WarpCounter -gt 0 ] ; then \
+        echo SetEnv WarpCounter $((WarpCounter-1)) ; \
+    else \
+        echo UnsetEnv WarpCounter ; \
+    fi'
 
 DestroyFunc MakeTrans
 AddToFunc MakeTrans
@@ -786,8 +808,6 @@ DestroyFunc ToggleSticky
 AddToFunc ToggleSticky
 + I ThisWindow (Sticky) WindowStyle !Sticky
 + I TestRc (NoMatch) WindowStyle Sticky
-
-
 
 # media keys
 Key XF86AudioMute A A Exec exec amixer set Master toggle
