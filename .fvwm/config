@@ -1,4 +1,5 @@
 
+PipeRead "echo Echo Config load started at $(date)"
 # This makes ibus trigger appropriately without having to edit shell
 # environment settings with separate .rc files.
 SetEnv GTK_IM_MODULE ibus
@@ -35,6 +36,18 @@ SetEnv MENU_FONT_SIZE 20
 SetEnv DEFAULT_FONT_FAMILY "Droid Sans Mono"
 SetEnv DEFAULT_FONT_SIZE 12
 
+# Sizes for DesktopSize
+SetEnv PAGES_X 1
+SetEnv PAGES_Y 9
+
+SetEnv ICONBOX_GEOMETRY $[vp.width]x$[vp.height]
+
+SetEnv ICONFILL_UD Bottom
+SetEnv ICONFILL_LR Left
+
+# Settings menu entry for volume control
+SetEnv VOLUME_APP "x-terminal-emulator -e alsamixer"
+Test (x pavucontrol) SetEnv VOLUME_APP pavucontrol
 
 # These are used to avoid hard-coded paths in the config file.
 SetEnv fvwm_wallpapers_dir $[FVWM_USERDIR]/wallpapers/
@@ -57,7 +70,7 @@ ImagePath $[fvwm_icons_dir]:+
 # Use some of the hicolor icons for apps that have them but no other specificied icons
 Test (x .local/share/icons/hicolor/256x256) ImagePath +:.local/share/icons/hicolor/256x256
 
-# This is where I save the current wallpaper (SetEnv WALLPAPER path.png)
+# This is where I save/load the current wallpaper (SetEnv WALLPAPER path.png)
 SetEnv fvwm_wallpaper_preference $[fvwm_preferences_dir]/wallpaper
 
 # This block creates the directories needed for my config to function
@@ -67,6 +80,7 @@ Test (!x $[fvwm_screenshots_dir]) Exec exec mkdir -p $[fvwm_screenshots_dir]
 Test (!x $[fvwm_preferences_dir]) Exec exec mkdir -p $[fvwm_preferences_dir]
 #Test (!x $[fvwm_icons_dir]) Exec exec mkdir -p $[fvwm_icons_dir]
 
+
 ##
 # Now, read all over-rides from the preferences directory
 # This must happen early in the config so that colorsets and other
@@ -75,6 +89,7 @@ Test (f $[fvwm_preferences_dir]) PipeRead 'for f in "$[fvwm_preferences_dir]"*; 
     cat $f ; \
     echo Echo loaded preferences from $f ; \
     done'
+
 
 ##
 # Font settings are constructed from variables stored as pieces
@@ -98,7 +113,7 @@ DefaultFont "$[DEFAULT_FONT]"
 # │  ⋮  │  I also like to see the window contents while
 # └─────┘  dragging a window.
 #
-DesktopSize 1x9
+DesktopSize $[PAGES_X]x$[PAGES_Y]
 EdgeScroll 0 0
 EdgeThickness 1
 HideGeometryWindow Always
@@ -139,7 +154,7 @@ Style * NoHandles, BorderWidth 0, SloppyFocus, MinOverlapPlacement, \
       IconBackgroundPadding 1, HilightIconTitleColorset 1
 #      IconBackgroundColorset 0,  specify a colorset to add a background
 
-Style * IconBox 1920x1080, IconFill Bottom Left
+Style * IconBox $[ICONBOX_GEOMETRY], IconFill $[ICONFILL_UD] $[ICONFILL_LR]
 
 Mouse 1 $[fvwm_title_button_arrow_up] N CustomMax
 
@@ -247,11 +262,19 @@ Style FvwmForm-QuitVerify !Title
 # └─────────────────┘
 DestroyMenu SettingsMenu
 AddToMenu SettingsMenu
++ "FVWM Settings" Title
 + MissingSubmenuFunction WallpaperBrowser
 + "%images.svg:$[MINI_ICON_SIZE]%Wallpaper" Popup $[fvwm_wallpapers_dir]
 + "%paint-format.svg:$[MINI_ICON_SIZE]%Colors" Popup ColorMenu
 + "%font.svg:$[MINI_ICON_SIZE]%Fonts" Popup FontsMenu
++ "System" Title
+Test (x wifi.sh) AddToMenu SettingsMenu "%connection.svg:$[MINI_ICON_SIZE]%Wifi" Popup WifiMenu
+AddToMenu SettingsMenu "%volume-high.svg:$[MINI_ICON_SIZE]%Volume Control" Exec exec $[VOLUME_APP]
 
+DestroyMenu WifiMenu
+AddToMenu WifiMenu
++ "Connect to any" Exec exec x-terminal-emulator +sb -e wifi.sh -a
++ "Disconnect" Exec exec x-terminal-emulator +sb -e wifi.sh -k
 
 #
 # These colors are from various wallpapers, they're hideous, but they sort of
@@ -318,10 +341,9 @@ Test (x gimp) AddToMenu DynamicAppMenu "%image2.svg:$[MINI_ICON_SIZE]%Gimp" Exec
 Test (x inkscape) AddToMenu DynamicAppMenu "%crop.svg:$[MINI_ICON_SIZE]%Inkscape" Exec exec inkscape
 
 # Settings
-# If it exists, put the bluetooth-wizard into the Apps menu
-Test (x bluetooth-wizard) AddToMenu DynamicAppMenu "Bluetooth Wizard" Exec exec bluetooth-wizard
-Test (x blueman-manager) AddToMenu DynamicAppMenu "Bluetooth Manager" Exec exec blueman-manager
-Test (x pavucontrol) AddToMenu DynamicAppMenu "%volume-high.svg:$[MINI_ICON_SIZE]%Volume Control" Exec exec pavucontrol
+# If it exists, put the bluetooth-wizard into the Settings menu
+Test (x bluetooth-wizard) AddToMenu SettingsMenu "Bluetooth Wizard" Exec exec bluetooth-wizard
+Test (x blueman-manager) AddToMenu SettingsMenu "Bluetooth Manager" Exec exec blueman-manager
 
 # Resize on win+r
 Key r A 4 Resize Direction SE
@@ -539,13 +561,11 @@ AddToFunc LaunchWarp
     fi'
 + I Exec exec $*
 
-# Make the newly added window transparent
-# but don't make Firefox transparent
 DestroyFunc WindowAdded
 AddToFunc WindowAdded
 + I ThisWindow ( URxvt ) MakeTrans
 + I ThisWindow ( xterm ) MakeTrans
-+ I Test (EnvIsSet WarpCounter) WarpToWindow
++ I Test (EnvIsSet WarpCounter) Warp-Focus
 + I Test (EnvIsSet WarpCounter) PipeRead '\
     if [ $WarpCounter -gt 0 ] ; then \
         echo SetEnv WarpCounter $((WarpCounter-1)) ; \
@@ -589,7 +609,7 @@ Style RightBar NoTitle, WindowListSkip, NeverFocus, Sticky
 AddToFunc StartFunction
 + I FvwmButtons RightBar
 
-*RightBar: Geometry 183x813-0+0
+*RightBar: Geometry 203x813-0+0
 
 *FvwmPager: Colorset 0
 *FvwmPager: Font none
@@ -601,10 +621,7 @@ AddToFunc StartFunction
 *FvwmPager: WindowColors wheat $[BG_COLOR] white $[BG_COLOR_LIGHTER]
 *FvwmPager: Colorset * 1
 *FvwmPager: UseSkipList
-*FvwmPager: Hilight gray
-
-#DestroyMenu FontsMenu
-#AddToMenu FontsMenu DynamicPopupAction BuildFontsMenu
+#*FvwmPager: Hilight gray
 
 Test (x $[FVWM_USERDIR]/font_helper.sh) PipeRead '$[FVWM_USERDIR]/font_helper.sh'
 
@@ -801,7 +818,7 @@ AddButtonStyle $[fvwm_title_button_arrow_up] Active (Pixmap arrow-up2.svg:14x14 
 # Make clicking the paper clip (I-2) call the toggle sticky function
 Mouse 1 $[fvwm_title_button_clip] N ToggleSticky
 
-Mouse 1 I N Iconify Off
+#Mouse 1 I N Iconify Off
 
 # Makes the window sticky (or removes stickyness)
 DestroyFunc ToggleSticky
@@ -818,3 +835,7 @@ Key F9 A A Exec exec amixer -D pulse sset Master 5%-
 Key F10 A A Exec exec amixer -D pulse sset Master 5%+
 
 Key XF86PowerOff A A FvwmForm FvwmForm-QuitVerify
+
+
+
+PipeRead "echo Echo Config load ended at $(date)"
