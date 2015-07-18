@@ -80,7 +80,6 @@ Test (!x $[fvwm_screenshots_dir]) Exec exec mkdir -p $[fvwm_screenshots_dir]
 Test (!x $[fvwm_preferences_dir]) Exec exec mkdir -p $[fvwm_preferences_dir]
 #Test (!x $[fvwm_icons_dir]) Exec exec mkdir -p $[fvwm_icons_dir]
 
-
 ##
 # Now, read all over-rides from the preferences directory
 # This must happen early in the config so that colorsets and other
@@ -239,7 +238,8 @@ AddToFunc Ops-or-Close
 DestroyMenu MenuFvwmRoot
 AddToMenu MenuFvwmRoot
 + "%enter.svg:$[MINI_ICON_SIZE]%Apps" Popup DynamicAppMenu
-+ "%happy.svg:$[MINI_ICON_SIZE]%Games" Popup DynamicGameMenu 
++ "%happy.svg:$[MINI_ICON_SIZE]%Games" Popup DynamicGameMenu
++ "%feed.svg:$[MINI_ICON_SIZE]%Feeds" Popup FeedMenu
 + "%console.svg:$[MINI_ICON_SIZE]%Console" FvwmConsole
 + MissingSubmenuFunction ScreenshotBrowser
 + "%screen.svg:$[MINI_ICON_SIZE]%Screenshots" Popup $[fvwm_screenshots_dir]
@@ -247,11 +247,45 @@ AddToMenu MenuFvwmRoot
 + "" Nop
 + "%loop2.svg:$[MINI_ICON_SIZE]%Reload" Restart
 # Put a lock icon in the menu if xautolock is present
-Test (x xautolock) AddToMenu MenuFvwmRoot "%lock.svg:$[MINI_ICON_SIZE]%Lock" Exec exec xautolock -locknow 
+Test (x xautolock) AddToMenu MenuFvwmRoot "%lock.svg:$[MINI_ICON_SIZE]%Lock" Exec exec xautolock -locknow
 # Put the exit option at the end of the menu
 AddToMenu MenuFvwmRoot
 + "%exit.svg:$[MINI_ICON_SIZE]%Exit" FvwmForm FvwmForm-QuitVerify
 Style FvwmForm-QuitVerify !Title
+
+DestroyMenu FeedMenu
+AddtoMenu FeedMenu
++ MissingSubmenuFunction FetchFeeds
++ "Slashdot" Popup "http://rss.slashdot.org/Slashdot/slashdotMain"
++ "%newspaper.svg:$[MINI_ICON_SIZE]%SoylentNews" Popup "https://soylentnews.org/index.rss"
++ "%reddit.svg:$[MINI_ICON_SIZE]%Reddit" Title
++ "/r/pics" Popup "https://www.reddit.com/r/pics/.rss"
++ "/r/funny" Popup "https://www.reddit.com/r/funny/.rss"
++ "/r/Chinese" Popup "https://www.reddit.com/r/Chinese/.rss"
++ "/r/ChineseLanguage" Popup "https://www.reddit.com/r/ChineseLanguage/.rss"
++ "%star.svg:$[MINI_ICON_SIZE]%NASA" Title
++ "Breaking News" Popup "https://www.nasa.gov/rss/dyn/breaking_news.rss"
++ "Education News" Popup "https://www.nasa.gov/rss/dyn/educationnews.rss"
++ "Image of the Day" Popup "https://www.nasa.gov/rss/dyn/lg_image_of_the_day.rss"
+
+# Instead of loading all the rss feeds all the time, put a populate button in
+# them the first go around.
+#
+# Comment this out and they'll fill with content the first time you try to open
+# them.
+AddToMenu "http://rss.slashdot.org/Slashdot/slashdotMain" "Populate" FetchFeeds "http://rss.slashdot.org/Slashdot/slashdotMain"
+AddToMenu "https://soylentnews.org/index.rss" "Populate" FetchFeeds "https://soylentnews.org/index.rss"
+AddToMenu "https://www.reddit.com/r/pics/.rss" "Populate" FetchFeeds "https://www.reddit.com/r/pics/.rss"
+AddToMenu "https://www.reddit.com/r/funny/.rss" "Populate" FetchFeeds "https://www.reddit.com/r/funny/.rss"
+AddToMenu "https://www.nasa.gov/rss/dyn/breaking_news.rss" "Populate" FetchFeeds "https://www.nasa.gov/rss/dyn/breaking_news.rss"
+AddToMenu "https://www.nasa.gov/rss/dyn/educationnews.rss" "Populate" FetchFeeds "https://www.nasa.gov/rss/dyn/educationnews.rss"
+AddToMenu "https://www.nasa.gov/rss/dyn/lg_image_of_the_day.rss" "Populate" FetchFeeds "https://www.nasa.gov/rss/dyn/lg_image_of_the_day.rss"
+
+DestroyFunc FetchFeeds
+AddToFunc FetchFeeds
++ I DestroyMenu $0
++ I AddToMenu $0 Refresh DestroyMenu $0
++ I PipeRead 'python $[FVWM_USERDIR]/rss.py -m "$0" "$0"'
 
 #
 # The settings menu consists of the following:
@@ -354,11 +388,11 @@ Test (x touchpad.sh) Key F5 A 4 Exec exec touchpad.sh
 # Place again on win+p
 Key p A 4 PlaceAgain
 
-# When Win+Right is pressed, move to the right edge of the screen
+# When Win+Arrow is pressed, move to the corresponding edge of the screen
 Key Right A 4 AnimatedMove -0 keep Warp
-
-# When Win+Left is pressed, move to the left edge of the screen
 Key Left A 4 AnimatedMove 0 keep Warp
+Key Up A 4 AnimatedMove keep 0 Warp
+Key Down A 4 AnimatedMove keep -0 Warp
 
 # When Win+T is pressed, open a terminal
 Key t A 4 LaunchWarp x-terminal-emulator +sb
@@ -375,6 +409,7 @@ Mouse 1 FSTW 4 Move-Raise-or-Lower
 # Bind Mouse 1 on Icons to DynamicWindowOpsMenu
 Mouse 1 I A Menu DynamicWindowOpsMenu
 
+# Move on Win+M
 Key M A 4 Move
 
 # Move up or down by a page when win+k or win+j are held
@@ -459,7 +494,7 @@ AddToFunc WallpaperBrowser I PipeRead 'test ! -d "$0/.thumbs" && mkdir "$0/.thum
       test -f "$0/${i##*/}" || rm $i ; \
    done'
 + I DestroyMenu $0
-+ I AddToMenu $[fvwm_wallpapers_dir] Refresh DestroyMenu $0
++ I AddToMenu $0 Refresh DestroyMenu $0
 + I PipeRead 'for file in "$0/".thumbs/*; do \
       iname=${file##*/} ; \
       echo AddToMenu $0 "\*$0/.thumbs/$iname*$iname" ChangeWallpaper \"$0/$iname\" ;\
@@ -484,7 +519,7 @@ AddToFunc ScreenshotBrowser I PipeRead 'test ! -d "$0/.thumbs" && mkdir "$0/.thu
       test -f "$0/${i##*/}" || rm $i ; \
    done'
 + I DestroyMenu $0
-+ I AddToMenu $[fvwm_screenshots_dir] Refresh DestroyMenu $0
++ I AddToMenu $0 Refresh DestroyMenu $0
 + I PipeRead 'for file in "$0/".thumbs/*; do \
       iname=${file##*/} ; \
       echo AddToMenu $0 "\*$0/.thumbs/$iname*$iname" Exec exec display \"$0/$iname\" ;\
