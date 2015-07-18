@@ -11,17 +11,23 @@ This program may be used to generate a single menu or multiple menus.
 When providing multiple URLs, it's best to just specify a parent menu and let
 the script decide the titles and menu names for the different sub menus.
 
+Requirements:
+
+    * PythonMagic (python-pythonmagick ubuntu package) for image conversion
+    * python magic (python-magic) for file type detection
+
+
 '''
 
-import urllib2
-from xml.dom.minidom import parseString
 from argparse import ArgumentParser
-import sys
-import tempfile
 from PythonMagick import Image
+from xml.dom.minidom import parseString
 import magic
 import os
 import re
+import sys
+import tempfile
+import urllib2
 
 
 def limit(text, length):
@@ -255,7 +261,9 @@ def main(args):
                           link=link, media=png_path).encode("utf-8"))
                 else:
                     print(ENTRY_NO_IMAGE.format(menu=menu,
-                          opts=options.browseopt, title=title, link=link).encode("utf-8"))
+                          opts=options.browseopt,
+                          title=title,
+                          link=link).encode("utf-8"))
 
 if __name__ == "__main__":
     main(sys.argv)
