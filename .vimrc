@@ -40,6 +40,9 @@ autocmd FileType java set keywordprg=
 " available!
 set hidden
 
+" save on switching buffers, consider it mitigation for set hidden
+" set autowrite
+
 " Stop visual wrapping of text, toggle with :set wrap!
 set nowrap
 
@@ -64,7 +67,6 @@ call matchadd('ColorColumn', '\%81v', 100)
 " to set the color of the column:
 " highlight ColorColumn ctermbg=magenta
 
-
 " Project specific settings -
 " look for a .vimrc file in the directory from where vim is launched and use
 " the settings found there
@@ -81,7 +83,7 @@ set background=dark
 set list
 
 " This sets the specific characters used for previous command
-set lcs=eol:◀,tab:▷◁,extends:▶,trail:▐
+set lcs=eol:◀,tab:▷◁,extends:▶,trail:ﬆ
 " end of line shows a left arrow
 " tab is replaced by ▷◁◁◁
 " if text extends beyond the right side of the screen show right arrow
@@ -115,17 +117,27 @@ cnoremap <F5> :Tagbar<CR>
 " Toggle the tag bar with F5, from insert mode, but go back to insert after
 inoremap <F5> <Esc>:Tagbar<CR>a
 
-" save on switching buffers, consider it mitigation for set hidden
-" set autowrite
+set modeline
 
-" when using the GUI, get rid of the useless toolbar:
-set guioptions-=T
-" get rid of the right-hand scrollbar, too, it takes up too much room
-set guioptions-=r
-
-" Also, set the colorscheme, but only for the gui
 if has("gui_running")
+    " Also, set the colorscheme, but only for the gui
     colorscheme darkbone
+    " when using the GUI, get rid of the useless toolbar:
+    set guioptions-=T
+    " get rid of the right-hand scrollbar, too, it takes up too much room
+    set guioptions-=r
 else
     set background=dark
 endif
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+
+" Had to include an initial version of the statusline, otherwise on one of my
+" systems there would be ne status line.
+set statusline=%<%f\ %h%m%r%=%-14.(%l,%c%V%)\ %P
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
