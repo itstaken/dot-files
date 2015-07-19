@@ -1,4 +1,3 @@
-
 PipeRead "echo Echo Config load started at $(date)"
 # This makes ibus trigger appropriately without having to edit shell
 # environment settings with separate .rc files.
@@ -210,6 +209,8 @@ Style "Minetest*" NoTitle
 
 Style "FightTheDragon" NoTitle
 
+Style "oclock" NoTitle
+
 
 # Bind left clicking I-1 to the options menu, but double-click should close the
 # window.  More specifically, double click will close, single clicking will
@@ -335,6 +336,9 @@ Test (x rxvt) AddToMenu DynamicAppMenu "%console.svg:$[MINI_ICON_SIZE]%RXvt" Exe
 Test (x xterm) AddToMenu DynamicAppMenu "%console.svg:$[MINI_ICON_SIZE]%XTerm" Exec exec xterm
 Test (x rox) AddToMenu DynamicAppMenu "%folder-open.svg:$[MINI_ICON_SIZE]%Rox Filer" Exec exec rox
 Test (x nautilus) AddToMenu DynamicAppMenu "%folder-open.svg:$[MINI_ICON_SIZE]%Nautilus" Exec exec nautilus --no-desktop
+
+Test (x oclock) AddToMenu DynamicAppMenu "%clock.svg:$[MINI_ICON_SIZE]%oclock" Exec exec oclock -bg black -fg ${BG_COLOR_LIGHTER} -bd ${BG_COLOR} -transparent
+
 
 # Internet-related stuff
 # If they exist, put firefox, chromium, and steam into the Apps menu:
@@ -500,11 +504,9 @@ AddToFunc WallpaperBrowser I PipeRead 'test ! -d "$0/.thumbs" && mkdir "$0/.thum
       echo AddToMenu $0 "\*$0/.thumbs/$iname*$iname" ChangeWallpaper \"$0/$iname\" ;\
       done'
 # Add an option to browse the wallpaper directory with Rox (if installed)
-+ I Piperead \
-'which rox >/dev/null && echo \'AddToMenu $0 "\*folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory (rox)" Exec exec rox "$0" \' || echo Nop'
++ I Test (x rox) AddToMenu $0 "\*folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory (rox)" Exec exec rox "$0"
 # Add an option to browse the wallpaper directory with Nautilus (if installed)
-+ I Piperead \
-'which nautilus >/dev/null && echo \'AddToMenu $0 "\*folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory (nautilus)" Exec exec nautilus --no-desktop "$0" \' || echo Nop'
++ I Test (x nautilus) AddToMenu $0 "\*folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory (nautilus)" Exec exec nautilus --no-desktop "$0"
 
 DestroyFunc ScreenshotBrowser
 AddToFunc ScreenshotBrowser I PipeRead 'test ! -d "$0/.thumbs" && mkdir "$0/.thumbs"; \
@@ -524,37 +526,12 @@ AddToFunc ScreenshotBrowser I PipeRead 'test ! -d "$0/.thumbs" && mkdir "$0/.thu
       iname=${file##*/} ; \
       echo AddToMenu $0 "\*$0/.thumbs/$iname*$iname" Exec exec display \"$0/$iname\" ;\
       done'
-# Add an option to browse the wallpaper directory with Rox (if installed)
-+ I Piperead \
-'which rox >/dev/null && echo \'AddToMenu $0 "\*folder-open.svg:$[ICON_SIZE]*Browse Directory (rox)" Exec exec rox "$0" \' || echo Nop'
-# Add an option to browse the wallpaper directory with Nautilus (if installed)
-+ I Piperead \
-'which nautilus >/dev/null && echo \'AddToMenu $0 "\*folder-open.svg:$[ICON_SIZE]*Browse Directory (nautilus)" Exec exec nautilus --no-desktop "$0" \' || echo Nop'
+# Add an option to browse the Screenshot directory with Rox (if installed)
++ I Test (x rox) AddToMenu $0 "\*folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory (rox)" Exec exec rox "$0"
+# Add an option to browse the Screenshot directory with Nautilus (if installed)
++ I Test (x nautilus) AddToMenu $0 "\*folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory (nautilus)" Exec exec nautilus --no-desktop "$0"
 
-DestroyFunc ImageBrowser
-AddToFunc ImageBrowser
-+ I PipeRead 'test ! -d "$0"/.thumbs && mkdir "$0"/.thumbs; \
-    for i in "$0/"*; do \
-    test -f "$0/.thumbs/${i##*/}" \
-         -a "${i} -ot "$0/.thumbs/${i##*/}" || { \
-             convert -quality 0 -scale 128 "${i}" "png:$0/.thumbs/${i##*/}" 2>/dev/null \
-                || continue ; \
-             }; \
-     done'
-+ I DestroyMenu $0
-+ I AddToMenu $0 "Browsing $0" Title
-+ I PipeRead 'for file in "$0/".thumbs/*; do \
-    iname=${file##*/} ; \
-    echo AddToMenu "$0 "\*$0/.thumbs/$iname*$iname" display \"$0/$iname\" ;\
-    done'
-# Add an option to browse the wallpaper directory with Rox (if installed)
-+ I Piperead \
-'which rox >/dev/null && echo \'AddToMenu $0 "\*folder-open.svg:$[ICON_SIZE]*Browse Directory (rox)" Exec exec rox "$0" \' || echo Nop'
-# Add an option to browse the wallpaper directory with Nautilus (if installed)
-+ I Piperead \
-'which nautilus >/dev/null && echo \'AddToMenu $0 "\*folder-open.svg:$[ICON_SIZE]*Browse Directory (nautilus)" Exec exec nautilus --no-desktop "$0" \' || echo Nop'
 
-#
 # The user can select different images to use as the wallpaper at any time.
 # Such selections are saved to and loaded from the wallpaper file in the
 # preferences folder.
@@ -822,11 +799,13 @@ AddToFunc HalfMax
 + I MakePartlyFull
 + I WindowStyle NoTitle
 
+PipeRead 'echo SetEnv HALF_WIDTH $(($[vp.width]/2))'
+
 # Called when the state machine is going to state 2
 DestroyFunc MakePartlyFull
 AddToFunc MakePartlyFull
 + I State 2 on
-+ I ResizeMoveMaximize 1226p 100% keep 0
++ I ResizeMoveMaximize $[HALF_WIDTH]p 100% keep 0
 
 # Called when the state machine is going back to initial state
 DestroyFunc Restore
@@ -853,8 +832,6 @@ AddButtonStyle $[fvwm_title_button_arrow_up] Active (Pixmap arrow-up2.svg:14x14 
 # Make clicking the paper clip (I-2) call the toggle sticky function
 Mouse 1 $[fvwm_title_button_clip] N ToggleSticky
 
-#Mouse 1 I N Iconify Off
-
 # Makes the window sticky (or removes stickyness)
 DestroyFunc ToggleSticky
 AddToFunc ToggleSticky
@@ -870,7 +847,5 @@ Key F9 A A Exec exec amixer -D pulse sset Master 5%-
 Key F10 A A Exec exec amixer -D pulse sset Master 5%+
 
 Key XF86PowerOff A A FvwmForm FvwmForm-QuitVerify
-
-
 
 PipeRead "echo Echo Config load ended at $(date)"
