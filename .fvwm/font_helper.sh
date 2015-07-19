@@ -50,12 +50,12 @@ AddToFunc SetMenuFontSize
 
 DestroyFunc SetDefaultFontFamily
 AddToFunc SetDefaultFontFamily
-+ I Exec exec echo SetEnv DEFAULT_FONT_FAMILY "$0" > "$[fvwm_preferences_dir]"/default_font
++ I Exec exec echo SetEnv DEFAULT_FONT_FAMILY \""$0"\" > "$[fvwm_preferences_dir]"/default_font
 + I Schedule 250 Restart
 
 DestroyFunc SetMenuFontFamily
 AddToFunc SetMenuFontFamily
-+ I Exec exec echo SetEnv MENU_FONT_FAMILY "$0" > "$[fvwm_preferences_dir]"/menu_font
++ I Exec exec echo SetEnv MENU_FONT_FAMILY \""$0\"" > "$[fvwm_preferences_dir]"/menu_font
 + I Schedule 250 Restart
 EOF
 
