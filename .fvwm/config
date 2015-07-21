@@ -269,24 +269,13 @@ AddtoMenu FeedMenu
 + "Education News" Popup "https://www.nasa.gov/rss/dyn/educationnews.rss"
 + "Image of the Day" Popup "https://www.nasa.gov/rss/dyn/lg_image_of_the_day.rss"
 
-# Instead of loading all the rss feeds all the time, put a populate button in
-# them the first go around.
-#
-# Comment this out and they'll fill with content the first time you try to open
-# them.
-AddToMenu "http://rss.slashdot.org/Slashdot/slashdotMain" "Populate" FetchFeeds "http://rss.slashdot.org/Slashdot/slashdotMain"
-AddToMenu "https://soylentnews.org/index.rss" "Populate" FetchFeeds "https://soylentnews.org/index.rss"
-AddToMenu "https://www.reddit.com/r/pics/.rss" "Populate" FetchFeeds "https://www.reddit.com/r/pics/.rss"
-AddToMenu "https://www.reddit.com/r/funny/.rss" "Populate" FetchFeeds "https://www.reddit.com/r/funny/.rss"
-AddToMenu "https://www.nasa.gov/rss/dyn/breaking_news.rss" "Populate" FetchFeeds "https://www.nasa.gov/rss/dyn/breaking_news.rss"
-AddToMenu "https://www.nasa.gov/rss/dyn/educationnews.rss" "Populate" FetchFeeds "https://www.nasa.gov/rss/dyn/educationnews.rss"
-AddToMenu "https://www.nasa.gov/rss/dyn/lg_image_of_the_day.rss" "Populate" FetchFeeds "https://www.nasa.gov/rss/dyn/lg_image_of_the_day.rss"
 
 DestroyFunc FetchFeeds
 AddToFunc FetchFeeds
-+ I DestroyMenu $0
-+ I AddToMenu $0 Refresh DestroyMenu $0
-+ I PipeRead 'python $[FVWM_USERDIR]/rss.py -m "$0" "$0"'
++ I DestroyMenu recreate $0
++ I AddToMenu $0 "Fetching feed..." Title
++ I AddToMenu $0 "Retry" FetchFeeds "$0"
++ I Exec exec python '$[FVWM_USERDIR]'/rss.py -m "$0" "$0"
 
 #
 # The settings menu consists of the following:
@@ -551,6 +540,7 @@ AddToFunc LoadWallpaper
 # Make sure wallpaper loading happens on startup:
 AddToFunc StartFunction
 + I LoadWallpaper
++ I Module FvwmCommandS
 + I Test (init) Exec exec ibus-daemon -drx
 + I Test (init, x xcompmgr, x transset) Exec exec xcompmgr
 + I Module FvwmEvent
@@ -616,6 +606,7 @@ DestroyModuleConfig RightBar
 *RightBar: (1x1, Swallow (UseOld, NoKill, Respawn) "trayer" "Exec exec trayer --widthtype request --heighttype request --align right 2>/dev/null")
 *RightBar: (1x3, Swallow (UseOld, NoKill, Respawn) "Conky" "Exec exec conky -o -c $[FVWM_USERDIR]/conkyconf -a top_left 2>/dev/null")
 *RightBar: Frame 0
+*RightBar: Font "$[DEFAULT_FONT]"
 Style RightBar NoTitle, WindowListSkip, NeverFocus, Sticky
 
 AddToFunc StartFunction

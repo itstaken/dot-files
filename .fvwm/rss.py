@@ -67,13 +67,10 @@ def build_arguments():
                         dest='scale', default='256x256',
                         help="When enclosure images are bigger than this, "
                         "scale them down to this.")  # like image of the day
-    parser.add_argument('-ts, --thumbnail-scale',
+    parser.add_argument('-c, --thumbnail-scale',
                         dest='thumbscale', default='128x128',
                         help="When thumbnails are bigger than this, scale them"
                         " down to this.")  # prevents insanely large menu entry
-    parser.add_argument('-d, --destroy',
-                        dest='destroy', action='store_true', default=False,
-                        help="Destroy the target menu before adding entries")
     parser.add_argument('-l, --limit',
                         dest='limit', default=160,
                         help="Limit the text length of RSS entries")
@@ -152,6 +149,7 @@ def fetch_media(url, scale=None):
 
     png_path = new_name+".png"
     image.write(png_path)
+    os.unlink(new_name)
 
     return png_path
 
@@ -211,59 +209,73 @@ ENTRY_NO_IMAGE = (u"AddToMenu {menu} \"{title}\" "
                   "Exec exec x-www-browser {opts} \"{link}\"")
 ENTRY_TITLE = u"AddToMenu {menu} \"{title}\" Title"
 ENTRY_PARENT = u"AddToMenu {parent} \"{title}\" Popup \"{menu}\""
+ENTRY_ERROR = u'AddToMenu {menu} \"{title}\" "Nop"'
+ERROR_CONNECT = "Error connecting to feed"
 
 DESTROY_MENU = u"DestroyMenu {menu}"
+
+dest = tempfile.NamedTemporaryFile(delete=False)
+
+
+def output(line):
+    dest.write("%s\n" % line)
 
 
 def main(args):
     options = build_arguments().parse_args(args[1:])
     for url in options.url:
-        dom = fetch_rss(url)
-        if options.title is None:
-            title = limit(sanitize(get_single_tag(dom, "title")),
-                          options.limit)
-        else:
-            title = options.title
-
         if options.menu is None:
             menu = url
         else:
             menu = options.menu
-
-        items = dom.getElementsByTagName("item")
-        if options.parent is not None:
-            print(ENTRY_PARENT.format(
-                  parent=options.parent,
-                  title=title, menu=menu).encode("utf-8"))
-        if options.destroy:
-            print(DESTROY_MENU.format(menu=menu).encode("utf-8"))
-        print(ENTRY_TITLE.format(menu=menu,
-              title=title).encode("utf-8"))
-        for item in items:
-            title = limit(sanitize(get_single_tag(item, 'title')),
-                          options.limit)
-            link = sanitize_link(get_single_tag(item, 'link'))
-            # media:thumbnail is what reddit uses
-            media = get_single_tag_attr(item, 'media:thumbnail', 'url')
-            # FIXME: if media is None: try something else for the thumbnail uri
-            if media is not None:
-                png_path = fetch_media(media, options.thumbscale)
-                print(ENTRY_IMAGE_LEFT.format(menu=menu,
-                      opts=options.browseopt, title=title, link=link,
-                      media=png_path).encode("utf-8"))
+        try:
+            dom = fetch_rss(url)
+            if options.title is None:
+                title = limit(sanitize(get_single_tag(dom, "title")),
+                              options.limit)
             else:
-                #enclosure is what nasa uses
-                media = get_single_tag_attr(item, 'enclosure', 'url')
+                title = options.title
+
+            items = dom.getElementsByTagName("item")
+            if options.parent is not None:
+                output(ENTRY_PARENT.format(
+                       parent=options.parent,
+                       title=title, menu=menu).encode("utf-8"))
+            output(DESTROY_MENU.format(menu=menu).encode("utf-8"))
+            output(ENTRY_TITLE.format(menu=menu,
+                   title=title).encode("utf-8"))
+            for item in items:
+                title = limit(sanitize(get_single_tag(item, 'title')),
+                              options.limit)
+                link = sanitize_link(get_single_tag(item, 'link'))
+                # media:thumbnail is what reddit uses
+                media = get_single_tag_attr(item, 'media:thumbnail', 'url')
+                # FIXME: if media is None: try something else for thumb uri
                 if media is not None:
-                    png_path = fetch_media(media, options.scale)
-                    print(ENTRY_IMAGE_ABOVE.format(menu=menu,
-                          opts=options.browseopt, title=title,
-                          link=link, media=png_path).encode("utf-8"))
+                    png_path = fetch_media(media, options.thumbscale)
+                    output(ENTRY_IMAGE_LEFT.format(menu=menu,
+                           opts=options.browseopt, title=title, link=link,
+                           media=png_path).encode("utf-8"))
                 else:
-                    print(ENTRY_NO_IMAGE.format(menu=menu,
-                          opts=options.browseopt,
-                          title=title,
-                          link=link).encode("utf-8"))
+                    #enclosure is what nasa uses
+                    media = get_single_tag_attr(item, 'enclosure', 'url')
+                    if media is not None:
+                        png_path = fetch_media(media, options.scale)
+                        output(ENTRY_IMAGE_ABOVE.format(menu=menu,
+                               opts=options.browseopt, title=title,
+                               link=link, media=png_path).encode("utf-8"))
+                    else:
+                        output(ENTRY_NO_IMAGE.format(menu=menu,
+                               opts=options.browseopt,
+                               title=title,
+                               link=link).encode("utf-8"))
+        except urllib2.URLError:
+            output(ENTRY_ERROR.format(menu=menu, title=ERROR_CONNECT))
+    dest.close()
+    os.system("FvwmCommand 'Read %s'" % dest.name)
+    #immediately follow with os.unlink and read wont have time
+    #to actually happen before the unlink, so tell fvwm to rm it
+    os.system("FvwmCommand 'Exec exec rm %s'" % dest.name)
 
 if __name__ == "__main__":
     main(sys.argv)
