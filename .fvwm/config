@@ -135,12 +135,17 @@ OpaqueMoveSize unlimited
 # In case I should ever toggle a border back on, handles are disabled (and set
 # to width zero just in case).
 #
-# Menus would also be flat, but some damned thing is making them have a 3D
-# border, so I set that to zero to hide the ugliness.
+# Menus also be flat, the flat border is accomplished by setting the
+# MenuColorset hi and sh colors to the same value so that the border's fake 3D
+# look uses the same color.  Increasing the width then gives it a nice bold
+# look, but the popupoffset has to be adjusted to prevent the double border
+# between menus effect.  So, set the PopupOffset's first argument to the
+# negative value of the border width for menus.
 
 
 ColorSet 0 bg $[BG_COLOR], fg $[FG_COLOR_INACTIVE]
 ColorSet 1 Tint $[BG_COLOR] 50, bg $[BG_COLOR], fg $[FG_COLOR], fgsh black
+ColorSet 2 Tint $[BG_COLOR] 50, bg $[BG_COLOR], fg $[FG_COLOR], fgsh black, hi black, sh black
 BorderStyle -- flat
 ButtonStyle All (Colorset 0 -- flat)
 AddButtonStyle $[fvwm_title_button_miniicon] Active MiniIcon (HiddenHandles NoInset Hilight3Doff -- flat)
@@ -176,9 +181,9 @@ Mouse 1 $[fvwm_title_button_arrow_up] N CustomMax
 #  └────┴──────────────────────────┘
 #
 #
-MenuStyle * MenuColorset 1, BorderWidth 0, ItemFormat "%s %| %i %l %|% %> ", \
-          PopupOffset 0 100, Hilight3DOff, ActiveFore $[FG_COLOR], ForeGround $[FG_COLOR], \
-          HilightBack $[BG_COLOR_LIGHTER], Font "$[MENU_FONT]"
+MenuStyle * MenuColorset 2, BorderWidth 2, ItemFormat "%s %| %i %l %|% %> ", \
+          PopupOffset -2 100, Hilight3DOff, ActiveFore black, ForeGround \
+          $[FG_COLOR], HilightBack $[BG_COLOR_LIGHTER], Font "$[MENU_FONT]"
 
 # Set up icons for stuff...
 Style "Android SDK Manager" Icon download.svg:$[ICON_SIZE], MiniIcon download.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride, DecorateTransient
@@ -209,7 +214,7 @@ Style "Minetest*" NoTitle
 
 Style "FightTheDragon" NoTitle
 
-Style "oclock" NoTitle
+Style "oclock" NoTitle, StaysOnBottom, Sticky, WindowListSkip, NeverFocus, CirculateSkip
 
 
 # Bind left clicking I-1 to the options menu, but double-click should close the
@@ -325,8 +330,7 @@ Test (x rxvt) AddToMenu DynamicAppMenu "%console.svg:$[MINI_ICON_SIZE]%RXvt" Exe
 Test (x xterm) AddToMenu DynamicAppMenu "%console.svg:$[MINI_ICON_SIZE]%XTerm" Exec exec xterm
 Test (x rox) AddToMenu DynamicAppMenu "%folder-open.svg:$[MINI_ICON_SIZE]%Rox Filer" Exec exec rox
 Test (x nautilus) AddToMenu DynamicAppMenu "%folder-open.svg:$[MINI_ICON_SIZE]%Nautilus" Exec exec nautilus --no-desktop
-
-Test (x oclock) AddToMenu DynamicAppMenu "%clock.svg:$[MINI_ICON_SIZE]%oclock" Exec exec oclock -bg black -fg ${BG_COLOR_LIGHTER} -bd ${BG_COLOR} -transparent
+Test (x oclock) AddToMenu DynamicAppMenu "%clock.svg:$[MINI_ICON_SIZE]%oclock" Exec exec oclock -geometry +0-0 -bg black -fg ${BG_COLOR_LIGHTER} -bd ${BG_COLOR} -transparent
 
 
 # Internet-related stuff
