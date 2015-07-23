@@ -183,7 +183,8 @@ Mouse 1 $[fvwm_title_button_arrow_up] N CustomMax
 #
 MenuStyle * MenuColorset 2, BorderWidth 2, ItemFormat "%s %| %i %l %|% %> ", \
           PopupOffset -2 100, Hilight3DOff, ActiveFore black, ForeGround \
-          $[FG_COLOR], HilightBack $[BG_COLOR_LIGHTER], Font "$[MENU_FONT]"
+          $[FG_COLOR], HilightBack $[BG_COLOR_LIGHTER], Font \
+          "$[MENU_FONT]", TrianglesSolid
 
 # Set up icons for stuff...
 Style "Android SDK Manager" Icon download.svg:$[ICON_SIZE], MiniIcon download.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride, DecorateTransient
@@ -211,9 +212,7 @@ Style "xcalc" MiniIcon calculate.svg:$[MINI_ICON_SIZE]
 Style "XClipboard" Icon paste2.svg:$[ICON_SIZE], MiniIcon paste2.svg:$[MINI_ICON_SIZE]
 Style "*rxvt*" MiniIcon console.svg:$[MINI_ICON_SIZE]
 Style "Minetest*" NoTitle
-
 Style "FightTheDragon" NoTitle
-
 Style "oclock" NoTitle, StaysOnBottom, Sticky, WindowListSkip, NeverFocus, CirculateSkip
 
 
@@ -375,6 +374,8 @@ Test (x inkscape) AddToMenu DynamicAppMenu "%crop.svg:$[MINI_ICON_SIZE]%Inkscape
 # If it exists, put the bluetooth-wizard into the Settings menu
 Test (x bluetooth-wizard) AddToMenu SettingsMenu "Bluetooth Wizard" Exec exec bluetooth-wizard
 Test (x blueman-manager) AddToMenu SettingsMenu "Bluetooth Manager" Exec exec blueman-manager
+
+Key o FSTW 4 Current Popup DynamicWindowOpsMenu Window 0 0
 
 # Resize on win+r
 Key r A 4 Resize Direction SE
@@ -617,6 +618,7 @@ AddToFunc StartFunction
 + I FvwmButtons RightBar
 
 *RightBar: Geometry 203x813-0+0
+*RightBar: Font $[DEFAULT_FONT]
 
 *FvwmPager: Colorset 0
 *FvwmPager: Font none
@@ -641,6 +643,7 @@ DestroyFunc DynamicWindowOpsMenuFunction
 AddToFunc DynamicWindowOpsMenuFunction
 + I DestroyMenu recreate DynamicWindowOpsMenu
 + I AddToMenu DynamicWindowOpsMenu "Window Options: $[w.name]" Title
++ I AddToMenu DynamicWindowOpsMenu "Toggle Title" ToggleTitle
 + I Test (x xcompmgr, x transset) AddToMenu DynamicWindowOpsMenu "Solidify" Exec exec transset -i $[w.id] 1.0
 + I ThisWindow ("Firefox",!Iconic) AddToMenu DynamicWindowOpsMenu "New Tab" Exec exec firefox -remote "openurl(about:blank,new-tab)"
 + I ThisWindow ("Firefox") AddToMenu DynamicWindowOpsMenu "New Window" Exec exec firefox -remote "openurl(about:blank,new-window)"
@@ -793,6 +796,16 @@ AddToFunc HalfMax
 + I State 1 on
 + I MakePartlyFull
 + I WindowStyle NoTitle
+
+##
+# This function uses state 3 to decide what to do with a window title.  If
+# state 3 is set, then it assumes the title is off and turns it on.  If state 3
+# is not set, then it assumes the title is on and turns it off.
+DestroyFunc ToggleTitle
+AddToFunc ToggleTitle
++ I ThisWindow (State 3) WindowStyle Title
++ I TestRc (NoMatch) WindowStyle !Title
++ I Current State 3 Toggle
 
 PipeRead 'echo SetEnv HALF_WIDTH $(($[vp.width]/2))'
 
