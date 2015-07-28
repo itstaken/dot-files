@@ -39,6 +39,17 @@ def limit(text, length):
     return text
 
 
+def escape_title(text):
+    '''
+    Escape the provided string so that when it is interpretted by FVWM as a
+    title it will correctly dispay @ ^ % &.
+    '''
+    return (text.replace('@', '@@').
+                 replace('^', '^^').
+                 replace('*', '**').
+                 replace('%', '%%').
+                 replace('&', '&&'))
+
 def build_arguments():
     '''
     Creates the argument parser for extracting command-line arguments.
@@ -199,8 +210,6 @@ def get_single_tag_attr(element, tag, attr):
 
     return entry
 
-# FIXME: add more sanitizing!
-
 ENTRY_IMAGE_LEFT = (u"AddToMenu {menu} \"%{media}%{title}\" "
                     "Exec exec x-www-browser {opts} \"{link}\"")
 ENTRY_IMAGE_ABOVE = (u"AddToMenu {menu} \"*{media}*{title}\" "
@@ -249,12 +258,12 @@ def main(args):  # pylint: disable=missing-docstring
             output(ENTRY_TITLE.format(menu=menu,
                    title=title).encode("utf-8"))
             for item in items:
-                title = limit(sanitize(get_single_tag(item, 'title')),
+                title = limit(escape_title(sanitize(get_single_tag(item,
+                              'title'))),
                               options.limit)
                 link = sanitize_link(get_single_tag(item, 'link'))
                 # media:thumbnail is what reddit uses
                 media = get_single_tag_attr(item, 'media:thumbnail', 'url')
-                # FIXME: if media is None: try something else for thumb uri
                 if media is not None:
                     png_path = fetch_media(media, options.thumbscale)
                     output(ENTRY_IMAGE_LEFT.format(menu=menu,
