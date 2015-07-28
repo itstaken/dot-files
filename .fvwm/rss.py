@@ -258,9 +258,9 @@ def main(args):  # pylint: disable=missing-docstring
             output(ENTRY_TITLE.format(menu=menu,
                    title=title).encode("utf-8"))
             for item in items:
-                title = limit(escape_title(sanitize(get_single_tag(item,
-                              'title'))),
-                              options.limit)
+                title = escape_title(limit(sanitize(get_single_tag(item,
+                              'title')),
+                              options.limit))
                 link = sanitize_link(get_single_tag(item, 'link'))
                 # media:thumbnail is what reddit uses
                 media = get_single_tag_attr(item, 'media:thumbnail', 'url')
