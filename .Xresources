@@ -5,11 +5,19 @@
 ! -- make scrollbars look like traditional xterm
 *Rxvt*scrollstyle: plain
 ! -- shortcut ctrl+b for big font
-*Rxvt.keysym.Control-b: command:\033]50;xft:Ubuntu Mono:pixelsize=24,style=regular\007
 ! -- shortcut ctrl+B for not as big font
-*Rxvt.keysym.Control-B: command:\033]50;xft:Ubuntu Mono:pixelsize=14,style=regular\007
 *Rxvt.iso14755 : false
 
+*Rxvt*font: xft:Ubuntu Mono:pixelsize=12,xft:WenQuanYi Micro Hei
+
+! -- shortcut ctlr b for bigger font
+*Rxvt.keysym.Control-b: command:\033]50;xft:Ubuntu Mono:pixelsize=16,xft:WenQuanYi Micro Hei:antialias=false\007
+! -- shortcut ctlr b for much bigger font
+*Rxvt.keysym.Control-B: command:\033]50;xft:Ubuntu Mono:pixelsize=20,xft:WenQuanYi Micro Hei:antialias=false\007
+! -- shortcut ctlr e for even bigger font
+*Rxvt.keysym.Control-e: command:\033]50;xft:Ubuntu Mono:pixelsize=24,xft:WenQuanYi Micro Hei:antialias=false\007
+! -- shortcut ctlr E for even more embiggened font
+*Rxvt.keysym.Control-E: command:\033]50;xft:Ubuntu Mono:pixelsize=30,xft:WenQuanYi Micro Hei:antialias=false\007
 
 ! XTERM settings
 ! xterm ignores synthetic events, allow them:
