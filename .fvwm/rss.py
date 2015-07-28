@@ -42,7 +42,7 @@ def limit(text, length):
 def escape_title(text):
     '''
     Escape the provided string so that when it is interpretted by FVWM as a
-    title it will correctly dispay @ ^ % &.
+    title it will correctly dispay @ ^ * % &.
     '''
     return (text.replace('@', '@@').
                  replace('^', '^^').
