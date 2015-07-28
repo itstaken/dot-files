@@ -78,13 +78,13 @@ def build_arguments():
     return parser
 
 
-def getText(node):
+def get_text(node):
     '''
     Fetches the text from the specified node.
     '''
     text = ''
-    for n in node.childNodes:
-        text += n.data
+    for child in node.childNodes:
+        text += child.data
     return text
 
 
@@ -103,16 +103,16 @@ def add_suffix(name):
     '''
     Rename the provided file by appending a suffix based on the file type.
     '''
-    m = magic.open(magic.MAGIC_MIME)
-    m.load()
-    mime_info = m.file(name)
+    file_typer = magic.open(magic.MAGIC_MIME)
+    file_typer.load()
+    mime_info = file_typer.file(name)
 
     # mime_info should match the pattern:
     # foo/bar; optional-stuff
-    m = re.match(r'[a-z]+/([a-z]+);.*', mime_info)
+    match = re.match(r'[a-z]+/([a-z]+);.*', mime_info)
     suffix = None
-    if m is not None:
-        suffix = m.groups()[0]
+    if match is not None:
+        suffix = match.groups()[0]
     new_name = name + '.' + suffix
 
     return new_name
@@ -123,27 +123,27 @@ def fetch_media(url, scale=None):
     Fetch the document stored at the specified url and save it to a tmp file,
     then return the name of that new file.
     '''
-    f = urllib2.urlopen(url)
-    data = f.read()
-    f.close()
+    stream = urllib2.urlopen(url)
+    data = stream.read()
+    stream.close()
 
-    f = tempfile.NamedTemporaryFile(delete=False)
-    f.write(data)
-    f.close()
+    temp = tempfile.NamedTemporaryFile(delete=False)
+    temp.write(data)
+    temp.close()
 
-    new_name = add_suffix(f.name)
-    os.rename(f.name, new_name)
+    new_name = add_suffix(temp.name)
+    os.rename(temp.name, new_name)
 
     image = Image(new_name)
     # rescale the image if option looks good and image exceeds the size
     if scale is not None:
-        m = re.match(r'([0-9]+)(x([0-9]+))?', scale)
-        if m.groups() > 0:
-            scale_width = int(m.groups()[0])
+        match = re.match(r'([0-9]+)(x([0-9]+))?', scale)
+        if match.groups() > 0:
+            scale_width = int(match.groups()[0])
             if image.size().width() > scale_width:
                 image.transform(scale)
-            elif m.groups() > 1:
-                scale_height = int(m.groups()[2])
+            elif match.groups() > 1:
+                scale_height = int(match.groups()[2])
                 if image.size().height() > scale_height:
                     image.transform(scale)
 
@@ -182,7 +182,7 @@ def get_single_tag(element, tag):
     entry = None
     entries = element.getElementsByTagName(tag)
     if len(entries) > 0:
-        entry = getText(entries[0])
+        entry = get_text(entries[0])
     return entry
 
 
@@ -214,14 +214,18 @@ ERROR_CONNECT = "Error connecting to feed"
 
 DESTROY_MENU = u"DestroyMenu {menu}"
 
-dest = tempfile.NamedTemporaryFile(delete=False)
+OUTPUT_FILE = tempfile.NamedTemporaryFile(delete=False)
 
 
 def output(line):
-    dest.write("%s\n" % line)
+    '''
+    Outputs the provided line (carriage return will be appended) to the
+    globally designated output file.
+    '''
+    OUTPUT_FILE.write("%s\n" % line)
 
 
-def main(args):
+def main(args):  # pylint: disable=missing-docstring
     options = build_arguments().parse_args(args[1:])
     for url in options.url:
         if options.menu is None:
@@ -271,11 +275,11 @@ def main(args):
                                link=link).encode("utf-8"))
         except urllib2.URLError:
             output(ENTRY_ERROR.format(menu=menu, title=ERROR_CONNECT))
-    dest.close()
-    os.system("FvwmCommand 'Read %s'" % dest.name)
+    OUTPUT_FILE.close()
+    os.system("FvwmCommand 'Read %s'" % OUTPUT_FILE.name)
     #immediately follow with os.unlink and read wont have time
     #to actually happen before the unlink, so tell fvwm to rm it
-    os.system("FvwmCommand 'Exec exec rm %s'" % dest.name)
+    os.system("FvwmCommand 'Exec exec rm %s'" % OUTPUT_FILE.name)
 
 if __name__ == "__main__":
     main(sys.argv)
