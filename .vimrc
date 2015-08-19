@@ -136,7 +136,7 @@ let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
 
 " Had to include an initial version of the statusline, otherwise on one of my
-" systems there would be ne status line.
+" systems there would be no status line.
 set statusline=%<%f\ %h%m%r%=%-14.(%l,%c%V%)\ %P
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
