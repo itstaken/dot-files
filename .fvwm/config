@@ -62,8 +62,12 @@ SetEnv fvwm_title_button_miniicon 1
 SetEnv fvwm_title_button_clip 2
 SetEnv fvwm_title_button_arrow_up 4
 
-# This puts the icons directory content (from Keyamoon's Free Pack - 450 Icons)
-# in the image search path.
+##
+# Note: icons come from Keyamoon's IcoMoon free pack, grab it from here and
+# move/rename the SVG folder to ~/.fvwm/icons:
+# https://github.com/Keyamoon/IcoMoon-Free/archive/master.zip
+#
+# This puts the icons directory content in the image search path.
 ImagePath $[fvwm_icons_dir]:+
 
 # Use some of the hicolor icons for apps that have them but no other specificied icons
@@ -187,30 +191,30 @@ MenuStyle * MenuColorset 2, BorderWidth 2, ItemFormat "%s %| %i %l %|% %> ", \
           "$[MENU_FONT]", TrianglesSolid
 
 # Set up icons for stuff...
-Style "Android SDK Manager" Icon download.svg:$[ICON_SIZE], MiniIcon download.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride, DecorateTransient
-Style "Apvlv" MiniIcon file-pdf.svg:$[MINI_ICON_SIZE]
-Style blobwars Icon radio-unchecked.svg:$[ICON_SIZE], MiniIcon radio-unchecked.svg:$[MINI_ICON_SIZE]
-Style "* - Chat" MiniIcon bubble2.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-Style "Chromium-browser" Icon chrome.svg:$[ICON_SIZE], MiniIcon chrome.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-Style "Firefox" MiniIcon firefox.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-Style Freeciv Icon office.svg:$[ICON_SIZE], MiniIcon office.svg:$[MINI_ICON_SIZE]
-Style "Friends" MiniIcon bubbles4.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-Style FvwmIdent Icon question.svg:$[ICON_SIZE], MiniIcon question.svg:$[MINI_ICON_SIZE]
-Style Gimp MiniIcon image2.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-Style Inkscape Icon crop.svg:$[ICON_SIZE], MiniIcon crop.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-Style "Layers - Brushes" MiniIcon images.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-Style MPlayer Icon play2.svg:$[ICON_SIZE], MiniIcon play2.svg:$[MINI_ICON_SIZE]
-Style "*nautilus*" MiniIcon folder.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-Style POWDER Icon wand.svg:$[ICON_SIZE], MiniIcon wand.svg:$[MINI_ICON_SIZE]
-Style "*rox*" MiniIcon folder.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-Style "Steam" NoIcon, Icon steam.svg:$[ICON_SIZE], MiniIcon steam.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-Style "Toolbox*" MiniIcon hammer.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-Style "URxvt" Icon console.svg:$[ICON_SIZE], Icon console.svg:$[ICON_SIZE], MiniIcon console.svg:$[MINI_ICON_SIZE]
-Style "Vim *" MiniIcon code.svg:$[MINI_ICON_SIZE]
-Style "Vim" Icon code.svg:$[ICON_SIZE], MiniIcon code.svg:$[MINI_ICON_SIZE]
-Style "xcalc" MiniIcon calculate.svg:$[MINI_ICON_SIZE]
-Style "XClipboard" Icon paste2.svg:$[ICON_SIZE], MiniIcon paste2.svg:$[MINI_ICON_SIZE]
-Style "*rxvt*" MiniIcon console.svg:$[MINI_ICON_SIZE]
+Style "Android SDK Manager" Icon 0097-download.svg:$[ICON_SIZE], MiniIcon 0097-download.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride, DecorateTransient
+Style "Apvlv" MiniIcon 0475-file-pdf.svg:$[MINI_ICON_SIZE]
+Style blobwars Icon 0343-radio-unchecked.svg:$[ICON_SIZE], MiniIcon 0343-radio-unchecked.svg:$[MINI_ICON_SIZE]
+Style "* - Chat" MiniIcon 0111-bubble2.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style "Chromium-browser" Icon 0486-chrome.svg:$[ICON_SIZE], MiniIcon 0486-chrome.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style "Firefox" MiniIcon 0487-0487-firefox.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style Freeciv Icon 0004-office.svg:$[ICON_SIZE], MiniIcon 0004-office.svg:$[MINI_ICON_SIZE]
+Style "Friends" MiniIcon 0113-bubbles4.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style FvwmIdent Icon 0266-question.svg:$[ICON_SIZE], MiniIcon 0266-question.svg:$[MINI_ICON_SIZE]
+Style Gimp MiniIcon 0014-image.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style Inkscape Icon 0344-crop.svg:$[ICON_SIZE], MiniIcon 0344-crop.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style "Layers - Brushes" MiniIcon 0015-images.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style MPlayer Icon 0278-play2.svg:$[ICON_SIZE], MiniIcon 0278-play2.svg:$[MINI_ICON_SIZE]
+Style "*nautilus*" MiniIcon 0048-folder.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style POWDER Icon 0152-magic-wand.svg:$[ICON_SIZE], MiniIcon 0152-magic-wand.svg:$[MINI_ICON_SIZE]
+Style "*rox*" MiniIcon 0048-folder.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style "Steam" NoIcon, Icon 0430-steam.svg:$[ICON_SIZE], MiniIcon 0430-steam.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style "Toolbox*" MiniIcon 0151-hammer.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style "URxvt" Icon 0386-terminal.svg:$[ICON_SIZE], Icon 0386-terminal.svg:$[ICON_SIZE], MiniIcon 0386-terminal.svg:$[MINI_ICON_SIZE]
+Style "Vim *" MiniIcon 0385-embed2.svg:$[MINI_ICON_SIZE]
+Style "Vim" Icon 0385-embed2.svg:$[ICON_SIZE], MiniIcon 0385-embed2.svg:$[MINI_ICON_SIZE]
+Style "xcalc" MiniIcon 0065-calculator.svg:$[MINI_ICON_SIZE]
+Style "XClipboard" Icon 0185-clipboard.svg:$[ICON_SIZE], MiniIcon 0185-clipboard.svg:$[MINI_ICON_SIZE]
+Style "*rxvt*" MiniIcon 0386-terminal.svg:$[MINI_ICON_SIZE]
 Style "Minetest*" NoTitle
 Style "FightTheDragon" NoTitle
 Style "oclock" NoTitle, StaysOnBottom, Sticky, WindowListSkip, NeverFocus, CirculateSkip
@@ -242,33 +246,33 @@ AddToFunc Ops-or-Close
 # └─────────────────┘
 DestroyMenu MenuFvwmRoot
 AddToMenu MenuFvwmRoot
-+ "%enter.svg:$[MINI_ICON_SIZE]%Apps" Popup DynamicAppMenu
-+ "%happy.svg:$[MINI_ICON_SIZE]%Games" Popup DynamicGameMenu
-+ "%feed.svg:$[MINI_ICON_SIZE]%Feeds" Popup FeedMenu
-+ "%console.svg:$[MINI_ICON_SIZE]%Console" FvwmConsole
++ "%0276-enter.svg:$[MINI_ICON_SIZE]%Apps" Popup DynamicAppMenu
++ "%0224-happy.svg:$[MINI_ICON_SIZE]%Games" Popup DynamicGameMenu
++ "%0030-feed.svg:$[MINI_ICON_SIZE]%Feeds" Popup FeedMenu
++ "%0386-terminal.svg:$[MINI_ICON_SIZE]%Console" FvwmConsole
 + MissingSubmenuFunction ScreenshotBrowser
-+ "%screen.svg:$[MINI_ICON_SIZE]%Screenshots" Popup $[fvwm_screenshots_dir]
-+ "%settings.svg:$[MINI_ICON_SIZE]%Settings" Popup SettingsMenu
++ "%0087-display.svg:$[MINI_ICON_SIZE]%Screenshots" Popup $[fvwm_screenshots_dir]
++ "%0147-equalizer.svg:$[MINI_ICON_SIZE]%Settings" Popup SettingsMenu
 + "" Nop
-+ "%loop2.svg:$[MINI_ICON_SIZE]%Reload" Restart
-# Put a lock icon in the menu if xautolock is present
-Test (x xautolock) AddToMenu MenuFvwmRoot "%lock.svg:$[MINI_ICON_SIZE]%Lock" Exec exec xautolock -locknow
++ "%0303-loop2.svg:$[MINI_ICON_SIZE]%Reload" Restart
+# Put a lock icon in the menu if xscreensaver is present
+Test (x xscreensaver) AddToMenu MenuFvwmRoot "%0144-lock.svg:$[MINI_ICON_SIZE]%Lock" Exec exec xscreensaver-command -lock
 # Put the exit option at the end of the menu
 AddToMenu MenuFvwmRoot
-+ "%exit.svg:$[MINI_ICON_SIZE]%Exit" FvwmForm FvwmForm-QuitVerify
++ "%0277-exit.svg:$[MINI_ICON_SIZE]%Exit" FvwmForm FvwmForm-QuitVerify
 Style FvwmForm-QuitVerify !Title
 
 DestroyMenu FeedMenu
 AddtoMenu FeedMenu
 + MissingSubmenuFunction FetchFeeds
 + "Slashdot" Popup "http://rss.slashdot.org/Slashdot/slashdotMain"
-+ "%newspaper.svg:$[MINI_ICON_SIZE]%SoylentNews" Popup "https://soylentnews.org/index.rss"
-+ "%reddit.svg:$[MINI_ICON_SIZE]%Reddit" Title
++ "%0005-newspaper.svg:$[MINI_ICON_SIZE]%SoylentNews" Popup "https://soylentnews.org/index.rss"
++ "%0456-reddit.svg:$[MINI_ICON_SIZE]%Reddit" Title
 + "/r/pics" Popup "https://www.reddit.com/r/pics/.rss"
 + "/r/funny" Popup "https://www.reddit.com/r/funny/.rss"
 + "/r/Chinese" Popup "https://www.reddit.com/r/Chinese/.rss"
 + "/r/ChineseLanguage" Popup "https://www.reddit.com/r/ChineseLanguage/.rss"
-+ "%star.svg:$[MINI_ICON_SIZE]%NASA" Title
++ "%0216-star-empty.svg:$[MINI_ICON_SIZE]%NASA" Title
 + "Breaking News" Popup "https://www.nasa.gov/rss/dyn/breaking_news.rss"
 + "Education News" Popup "https://www.nasa.gov/rss/dyn/educationnews.rss"
 + "Image of the Day" Popup "https://www.nasa.gov/rss/dyn/lg_image_of_the_day.rss"
@@ -292,12 +296,12 @@ DestroyMenu SettingsMenu
 AddToMenu SettingsMenu
 + "FVWM Settings" Title
 + MissingSubmenuFunction WallpaperBrowser
-+ "%images.svg:$[MINI_ICON_SIZE]%Wallpaper" Popup $[fvwm_wallpapers_dir]
-+ "%paint-format.svg:$[MINI_ICON_SIZE]%Colors" Popup ColorMenu
-+ "%font.svg:$[MINI_ICON_SIZE]%Fonts" Popup FontsMenu
++ "%0015-images.svg:$[MINI_ICON_SIZE]%Wallpaper" Popup $[fvwm_wallpapers_dir]
++ "%0013-paint-format.svg:$[MINI_ICON_SIZE]%Colors" Popup ColorMenu
++ "%0349-font.svg:$[MINI_ICON_SIZE]%Fonts" Popup FontsMenu
 + "System" Title
-Test (x wifi.sh) AddToMenu SettingsMenu "%connection.svg:$[MINI_ICON_SIZE]%Wifi" Popup WifiMenu
-AddToMenu SettingsMenu "%volume-high.svg:$[MINI_ICON_SIZE]%Volume Control" Exec exec $[VOLUME_APP]
+Test (x wifi.sh) AddToMenu SettingsMenu "%0028-connection.svg:$[MINI_ICON_SIZE]%Wifi" Popup WifiMenu
+AddToMenu SettingsMenu "%0295-volume-high.svg:$[MINI_ICON_SIZE]%Volume Control" Exec exec $[VOLUME_APP]
 
 DestroyMenu WifiMenu
 AddToMenu WifiMenu
@@ -325,50 +329,50 @@ AddToFunc UpdateColors
 
 # Dynamic App Menu Generation
 # If they exist, put rxvt, xterm, rox, and nautilus in Apps menu:
-Test (x rxvt) AddToMenu DynamicAppMenu "%console.svg:$[MINI_ICON_SIZE]%RXvt" Exec exec rxvt
-Test (x xterm) AddToMenu DynamicAppMenu "%console.svg:$[MINI_ICON_SIZE]%XTerm" Exec exec xterm
-Test (x rox) AddToMenu DynamicAppMenu "%folder-open.svg:$[MINI_ICON_SIZE]%Rox Filer" Exec exec rox
-Test (x nautilus) AddToMenu DynamicAppMenu "%folder-open.svg:$[MINI_ICON_SIZE]%Nautilus" Exec exec nautilus --no-desktop
-Test (x oclock) AddToMenu DynamicAppMenu "%clock.svg:$[MINI_ICON_SIZE]%oclock" Exec exec oclock -geometry +0-0 -bg black -fg ${BG_COLOR_LIGHTER} -bd ${BG_COLOR} -transparent
+Test (x rxvt) AddToMenu DynamicAppMenu "%0386-terminal.svg:$[MINI_ICON_SIZE]%RXvt" Exec exec rxvt
+Test (x xterm) AddToMenu DynamicAppMenu "%0386-terminal.svg:$[MINI_ICON_SIZE]%XTerm" Exec exec xterm
+Test (x rox) AddToMenu DynamicAppMenu "%0049-folder-open.svg:$[MINI_ICON_SIZE]%Rox Filer" Exec exec rox
+Test (x nautilus) AddToMenu DynamicAppMenu "%0049-folder-open.svg:$[MINI_ICON_SIZE]%Nautilus" Exec exec nautilus --no-desktop
+Test (x oclock) AddToMenu DynamicAppMenu "%0079-clock.svg:$[MINI_ICON_SIZE]%oclock" Exec exec oclock -geometry +0-0 -bg black -fg ${BG_COLOR_LIGHTER} -bd ${BG_COLOR} -transparent
 
 
 # Internet-related stuff
 # If they exist, put firefox, chromium, and steam into the Apps menu:
-Test (x firefox) AddToMenu DynamicAppMenu "%firefox.svg:$[MINI_ICON_SIZE]%Firefox" Exec exec firefox
-Test (x chromium-browser) AddToMenu DynamicAppMenu "%chrome.svg:$[MINI_ICON_SIZE]%Chromium" Exec exec chromium-browser
-Test (x steam) AddToMenu DynamicAppMenu "%steam.svg:$[MINI_ICON_SIZE]%Steam" Exec exec steam
-Test (x steam) AddToMenu DynamicAppMenu "%bubbles4.svg:$[MINI_ICON_SIZE]%Steam Friends" Exec exec steam "steam://open/friends"
-Test (x steam) AddToMenu DynamicAppMenu "%steam.svg:$[MINI_ICON_SIZE]%Steam Library" Exec exec steam "steam://open/games"
+Test (x firefox) AddToMenu DynamicAppMenu "%0487-firefox.svg:$[MINI_ICON_SIZE]%Firefox" Exec exec firefox
+Test (x chromium-browser) AddToMenu DynamicAppMenu "%0486-chrome.svg:$[MINI_ICON_SIZE]%Chromium" Exec exec chromium-browser
+Test (x steam) AddToMenu DynamicAppMenu "%0430-steam.svg:$[MINI_ICON_SIZE]%Steam" Exec exec steam
+Test (x steam) AddToMenu DynamicAppMenu "%0113-bubbles4.svg:$[MINI_ICON_SIZE]%Steam Friends" Exec exec steam "steam://open/friends"
+Test (x steam) AddToMenu DynamicAppMenu "%0430-steam.svg:$[MINI_ICON_SIZE]%Steam Library" Exec exec steam "steam://open/games"
 
 # Games
 # If they exist, put various games in the Games menu:
-Test (x abe) AddToMenu DynamicGameMenu "%hammer.svg:$[MINI_ICON_SIZE]%Abe's Amazing Adventure" Exec exec abe
-Test (x blobwars) AddToMenu DynamicGameMenu "%radio-unchecked.svg:$[MINI_ICON_SIZE]%Blobwars: Metal Blob Solid" Exec exec blobwars
-Test (x freeciv) AddToMenu DynamicGameMenu "%office.svg:$[MINI_ICON_SIZE]%FreeCiv" Exec exec freeciv
-Test (x freecol) AddToMenu DynamicGameMenu "%globe.svg:$[MINI_ICON_SIZE]%FreeCol" Exec exec freecol
-Test (x freedink) AddToMenu DynamicGameMenu "%lab.svg:$[MINI_ICON_SIZE]%Dink Smallwood" Exec exec freedink
-Test (x freedroidRPG) AddToMenu DynamicGameMenu "%question.svg:$[MINI_ICON_SIZE]%FreeDroid RPG" Exec exec freedroidRPG
-Test (x nethack,x x-terminal-emulator) AddToMenu DynamicGameMenu "%at.svg:$[MINI_ICON_SIZE]%Nethack (console)" Exec exec x-terminal-emulator +sb -e nethack
+Test (x abe) AddToMenu DynamicGameMenu "%0151-hammer.svg:$[MINI_ICON_SIZE]%Abe's Amazing Adventure" Exec exec abe
+Test (x blobwars) AddToMenu DynamicGameMenu "%0343-radio-unchecked.svg:$[MINI_ICON_SIZE]%Blobwars: Metal Blob Solid" Exec exec blobwars
+Test (x freeciv) AddToMenu DynamicGameMenu "%0004-office.svg:$[MINI_ICON_SIZE]%FreeCiv" Exec exec freeciv
+Test (x freecol) AddToMenu DynamicGameMenu "%0202-sphere.svg:$[MINI_ICON_SIZE]%FreeCol" Exec exec freecol
+Test (x freedink) AddToMenu DynamicGameMenu "%0171-lab.svg:$[MINI_ICON_SIZE]%Dink Smallwood" Exec exec freedink
+Test (x freedroidRPG) AddToMenu DynamicGameMenu "%0266-question.svg:$[MINI_ICON_SIZE]%FreeDroid RPG" Exec exec freedroidRPG
+Test (x nethack,x x-terminal-emulator) AddToMenu DynamicGameMenu "Nethack (console)" Exec exec x-terminal-emulator +sb -e nethack
 Test (x nexuiz) AddToMenu DynamicGameMenu "nexuiz" Exec exec nexuiz
-Test (x powder) AddToMenu DynamicGameMenu "%wand.svg:$[MINI_ICON_SIZE]%Powder" Exec exec powder
+Test (x powder) AddToMenu DynamicGameMenu "%0152-magic-wand.svg:$[MINI_ICON_SIZE]%Powder" Exec exec powder
 Test (x sauerbraten) AddToMenu DynamicGameMenu "sauerbraten" Exec exec sauerbraten
-Test (x slashem,x x-terminal-emulator) AddToMenu DynamicGameMenu "%bug.svg:!$[MINI_ICON_SIZE]%Slashem (console)" Exec exec x-terminal-emulator +sb -e slashem
-Test (x tmw) AddToMenu DynamicGameMenu "%question.svg:!$[MINI_ICON_SIZE]%The Mana World" Exec exec tmw
+Test (x slashem,x x-terminal-emulator) AddToMenu DynamicGameMenu "%0154-bug.svg:!$[MINI_ICON_SIZE]%Slashem (console)" Exec exec x-terminal-emulator +sb -e slashem
+Test (x tmw) AddToMenu DynamicGameMenu "%0266-question.svg:!$[MINI_ICON_SIZE]%The Mana World" Exec exec tmw
 
 #I have some shortcuts in ~/bin ending in .exe that invoke wine,
 #if they exist, put these in the Games menu, too.
-Test (x poe.exe) AddToMenu DynamicGameMenu "%hammer.svg:$[MINI_ICON_SIZE]%Path of Exile" Exec exec poe.exe
+Test (x poe.exe) AddToMenu DynamicGameMenu "%0151-hammer.svg:$[MINI_ICON_SIZE]%Path of Exile" Exec exec poe.exe
 Test (x marvel.exe) AddToMenu DynamicGameMenu "Marvel heroes" Exec exec marvel.exe
 Test (x warframe.exe) AddToMenu DynamicGameMenu "Warframe" Exec exec warframe.exe
 
 # Editors/Utilities
 # If they exist, put various editors into the Apps menu:
-Test (x vim,x x-terminal-emulator) AddToMenu DynamicAppMenu "%code.svg:$[MINI_ICON_SIZE]%Vim" Exec exec x-terminal-emulator +sb -T Vim -e vim
-Test (x gvim) AddToMenu DynamicAppMenu "%code.svg:$[MINI_ICON_SIZE]%GVim" Exec exec gvim
-Test (x gedit) AddToMenu DynamicAppMenu "%file3.svg:$[MINI_ICON_SIZE]%GEdit" Exec exec gedit
-Test (x xclipboard) AddToMenu DynamicAppMenu "%paste2.svg:$[MINI_ICON_SIZE]%Clipboard" Exec exec xclipboard
-Test (x gimp) AddToMenu DynamicAppMenu "%image2.svg:$[MINI_ICON_SIZE]%Gimp" Exec exec gimp
-Test (x inkscape) AddToMenu DynamicAppMenu "%crop.svg:$[MINI_ICON_SIZE]%Inkscape" Exec exec inkscape
+Test (x vim,x x-terminal-emulator) AddToMenu DynamicAppMenu "%0385-embed2.svg:$[MINI_ICON_SIZE]%Vim" Exec exec x-terminal-emulator +sb -T Vim -e vim
+Test (x gvim) AddToMenu DynamicAppMenu "%0385-embed2.svg:$[MINI_ICON_SIZE]%GVim" Exec exec gvim
+Test (x gedit) AddToMenu DynamicAppMenu "%0039-file-text2.svg:$[MINI_ICON_SIZE]%GEdit" Exec exec gedit
+Test (x xclipboard) AddToMenu DynamicAppMenu "%0185-clipboard.svg:$[MINI_ICON_SIZE]%Clipboard" Exec exec xclipboard
+Test (x gimp) AddToMenu DynamicAppMenu "%0014-image.svg:$[MINI_ICON_SIZE]%Gimp" Exec exec gimp
+Test (x inkscape) AddToMenu DynamicAppMenu "%0344-crop.svg:$[MINI_ICON_SIZE]%Inkscape" Exec exec inkscape
 
 # Settings
 # If it exists, put the bluetooth-wizard into the Settings menu
@@ -498,9 +502,9 @@ AddToFunc WallpaperBrowser I PipeRead 'test ! -d "$0/.thumbs" && mkdir "$0/.thum
       echo AddToMenu $0 "\*$0/.thumbs/$iname*$iname" ChangeWallpaper \"$0/$iname\" ;\
       done'
 # Add an option to browse the wallpaper directory with Rox (if installed)
-+ I Test (x rox) AddToMenu $0 "\*folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory (rox)" Exec exec rox "$0"
++ I Test (x rox) AddToMenu $0 "\*0049-folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory (rox)" Exec exec rox "$0"
 # Add an option to browse the wallpaper directory with Nautilus (if installed)
-+ I Test (x nautilus) AddToMenu $0 "\*folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory (nautilus)" Exec exec nautilus --no-desktop "$0"
++ I Test (x nautilus) AddToMenu $0 "\*0049-folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory (nautilus)" Exec exec nautilus --no-desktop "$0"
 
 DestroyFunc ScreenshotBrowser
 AddToFunc ScreenshotBrowser I PipeRead 'test ! -d "$0/.thumbs" && mkdir "$0/.thumbs"; \
@@ -521,9 +525,9 @@ AddToFunc ScreenshotBrowser I PipeRead 'test ! -d "$0/.thumbs" && mkdir "$0/.thu
       echo AddToMenu $0 "\*$0/.thumbs/$iname*$iname" Exec exec display \"$0/$iname\" ;\
       done'
 # Add an option to browse the Screenshot directory with Rox (if installed)
-+ I Test (x rox) AddToMenu $0 "\*folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory (rox)" Exec exec rox "$0"
++ I Test (x rox) AddToMenu $0 "\*0049-folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory (rox)" Exec exec rox "$0"
 # Add an option to browse the Screenshot directory with Nautilus (if installed)
-+ I Test (x nautilus) AddToMenu $0 "\*folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory (nautilus)" Exec exec nautilus --no-desktop "$0"
++ I Test (x nautilus) AddToMenu $0 "\*0049-folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory (nautilus)" Exec exec nautilus --no-desktop "$0"
 
 
 # The user can select different images to use as the wallpaper at any time.
@@ -554,6 +558,7 @@ AddToFunc StartFunction
 + I Test (init, x blueman-applet) Exec exec blueman-applet
 + I Test (init, x synclient) Exec exec synclient HorizTwoFingerScroll=1
 + I Test (init, x synclient) Exec exec synclient TapButton3=2
++ I Test (init, x xscreensaver) Exec exec xscreensaver
 
 *FvwmEvent: Cmd
 *FvwmEvent: add_window WindowAdded
@@ -832,10 +837,10 @@ AddToFunc Retransit
 + I All WindowAdded $[w.id]
 
 # Put a paperclip icon (I-2) in the upper right of the active window
-AddButtonStyle $[fvwm_title_button_clip] Active (Pixmap attachment.svg:14x14 -- flat)
+AddButtonStyle $[fvwm_title_button_clip] Active (Pixmap 0206-attachment.svg:14x14 -- flat)
 
 # Put an up arrow (I-4) in the upper right of the active window
-AddButtonStyle $[fvwm_title_button_arrow_up] Active (Pixmap arrow-up2.svg:14x14 -- flat)
+AddButtonStyle $[fvwm_title_button_arrow_up] Active (Pixmap 0315-arrow-up2.svg:14x14 -- flat)
 
 # Make clicking the paper clip (I-2) call the toggle sticky function
 Mouse 1 $[fvwm_title_button_clip] N ToggleSticky
