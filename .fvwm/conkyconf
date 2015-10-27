@@ -1,9 +1,11 @@
 TEXT
-${if_up eth1}
-eth1: up, addr $alignr ${addr eth1}
+Battery: ${color green}${execi 60 battery.sh}${color white}%
+Wifi: ${color red}${execi 30 wifi.sh -e}${color white}
+${if_up mlan0}
+mlan0: up, addr $alignr ${addr mlan0}
 Up ${alignr} Down
-${upspeed eth1}${alignr}${downspeed eth1}
-${upspeedgraph eth1 50,100 006600 00ff00}${alignr}${downspeedgraph eth1 50,100 006600 00ff00}
+${upspeed mlan0}${alignr}${downspeed mlan0}
+${upspeedgraph mlan0 50,100 006600 00ff00}${alignr}${downspeedgraph mlan0 50,100 006600 00ff00}
 ${else}
-eth1: down
+mlan0: down
 ${endif}
