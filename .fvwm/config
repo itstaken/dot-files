@@ -49,13 +49,13 @@ SetEnv VOLUME_APP "x-terminal-emulator -e alsamixer"
 Test (x pavucontrol) SetEnv VOLUME_APP pavucontrol
 
 # These are used to avoid hard-coded paths in the config file.
-SetEnv fvwm_wallpapers_dir $[FVWM_USERDIR]/wallpapers/
-SetEnv fvwm_screenshots_dir $[FVWM_USERDIR]/screenshots/
-SetEnv fvwm_icons_dir $[FVWM_USERDIR]/icons/
+SetEnv fvwm_wallpapers_dir "$[FVWM_USERDIR]/wallpapers"
+SetEnv fvwm_screenshots_dir "$[FVWM_USERDIR]/screenshots"
+SetEnv fvwm_icons_dir "$[FVWM_USERDIR]/icons"
 
-SetEnv fvwm_preferences_dir $[FVWM_USERDIR]/preferences/
-SetEnv fvwm_color_scheme_preference $[fvwm_preferences_dir]/color_scheme
-SetEnv fvwm_font_preferences $[fvwm_preferences_dir]/font
+SetEnv fvwm_preferences_dir "$[FVWM_USERDIR]/preferences"
+SetEnv fvwm_color_scheme_preference "$[fvwm_preferences_dir]/color_scheme"
+SetEnv fvwm_font_preferences "$[fvwm_preferences_dir]/font"
 
 # These are so it's easier to change titlebar button positions
 SetEnv fvwm_title_button_miniicon 1
@@ -74,20 +74,20 @@ ImagePath $[fvwm_icons_dir]:+
 Test (x .local/share/icons/hicolor/256x256) ImagePath +:.local/share/icons/hicolor/256x256
 
 # This is where I save/load the current wallpaper (SetEnv WALLPAPER path.png)
-SetEnv fvwm_wallpaper_preference $[fvwm_preferences_dir]/wallpaper
+SetEnv fvwm_wallpaper_preference "$[fvwm_preferences_dir]/wallpaper"
 
 # This block creates the directories needed for my config to function
 # correctly.
-#Test (!x $[fvwm_wallpapers_dir]) Exec exec mkdir -p $[fvwm_wallpapers_dir]
-Test (!x $[fvwm_screenshots_dir]) Exec exec mkdir -p $[fvwm_screenshots_dir]
-Test (!x $[fvwm_preferences_dir]) Exec exec mkdir -p $[fvwm_preferences_dir]
-#Test (!x $[fvwm_icons_dir]) Exec exec mkdir -p $[fvwm_icons_dir]
+#Test (!x $[fvwm_wallpapers_dir]) Exec exec mkdir -p "$[fvwm_wallpapers_dir]"
+Test (!x "$[fvwm_screenshots_dir]") Exec exec mkdir -p "$[fvwm_screenshots_dir]"
+Test (!x "$[fvwm_preferences_dir]") Exec exec mkdir -p "$[fvwm_preferences_dir]"
+#Test (!x $[fvwm_icons_dir]) Exec exec mkdir -p "$[fvwm_icons_dir]"
 
 ##
 # Now, read all over-rides from the preferences directory
 # This must happen early in the config so that colorsets and other
 # configurations that use the variables are set early enough.
-Test (f $[fvwm_preferences_dir]) PipeRead 'for f in "$[fvwm_preferences_dir]"*; do \
+Test (f "$[fvwm_preferences_dir]") PipeRead 'for f in "$[fvwm_preferences_dir]"/*; do \
     cat $f ; \
     echo Echo loaded preferences from $f ; \
     done'
@@ -251,7 +251,7 @@ AddToMenu MenuFvwmRoot
 + "%0030-feed.svg:$[MINI_ICON_SIZE]%Feeds" Popup FeedMenu
 + "%0386-terminal.svg:$[MINI_ICON_SIZE]%Console" FvwmConsole
 + MissingSubmenuFunction ScreenshotBrowser
-+ "%0087-display.svg:$[MINI_ICON_SIZE]%Screenshots" Popup $[fvwm_screenshots_dir]
++ "%0087-display.svg:$[MINI_ICON_SIZE]%Screenshots" Popup "$[fvwm_screenshots_dir]"
 + "%0147-equalizer.svg:$[MINI_ICON_SIZE]%Settings" Popup SettingsMenu
 + "" Nop
 + "%0303-loop2.svg:$[MINI_ICON_SIZE]%Reload" Restart
@@ -281,8 +281,8 @@ AddtoMenu FeedMenu
 DestroyFunc FetchFeeds
 AddToFunc FetchFeeds
 + I DestroyMenu recreate $0
-+ I AddToMenu $0 "Fetching feed..." Title
-+ I AddToMenu $0 "Retry" FetchFeeds "$0"
++ I AddToMenu "$0" "Fetching feed..." Title
++ I AddToMenu "$0" "Retry" FetchFeeds "$0"
 + I Exec exec python '$[FVWM_USERDIR]'/rss.py -m "$0" "$0"
 
 #
@@ -340,6 +340,7 @@ Test (x oclock) AddToMenu DynamicAppMenu "%0079-clock.svg:$[MINI_ICON_SIZE]%oclo
 # If they exist, put firefox, chromium, and steam into the Apps menu:
 Test (x firefox) AddToMenu DynamicAppMenu "%0487-firefox.svg:$[MINI_ICON_SIZE]%Firefox" Exec exec firefox
 Test (x chromium-browser) AddToMenu DynamicAppMenu "%0486-chrome.svg:$[MINI_ICON_SIZE]%Chromium" Exec exec chromium-browser
+Test (x mumble) AddToMenu DynamicAppMenu "%0027-bullhorn.svg:$[MINI_ICON_SIZE]%Mumble" Exec exec mumble
 Test (x steam) AddToMenu DynamicAppMenu "%0430-steam.svg:$[MINI_ICON_SIZE]%Steam" Exec exec steam
 Test (x steam) AddToMenu DynamicAppMenu "%0113-bubbles4.svg:$[MINI_ICON_SIZE]%Steam Friends" Exec exec steam "steam://open/friends"
 Test (x steam) AddToMenu DynamicAppMenu "%0430-steam.svg:$[MINI_ICON_SIZE]%Steam Library" Exec exec steam "steam://open/games"
@@ -431,9 +432,9 @@ Key F4 A A Screenshot root -screen
 Key Tab A 4 Menu NewAltTabMenu
 
 #Use mpc for music controls
-Key XF86AudioPlay A A Exec exec mpc pause
-Key XF86AudioNext A A Exec exec mpc next
-Key XF86AudioPrev A A Exec exec mpc prev
+Test (x mpc) Key XF86AudioPlay A A Exec exec mpc pause
+Test (x mpc) Key XF86AudioNext A A Exec exec mpc next
+Test (x mpc) Key XF86AudioPrev A A Exec exec mpc prev
 
 # Click and release: start resizing the window on right and bottom edges, left
 # click to accept, right to cancel
@@ -507,7 +508,8 @@ AddToFunc WallpaperBrowser I PipeRead 'test ! -d "$0/.thumbs" && mkdir "$0/.thum
 + I Test (x nautilus) AddToMenu $0 "\*0049-folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory (nautilus)" Exec exec nautilus --no-desktop "$0"
 
 DestroyFunc ScreenshotBrowser
-AddToFunc ScreenshotBrowser I PipeRead 'test ! -d "$0/.thumbs" && mkdir "$0/.thumbs"; \
+AddToFunc ScreenshotBrowser 
++ I PipeRead 'test ! -d "$0/.thumbs" && mkdir "$0/.thumbs"; \
    for i in "$0/"*; do \
       test -f "$0/.thumbs/${i##*/}" \
          -a "${i}" -ot "$0/.thumbs/${i##*/}" || { \
@@ -516,18 +518,18 @@ AddToFunc ScreenshotBrowser I PipeRead 'test ! -d "$0/.thumbs" && mkdir "$0/.thu
          }; \
    done; \
    for i in "$0/.thumbs/"*; do \
-      test -f "$0/${i##*/}" || rm $i ; \
+      test -f "$0/${i##*/}" || rm "${i}" 2>/dev/null; \
    done'
-+ I DestroyMenu $0
-+ I AddToMenu $0 Refresh DestroyMenu $0
++ I DestroyMenu "$0"
++ I AddToMenu "$0" Refresh DestroyMenu "$0"
 + I PipeRead 'for file in "$0/".thumbs/*; do \
       iname=${file##*/} ; \
-      echo AddToMenu $0 "\*$0/.thumbs/$iname*$iname" Exec exec display \"$0/$iname\" ;\
+      echo AddToMenu \\"$0\\" \\"\*$0/.thumbs/$iname*$iname\\" Exec exec display \\"$0/$iname\\" ;\
       done'
 # Add an option to browse the Screenshot directory with Rox (if installed)
-+ I Test (x rox) AddToMenu $0 "\*0049-folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory (rox)" Exec exec rox "$0"
++ I Test (x rox) AddToMenu "$0" "\*0049-folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory (rox)" Exec exec rox "$0"
 # Add an option to browse the Screenshot directory with Nautilus (if installed)
-+ I Test (x nautilus) AddToMenu $0 "\*0049-folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory (nautilus)" Exec exec nautilus --no-desktop "$0"
++ I Test (x nautilus) AddToMenu "$0" "\*0049-folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory (nautilus)" Exec exec nautilus --no-desktop "$0"
 
 
 # The user can select different images to use as the wallpaper at any time.
@@ -537,14 +539,14 @@ AddToFunc ScreenshotBrowser I PipeRead 'test ! -d "$0/.thumbs" && mkdir "$0/.thu
 # This function changes the wallpaper preference to the image file it is passed
 DestroyFunc ChangeWallpaper
 AddToFunc ChangeWallpaper
-+ I Exec exec echo SetEnv WALLPAPER "$0" > $[fvwm_wallpaper_preference]
++ I Exec exec echo SetEnv WALLPAPER "$0" > "$[fvwm_wallpaper_preference]"
 + I SetEnv WALLPAPER "$0"
 + I Schedule 250 LoadWallpaper
 
 # This function loads the wallpaper from the preference file
 DestroyFunc LoadWallpaper
 AddToFunc LoadWallpaper
-+ I Test (f $[fvwm_wallpaper_preference]) Exec exec fvwm-root -r --dither $[WALLPAPER]
++ I Test (f "$[fvwm_wallpaper_preference]") Exec exec fvwm-root -r --dither "$[WALLPAPER]"
 
 # Make sure wallpaper loading happens on startup:
 AddToFunc StartFunction
@@ -558,7 +560,7 @@ AddToFunc StartFunction
 + I Test (init, x blueman-applet) Exec exec blueman-applet
 + I Test (init, x synclient) Exec exec synclient HorizTwoFingerScroll=1
 + I Test (init, x synclient) Exec exec synclient TapButton3=2
-+ I Test (init, x xscreensaver) Exec exec xscreensaver
++ I Test (init, x xscreensaver) Exec exec xscreensaver -no-splash
 
 *FvwmEvent: Cmd
 *FvwmEvent: add_window WindowAdded
@@ -621,6 +623,7 @@ Style RightBar NoTitle, WindowListSkip, NeverFocus, Sticky
 
 AddToFunc StartFunction
 + I FvwmButtons RightBar
++ I Test (x regenconf.sh) Exec exec regenconf.sh > $[FVWM_USERDIR]/conkyconf
 
 *RightBar: Geometry 203x813-0+0
 *RightBar: Font $[DEFAULT_FONT]
@@ -653,32 +656,32 @@ AddToFunc DynamicWindowOpsMenuFunction
 + I ThisWindow ("Firefox",!Iconic) AddToMenu DynamicWindowOpsMenu "New Tab" Exec exec firefox -remote "openurl(about:blank,new-tab)"
 + I ThisWindow ("Firefox") AddToMenu DynamicWindowOpsMenu "New Window" Exec exec firefox -remote "openurl(about:blank,new-window)"
 + I TestRc (Match) AddToMenu DynamicWindowOpsMenu "" Nop
-+ I AddToMenu DynamicWindowOpsMenu "Identify" FvwmIdent
-+ I ThisWindow (!Iconic) AddToMenu DynamicWindowOpsMenu "Get Screenshot" Screenshot $[w.id]
-+ I ThisWindow (!Iconic) AddToMenu DynamicWindowOpsMenu "Get Screenshot (with borders)" Screenshot $[w.id] -frame
++ I AddToMenu DynamicWindowOpsMenu "%0266-question.svg:$[MINI_ICON_SIZE]%Identify" FvwmIdent
++ I ThisWindow (!Iconic) AddToMenu DynamicWindowOpsMenu "%0016-camera.svg:$[MINI_ICON_SIZE]%Get Screenshot" Screenshot $[w.id]
++ I ThisWindow (!Iconic) AddToMenu DynamicWindowOpsMenu "%0015-images.svg:$[MINI_ICON_SIZE]%Get Screenshot (with borders)" Screenshot $[w.id] -frame
 + I AddToMenu DynamicWindowOpsMenu "" Nop
-+ I ThisWindow (Iconic) AddToMenu DynamicWindowOpsMenu "Deiconify" Iconify off
-+ I ThisWindow (!Iconic) AddToMenu DynamicWindowOpsMenu "Iconify" Iconify
-+ I TestRc (Match) AddToMenu DynamicWindowOpsMenu "Resize" Resize
-+ I AddToMenu DynamicWindowOpsMenu "Move" Move
-+ I ThisWindow (Maximized) AddToMenu DynamicWindowOpsMenu "Un-Maximize" Maximize
-+ I TestRc (NoMatch) AddToMenu DynamicWindowOpsMenu "Maximize" Maximize
++ I ThisWindow (Iconic) AddToMenu DynamicWindowOpsMenu "%$[w.miniiconfile]:$[MINI_ICON_SIZE]%Deiconify" Iconify off
++ I ThisWindow (!Iconic) AddToMenu DynamicWindowOpsMenu "%$[w.miniiconfile]:$[MINI_ICON_SIZE]%Iconify" Iconify
++ I TestRc (Match) AddToMenu DynamicWindowOpsMenu "%0318-arrow-down-right2.svg:$[MINI_ICON_SIZE]%Resize" Resize
++ I AddToMenu DynamicWindowOpsMenu "%0317-arrow-right2.svg:$[MINI_ICON_SIZE]%Move" Move
++ I ThisWindow (Maximized) AddToMenu DynamicWindowOpsMenu "%0139-shrink.svg:$[MINI_ICON_SIZE]%Un-Maximize" Maximize
++ I TestRc (NoMatch) AddToMenu DynamicWindowOpsMenu "%0138-enlarge.svg:$[MINI_ICON_SIZE]%Maximize" Maximize
 + I ThisWindow (Shaded) AddToMenu DynamicWindowOpsMenu "Un-Shade" WindowShade
-+ I TestRc (NoMatch) AddToMenu DynamicWindowOpsMenu "Shade" WindowShade
-+ I ThisWindow (Sticky) AddToMenu DynamicWindowOpsMenu "Un-Stick" WindowStyle !Sticky
-+ I TestRc (NoMatch) AddToMenu DynamicWindowOpsMenu "Stick" WindowStyle Sticky
++ I TestRc (NoMatch) AddToMenu DynamicWindowOpsMenu "%0268-minus.svg:$[MINI_ICON_SIZE]%Shade" WindowShade
++ I ThisWindow (Sticky) AddToMenu DynamicWindowOpsMenu "%0071-pushpin.svg:$[MINI_ICON_SIZE]%Un-Stick" WindowStyle !Sticky
++ I TestRc (NoMatch) AddToMenu DynamicWindowOpsMenu "%0071-pushpin.svg:$[MINI_ICON_SIZE]%Stick" WindowStyle Sticky
 + I AddToMenu DynamicWindowOpsMenu "" Nop
-+ I AddToMenu DynamicWindowOpsMenu "Close" Close
-+ I AddToMenu DynamicWindowOpsMenu "Kill" Destroy
++ I AddToMenu DynamicWindowOpsMenu "%0183-switch.svg:$[MINI_ICON_SIZE]%Close" Close
++ I AddToMenu DynamicWindowOpsMenu "%0151-hammer.svg:$[MINI_ICON_SIZE]%Kill" Destroy
 + I AddToMenu DynamicWindowOpsMenu "" Nop
-+ I AddToMenu DynamicWindowOpsMenu "Group Actions" Popup DynamicGroupMenuThingy
++ I AddToMenu DynamicWindowOpsMenu "%0048-folder.svg:$[MINI_ICON_SIZE]%Group Actions" Popup DynamicGroupMenuThingy
 
 # Function to do screenshots
 DestroyFunc Screenshot
 AddToFunc Screenshot
 + I Raise
-+ I Exec exec import -window $0 $1 $[fvwm_screenshots_dir]/`date +%Y_%b_%d_%H:%M:%S.png`
-+ I Schedule 250 ScreenshotBrowser $[fvwm_screenshots_dir]
++ I Exec exec import -window $0 $1 "$[fvwm_screenshots_dir]"/`date +%Y_%b_%d_%H:%M:%S.png`
++ I Schedule 250 ScreenshotBrowser "$[fvwm_screenshots_dir]"
 
 # This is the context-sensitive group menu 
 DestroyMenu DynamicGroupMenuThingy
@@ -855,9 +858,11 @@ AddToFunc ToggleSticky
 Key XF86AudioMute A A Exec exec amixer set Master toggle
 #Key F6 A A Exec exec brightness.sh -d
 #Key F7 A A Exec exec brightness.sh -u
-Key F8 A A Exec exec amixer -D pulse sset Master toggle
-Key F9 A A Exec exec amixer -D pulse sset Master 5%-
-Key F10 A A Exec exec amixer -D pulse sset Master 5%+
+Test (x amixer) Key F8 A A Exec exec amixer -D pulse sset Master toggle
+Test (x amixer) Key F9 A A Exec exec amixer -D pulse sset Master 5%-
+Test (x amixer) Key F10 A A Exec exec amixer -D pulse sset Master 5%+
+Test (x amixer) Key XF86AudioRaiseVolume A A Exec exec amixer -D pulse sset Master 2%+
+Test (x amixer) Key XF86AudioLowerVolume A A Exec exec amixer -D pulse sset Master 2%-
 
 Key XF86PowerOff A A FvwmForm FvwmForm-QuitVerify
 
