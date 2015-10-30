@@ -421,7 +421,7 @@ Key t A $[MOD_KEY] LaunchWarp x-terminal-emulator +sb
 Key s A $[MOD_KEY] WindowShade
 
 # Bind Win+Right Mouse to resize function
-Mouse 3 FSTW 4 Resize-or-not
+Mouse 3 FSTW $[MOD_KEY] Resize-or-not
 
 # Bind Win+Left Mouse to Moving, raising, and lowering actions
 Mouse 1 FSTW 4 Move-Raise-or-Lower
