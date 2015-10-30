@@ -42,6 +42,10 @@ SetEnv PAGES_Y 9
 # Default modifier key is 4 (Win Key) for key bindings
 SetEnv MOD_KEY 4
 
+# Default position of window titles is at the top of the window,
+# so it can be modified by a menu.
+SetEnv TITLE_POSITION TitleAtTop
+
 SetEnv ICONBOX_GEOMETRY $[vp.width]x$[vp.height]
 
 SetEnv ICONFILL_UD Bottom
@@ -60,6 +64,7 @@ SetEnv fvwm_preferences_dir "$[FVWM_USERDIR]/preferences"
 SetEnv fvwm_color_scheme_preference "$[fvwm_preferences_dir]/color_scheme"
 SetEnv fvwm_font_preferences "$[fvwm_preferences_dir]/font"
 SetEnv fvwm_key_preferences "$[fvwm_preferences_dir]/modifier_key"
+SetEnv fvwm_title_preferences "$[fvwm_preferences_dir]/title_position"
 
 # These are so it's easier to change titlebar button positions
 SetEnv fvwm_title_button_miniicon 1
@@ -304,6 +309,7 @@ AddToMenu SettingsMenu
 + "%0013-paint-format.svg:$[MINI_ICON_SIZE]%Colors" Popup ColorMenu
 + "%0349-font.svg:$[MINI_ICON_SIZE]%Fonts" Popup FontsMenu
 + "%0086-keyboard.svg:$[MINI_ICON_SIZE]%Modifier Key" Popup KeysMenu
++ "%0268-minus.svg:$[MINI_ICON_SIZE]%Window Title Position" Popup TitlesMenu
 + "System" Title
 Test (x wifi.sh) AddToMenu SettingsMenu "%0028-connection.svg:$[MINI_ICON_SIZE]%Wifi" Popup WifiMenu
 AddToMenu SettingsMenu "%0295-volume-high.svg:$[MINI_ICON_SIZE]%Volume Control" Exec exec $[VOLUME_APP]
@@ -312,6 +318,23 @@ DestroyMenu WifiMenu
 AddToMenu WifiMenu
 + "Connect to any" Exec exec x-terminal-emulator +sb -e wifi.sh -a
 + "Disconnect" Exec exec x-terminal-emulator +sb -e wifi.sh -k
+
+DestroyMenu TitlesMenu
+AddToMenu TitlesMenu
++ "Top" SetTitlePosition TitleAtTop
++ "Left" SetTitlePosition TitleAtLeft
++ "Right" SetTitlePosition TitleAtRight
++ "Bottom" SetTitlePosition TitleAtBottom
+
+DestroyFunc SetTitlePosition
+AddToFunc SetTitlePosition
++ I Exec exec echo SetEnv TITLE_POSITION \"$0\" > "$[fvwm_title_preferences]"
++ I SetEnv TITLE_POSITION \"$0\"
++ I Schedule 250 ReTitle
+
+DestroyFunc ReTitle
+AddToFunc ReTitle
++ I Style "*" $[TITLE_POSITION]
 
 DestroyMenu KeysMenu
 AddToMenu KeysMenu
@@ -403,7 +426,7 @@ Key o FSTW $[MOD_KEY] Current Popup DynamicWindowOpsMenu Window 0 0
 Key r A $[MOD_KEY] Resize Direction SE
 
 # Touchpad enable/disable
-Test (x touchpad.sh) Key F5 A 4 Exec exec touchpad.sh
+Test (x touchpad.sh) Key F5 A $[MOD_KEY] Exec exec touchpad.sh
 
 # Place again on win+p
 Key p A $[MOD_KEY] PlaceAgain
@@ -446,7 +469,7 @@ Key Escape A $[MOD_KEY] Menu MenuFvwmRoot
 Key Print A A Screenshot root -screen
 Key F4 A A Screenshot root -screen
 
-Key Tab A $[MOD_KEY] Menu NewAltTabMenu
+Key Tab A 4 Menu NewAltTabMenu
 
 #Use mpc for music controls
 Test (x mpc) Key XF86AudioPlay A A Exec exec mpc pause
@@ -488,7 +511,7 @@ AddToFunc Warp-Focus
 # cycle through other windows of the same class
 # similar to gnome/osx but without displaying an icon or list of other windows
 # of the same class
-Key grave A 4 Focus-Next-Class
+Key grave A $[MOD_KEY] Focus-Next-Class
 DestroyFunc Focus-Next-Class
 AddToFunc Focus-Next-Class
 + I Next (!WindowListSkip, AcceptsFocus, CurrentPage, $[w.class]) Warp-Focus
