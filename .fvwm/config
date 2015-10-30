@@ -39,6 +39,9 @@ SetEnv DEFAULT_FONT_SIZE 12
 SetEnv PAGES_X 1
 SetEnv PAGES_Y 9
 
+# Default modifier key is 4 (Win Key) for key bindings
+SetEnv MOD_KEY 4
+
 SetEnv ICONBOX_GEOMETRY $[vp.width]x$[vp.height]
 
 SetEnv ICONFILL_UD Bottom
@@ -56,6 +59,7 @@ SetEnv fvwm_icons_dir "$[FVWM_USERDIR]/icons"
 SetEnv fvwm_preferences_dir "$[FVWM_USERDIR]/preferences"
 SetEnv fvwm_color_scheme_preference "$[fvwm_preferences_dir]/color_scheme"
 SetEnv fvwm_font_preferences "$[fvwm_preferences_dir]/font"
+SetEnv fvwm_key_preferences "$[fvwm_preferences_dir]/modifier_key"
 
 # These are so it's easier to change titlebar button positions
 SetEnv fvwm_title_button_miniicon 1
@@ -296,9 +300,10 @@ DestroyMenu SettingsMenu
 AddToMenu SettingsMenu
 + "FVWM Settings" Title
 + MissingSubmenuFunction WallpaperBrowser
-+ "%0015-images.svg:$[MINI_ICON_SIZE]%Wallpaper" Popup $[fvwm_wallpapers_dir]
++ "%0015-images.svg:$[MINI_ICON_SIZE]%Wallpaper" Popup "$[fvwm_wallpapers_dir]"
 + "%0013-paint-format.svg:$[MINI_ICON_SIZE]%Colors" Popup ColorMenu
 + "%0349-font.svg:$[MINI_ICON_SIZE]%Fonts" Popup FontsMenu
++ "%0086-keyboard.svg:$[MINI_ICON_SIZE]%Modifier Key" Popup KeysMenu
 + "System" Title
 Test (x wifi.sh) AddToMenu SettingsMenu "%0028-connection.svg:$[MINI_ICON_SIZE]%Wifi" Popup WifiMenu
 AddToMenu SettingsMenu "%0295-volume-high.svg:$[MINI_ICON_SIZE]%Volume Control" Exec exec $[VOLUME_APP]
@@ -307,6 +312,18 @@ DestroyMenu WifiMenu
 AddToMenu WifiMenu
 + "Connect to any" Exec exec x-terminal-emulator +sb -e wifi.sh -a
 + "Disconnect" Exec exec x-terminal-emulator +sb -e wifi.sh -k
+
+DestroyMenu KeysMenu
+AddToMenu KeysMenu
++ "Windows Key" SetModifierKey 4
++ "Alt Key" SetModifierKey M
++ "Control Key" SetModifierKey C
++ "Contrl+Alt" SetModifierKey CM
+
+DestroyFunc SetModifierKey
+AddToFunc SetModifierKey
++ I Exec exec echo SetEnv MOD_KEY \"$0\" > "$[fvwm_key_preferences]"
++ I Schedule 250 Restart
 
 #
 # These colors are from various wallpapers, they're hideous, but they sort of
@@ -380,28 +397,28 @@ Test (x inkscape) AddToMenu DynamicAppMenu "%0344-crop.svg:$[MINI_ICON_SIZE]%Ink
 Test (x bluetooth-wizard) AddToMenu SettingsMenu "Bluetooth Wizard" Exec exec bluetooth-wizard
 Test (x blueman-manager) AddToMenu SettingsMenu "Bluetooth Manager" Exec exec blueman-manager
 
-Key o FSTW 4 Current Popup DynamicWindowOpsMenu Window 0 0
+Key o FSTW $[MOD_KEY] Current Popup DynamicWindowOpsMenu Window 0 0
 
 # Resize on win+r
-Key r A 4 Resize Direction SE
+Key r A $[MOD_KEY] Resize Direction SE
 
 # Touchpad enable/disable
 Test (x touchpad.sh) Key F5 A 4 Exec exec touchpad.sh
 
 # Place again on win+p
-Key p A 4 PlaceAgain
+Key p A $[MOD_KEY] PlaceAgain
 
 # When Win+Arrow is pressed, move to the corresponding edge of the screen
-Key Right A 4 AnimatedMove -0 keep Warp
-Key Left A 4 AnimatedMove 0 keep Warp
-Key Up A 4 AnimatedMove keep 0 Warp
-Key Down A 4 AnimatedMove keep -0 Warp
+Key Right A $[MOD_KEY] AnimatedMove -0 keep Warp
+Key Left A $[MOD_KEY] AnimatedMove 0 keep Warp
+Key Up A $[MOD_KEY] AnimatedMove keep 0 Warp
+Key Down A $[MOD_KEY] AnimatedMove keep -0 Warp
 
 # When Win+T is pressed, open a terminal
-Key t A 4 LaunchWarp x-terminal-emulator +sb
+Key t A $[MOD_KEY] LaunchWarp x-terminal-emulator +sb
 
 # When Win+S is pressed, shade the window
-Key s A 4 WindowShade
+Key s A $[MOD_KEY] WindowShade
 
 # Bind Win+Right Mouse to resize function
 Mouse 3 FSTW 4 Resize-or-not
@@ -413,23 +430,23 @@ Mouse 1 FSTW 4 Move-Raise-or-Lower
 Mouse 1 I A Menu DynamicWindowOpsMenu
 
 # Move on Win+M
-Key M A 4 Move
+Key M A $[MOD_KEY] Move
 
 # Move up or down by a page when win+k or win+j are held
-Key k A 4 GoToPage +0p -1p
-Key j A 4 GoToPage +0p +1p
+Key k A $[MOD_KEY] GoToPage +0p -1p
+Key j A $[MOD_KEY] GoToPage +0p +1p
 
 # Move between windows on the current page with Win+h/l
-Key h A 4 Focus-Prev-Window
-Key l A 4 Focus-Next-Window
+Key h A $[MOD_KEY] Focus-Prev-Window
+Key l A $[MOD_KEY] Focus-Next-Window
 
 # Win+Esc pop up the menu
-Key Escape A 4 Menu MenuFvwmRoot
+Key Escape A $[MOD_KEY] Menu MenuFvwmRoot
 
 Key Print A A Screenshot root -screen
 Key F4 A A Screenshot root -screen
 
-Key Tab A 4 Menu NewAltTabMenu
+Key Tab A $[MOD_KEY] Menu NewAltTabMenu
 
 #Use mpc for music controls
 Test (x mpc) Key XF86AudioPlay A A Exec exec mpc pause
@@ -773,7 +790,7 @@ AddToFunc WindowListSelectFunction
 #  1 0  -> FullMax and set (0 1)
 #  0 1  -> Restore and set (0 0)
 #
-Key F A 4 CustomMax
+Key F A $[MOD_KEY] CustomMax
 # Entry-point to custom maximization state machine
 # Transition from initial state to half max (2)
 # or figure out what other state it could be in via Resolve1or2
