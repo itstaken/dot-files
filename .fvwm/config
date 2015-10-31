@@ -39,6 +39,13 @@ SetEnv DEFAULT_FONT_SIZE 12
 SetEnv PAGES_X 1
 SetEnv PAGES_Y 9
 
+# The RightBar size can be over-ridden via a preference file, but the default
+# (which looks okay on my 1920x1080 laptop) is 1/9th the screen width by 1
+# screen height.  To over-ride this to, for example 203x900, put the following
+# into a file in the .fvwm/preferences directory:
+# SetEnv RIGHT_BAR_GEOMETRY 203x900-0+0
+PipeRead 'echo SetEnv RIGHT_BAR_GEOMETRY \$(($[vp.width]/9))x$[vp.height]-0+0'
+
 # Default modifier key is 4 (Win Key) for key bindings
 SetEnv MOD_KEY 4
 
@@ -665,7 +672,8 @@ AddToFunc StartFunction
 + I FvwmButtons RightBar
 + I Test (x regenconf.sh) Exec exec regenconf.sh > $[FVWM_USERDIR]/conkyconf
 
-*RightBar: Geometry 203x813-0+0
+
+*RightBar: Geometry $[RIGHT_BAR_GEOMETRY]
 *RightBar: Font $[DEFAULT_FONT]
 
 *FvwmPager: Colorset 0
