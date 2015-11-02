@@ -177,7 +177,7 @@ Style * NoHandles, BorderWidth 0, SloppyFocus, MinOverlapPlacement, \
       IconBackgroundPadding 1, HilightIconTitleColorset 1
 #      IconBackgroundColorset 0,  specify a colorset to add a background
 
-Style * IconBox $[ICONBOX_GEOMETRY], IconFill $[ICONFILL_UD] $[ICONFILL_LR]
+Style * $[TITLE_POSITION], IconBox $[ICONBOX_GEOMETRY], IconFill $[ICONFILL_UD] $[ICONFILL_LR]
 
 Mouse 1 $[fvwm_title_button_arrow_up] N CustomMax
 
