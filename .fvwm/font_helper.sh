@@ -7,6 +7,18 @@ MIN_SIZE=5
 MAX_SIZE=36
 
 ##
+# Create function for updating fonts so that restarting isn't needed
+cat << "EOF"
+DestroyFunc Refont
+AddToFunc Refont
++ I SetEnv DEFAULT_FONT "xft:$[DEFAULT_FONT_FAMILY]:size=$[DEFAULT_FONT_SIZE]"
++ I SetEnv MENU_FONT "xft:$[MENU_FONT_FAMILY]:size=$[MENU_FONT_SIZE]"
++ I DefaultFont "$[DEFAULT_FONT]"
++ I MenuStyle "*" Font "$[MENU_FONT]"
++ I Schedule 250 PipeRead '$[FVWM_USERDIR]/font_helper.sh'
+EOF
+
+##
 # Create a menu that is (lamely) menu font size numbers
 cat << "EOF"
 DestroyMenu MenuFontSizeMenu
@@ -40,23 +52,27 @@ AddToMenu FontsMenu
 
 DestroyFunc SetDefaultFontSize
 AddToFunc SetDefaultFontSize
++ I SetEnv DEFAULT_FONT_SIZE "$0"
 + I Exec exec echo SetEnv DEFAULT_FONT_SIZE "$0" > "$[fvwm_preferences_dir]"/default_font_size
-+ I Schedule 250 Restart
++ I Refont
 
 DestroyFunc SetMenuFontSize
 AddToFunc SetMenuFontSize
++ I SetEnv MENU_FONT_SIZE "$0"
 + I Exec exec echo SetEnv MENU_FONT_SIZE "$0" > "$[fvwm_preferences_dir]"/menu_font_size
-+ I Schedule 250 Restart
++ I Refont
 
 DestroyFunc SetDefaultFontFamily
 AddToFunc SetDefaultFontFamily
-+ I Exec exec echo SetEnv DEFAULT_FONT_FAMILY \""$0"\" > "$[fvwm_preferences_dir]"/default_font
-+ I Schedule 250 Restart
++ I SetEnv DEFAULT_FONT_FAMILY "$0"
++ I Exec exec echo SetEnv DEFAULT_FONT_FAMILY "$0" > "$[fvwm_preferences_dir]"/default_font
++ I Refont
 
 DestroyFunc SetMenuFontFamily
 AddToFunc SetMenuFontFamily
-+ I Exec exec echo SetEnv MENU_FONT_FAMILY \""$0\"" > "$[fvwm_preferences_dir]"/menu_font
-+ I Schedule 250 Restart
++ I SetEnv MENU_FONT_FAMILY "$0" > "$[fvwm_preferences_dir]"/menu_font
++ I Exec exec echo SetEnv MENU_FONT_FAMILY "$0" > "$[fvwm_preferences_dir]"/menu_font
++ I Refont
 EOF
 
 
