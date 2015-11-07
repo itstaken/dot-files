@@ -16,6 +16,8 @@ SetEnv FG_COLOR white
 SetEnv FG_COLOR_INACTIVE grey
 SetEnv BG_COLOR #4a516a
 SetEnv BG_COLOR_LIGHTER #7d849d
+# The BG_COLOR_LIGHTER is just the BG_COLOR lightened a bit so it can be used
+# as a highlight color in menus.
 
 # Icons on the desk will be this size:
 SetEnv ICON_SIZE 64x64
@@ -86,9 +88,6 @@ SetEnv fvwm_title_button_arrow_up 4
 # This puts the icons directory content in the image search path.
 ImagePath $[fvwm_icons_dir]:+
 
-# Use some of the hicolor icons for apps that have them but no other specificied icons
-Test (x .local/share/icons/hicolor/256x256) ImagePath +:.local/share/icons/hicolor/256x256
-
 # This is where I save/load the current wallpaper (SetEnv WALLPAPER path.png)
 SetEnv fvwm_wallpaper_preference "$[fvwm_preferences_dir]/wallpaper"
 
@@ -147,9 +146,8 @@ OpaqueMoveSize unlimited
 # xcompmgr.)  All titles have a flat look with no 3D bevels.
 #
 # Icon 1 is a mini icon for the window that pops up a dynamic options list and
-# Icon 2 is a paper clip icon that toggles window stickiness.  Additionally,
-# Icon 2 is only displayed when for the currently active window.
-# Icon 4 is n up arrow that does a custom maximize (see CustomMax function).
+# Icon 2 is a paper clip icon that toggles window stickiness.
+# Icon 4 is an up arrow that does a custom maximize (see CustomMax function).
 # Icons are only displayed for the currently active window.
 #
 # In case I should ever toggle a border back on, handles are disabled (and set
@@ -323,21 +321,50 @@ AddToMenu SettingsMenu "%0295-volume-high.svg:$[MINI_ICON_SIZE]%Volume Control" 
 
 DestroyMenu WifiMenu
 AddToMenu WifiMenu
-+ "Connect to any" Exec exec x-terminal-emulator +sb -e wifi.sh -a
-+ "Disconnect" Exec exec x-terminal-emulator +sb -e wifi.sh -k
++ DynamicPopupAction CreateWifiMenu
+
+DestroyFunc CreateWifiMenu
+AddToFunc CreateWifiMenu
++ I DestroyMenu recreate WifiMenu
++ I PipeRead 'SSID=$(wifi.sh -e) ; test ! -z $SSID && echo "AddToMenu WifiMenu \\"Connected: $SSID\\"" Title'
++ I AddToMenu WifiMenu "Connect to any" Exec exec x-terminal-emulator +sb -e wifi.sh -a
++ I AddToMenu WifiMenu "Disconnect" Exec exec x-terminal-emulator +sb -e wifi.sh -k
++ I Test (x regenconf.sh) AddToMenu WifiMenu "Refresh Conky Config" UpdateConky
+
+DestroyFunc MakeTitleMenu
+AddToFunc MakeTitleMenu
++ I DestroyMenu recreate TitlesMenu
++ I PipeRead ' \
+if [ "$TITLE_POSITION" = "TitleAtTop" ] ; then \
+    echo "AddToMenu TitlesMenu \\"[x] Top\\" SetTitlePosition TitleAtTop" ; \
+else \
+    echo "AddToMenu TitlesMenu \\"Top\\" SetTitlePosition TitleAtTop" ; \
+fi ; \
+if [ "$TITLE_POSITION" = "TitleAtLeft" ] ; then \
+    echo "AddToMenu TitlesMenu \\"[x] Left\\" SetTitlePosition TitleAtLeft" ; \
+else \
+    echo "AddToMenu TitlesMenu \\"Left\\" SetTitlePosition TitleAtLeft" ; \
+fi ; \
+if [ "$TITLE_POSITION" = "TitleAtRight" ] ; then \
+    echo "AddToMenu TitlesMenu \\"[x] Right\\" SetTitlePosition TitleAtRight" ; \
+else \
+    echo "AddToMenu TitlesMenu \\"Right\\" SetTitlePosition TitleAtRight" ; \
+fi ; \
+if [ "$TITLE_POSITION" = "TitleAtBottom" ] ; then \
+    echo "AddToMenu TitlesMenu \\"[x] Bottom\\" SetTitlePosition TitleAtBottom" ; \
+else \
+    echo "AddToMenu TitlesMenu \\"Bottom\\" SetTitlePosition TitleAtBottom" ; \
+fi'
 
 DestroyMenu TitlesMenu
 AddToMenu TitlesMenu
-+ "Top" SetTitlePosition TitleAtTop
-+ "Left" SetTitlePosition TitleAtLeft
-+ "Right" SetTitlePosition TitleAtRight
-+ "Bottom" SetTitlePosition TitleAtBottom
++ DynamicPopupAction MakeTitleMenu
 
 DestroyFunc SetTitlePosition
 AddToFunc SetTitlePosition
 + I Exec exec echo SetEnv TITLE_POSITION \"$0\" > "$[fvwm_title_preferences]"
-+ I SetEnv TITLE_POSITION \"$0\"
-+ I Schedule 250 ReTitle
++ I SetEnv TITLE_POSITION "$0"
++ I ReTitle
 
 DestroyFunc ReTitle
 AddToFunc ReTitle
@@ -670,6 +697,9 @@ Style RightBar NoTitle, WindowListSkip, NeverFocus, Sticky
 
 AddToFunc StartFunction
 + I FvwmButtons RightBar
+
+DestroyFunc UpdateConky
+AddToFunc UpdateConky
 + I Test (x regenconf.sh) Exec exec regenconf.sh > $[FVWM_USERDIR]/conkyconf
 
 
