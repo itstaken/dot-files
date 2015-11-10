@@ -1,4 +1,5 @@
 PipeRead "echo Echo Config load started at $(date)"
+
 # This makes ibus trigger appropriately without having to edit shell
 # environment settings with separate .rc files.
 SetEnv GTK_IM_MODULE ibus
@@ -9,7 +10,6 @@ SetEnv QT_IM_MODULE ibus
 # my config.  These are all default values for the preference.  To change these
 # values, I create additional configuration files under $[fvwm_preferences_dir]
 # where I over-ride the values set here.
-#
 
 # Color Preferences
 SetEnv FG_COLOR white
@@ -80,7 +80,6 @@ SetEnv fvwm_title_button_miniicon 1
 SetEnv fvwm_title_button_clip 2
 SetEnv fvwm_title_button_arrow_up 4
 
-##
 # Note: icons come from Keyamoon's IcoMoon free pack, grab it from here and
 # move/rename the SVG folder to ~/.fvwm/icons:
 # https://github.com/Keyamoon/IcoMoon-Free/archive/master.zip
@@ -98,7 +97,6 @@ Test (!x "$[fvwm_screenshots_dir]") Exec exec mkdir -p "$[fvwm_screenshots_dir]"
 Test (!x "$[fvwm_preferences_dir]") Exec exec mkdir -p "$[fvwm_preferences_dir]"
 #Test (!x $[fvwm_icons_dir]) Exec exec mkdir -p "$[fvwm_icons_dir]"
 
-##
 # Now, read all over-rides from the preferences directory
 # This must happen early in the config so that colorsets and other
 # configurations that use the variables are set early enough.
@@ -108,7 +106,6 @@ Test (f "$[fvwm_preferences_dir]") PipeRead 'for f in "$[fvwm_preferences_dir]"/
     done'
 
 
-##
 # Font settings are constructed from variables stored as pieces
 SetEnv DEFAULT_FONT "xft:$[DEFAULT_FONT_FAMILY]:size=$[DEFAULT_FONT_SIZE]"
 SetEnv MENU_FONT "xft:$[MENU_FONT_FAMILY]:size=$[MENU_FONT_SIZE]"
@@ -168,15 +165,26 @@ BorderStyle -- flat
 ButtonStyle All (Colorset 0 -- flat)
 AddButtonStyle $[fvwm_title_button_miniicon] Active MiniIcon (HiddenHandles NoInset Hilight3Doff -- flat)
 TitleStyle (Colorset 0 -- flat)
-Style * NoHandles, BorderWidth 0, SloppyFocus, MinOverlapPlacement, \
-      SnapAttraction 3 SameType Screen, Colorset 0, HilightFore white, \
-      HilightBack $[BG_COLOR], \
-      IconTitleRelief 0, IconBackgroundRelief 0, IconTitleColorset 0, \
-      IconBackgroundPadding 1, HilightIconTitleColorset 1
-#      IconBackgroundColorset 0,  specify a colorset to add a background
 
-Style * $[TITLE_POSITION], IconBox $[ICONBOX_GEOMETRY], IconFill $[ICONFILL_UD] $[ICONFILL_LR]
+Style "*" BorderWidth 0
+Style "*" Colorset 0
+Style "*" HilightBack $[BG_COLOR]
+Style "*" HilightFore white
+Style "*" HilightIconTitleColorset 1
+Style "*" IconBackgroundPadding 1
+Style "*" IconBackgroundRelief 0
+Style "*" IconBox $[ICONBOX_GEOMETRY]
+Style "*" IconFill $[ICONFILL_UD] $[ICONFILL_LR]
+Style "*" IconOverride
+Style "*" IconTitleColorset 0
+Style "*" IconTitleRelief 0
+Style "*" MinOverlapPlacement
+Style "*" NoHandles
+Style "*" SloppyFocus
+Style "*" SnapAttraction 3 SameType Screen
+Style "*" $[TITLE_POSITION]
 
+# Style "*" IconBackgroundColorset 0 -- specify a colorset to add a background
 Mouse 1 $[fvwm_title_button_arrow_up] N CustomMax
 
 #
@@ -201,38 +209,37 @@ Mouse 1 $[fvwm_title_button_arrow_up] N CustomMax
 #
 MenuStyle * MenuColorset 2, BorderWidth 2, ItemFormat "%s %| %i %l %|% %> ", \
           PopupOffset -2 100, Hilight3DOff, ActiveFore black, ForeGround \
-          $[FG_COLOR], HilightBack $[BG_COLOR_LIGHTER], Font \
-          "$[MENU_FONT]", TrianglesSolid
+          $[FG_COLOR], HilightBack $[BG_COLOR_LIGHTER], Font "$[MENU_FONT]", \
+          TrianglesSolid
 
 # Set up icons for stuff...
 Style "Android SDK Manager" Icon 0097-download.svg:$[ICON_SIZE], MiniIcon 0097-download.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride, DecorateTransient
 Style "Apvlv" MiniIcon 0475-file-pdf.svg:$[MINI_ICON_SIZE]
-Style blobwars Icon 0343-radio-unchecked.svg:$[ICON_SIZE], MiniIcon 0343-radio-unchecked.svg:$[MINI_ICON_SIZE]
+Style "blobwars" Icon 0343-radio-unchecked.svg:$[ICON_SIZE], MiniIcon 0343-radio-unchecked.svg:$[MINI_ICON_SIZE]
 Style "* - Chat" MiniIcon 0111-bubble2.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
 Style "Chromium-browser" Icon 0486-chrome.svg:$[ICON_SIZE], MiniIcon 0486-chrome.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style "FightTheDragon" NoTitle
 Style "Firefox" MiniIcon 0487-0487-firefox.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-Style Freeciv Icon 0004-office.svg:$[ICON_SIZE], MiniIcon 0004-office.svg:$[MINI_ICON_SIZE]
+Style "Freeciv" Icon 0004-office.svg:$[ICON_SIZE], MiniIcon 0004-office.svg:$[MINI_ICON_SIZE]
 Style "Friends" MiniIcon 0113-bubbles4.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-Style FvwmIdent Icon 0266-question.svg:$[ICON_SIZE], MiniIcon 0266-question.svg:$[MINI_ICON_SIZE]
-Style Gimp MiniIcon 0014-image.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-Style Inkscape Icon 0344-crop.svg:$[ICON_SIZE], MiniIcon 0344-crop.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style "FvwmIdent" Icon 0266-question.svg:$[ICON_SIZE], MiniIcon 0266-question.svg:$[MINI_ICON_SIZE]
+Style "Gimp" MiniIcon 0014-image.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style "Inkscape" Icon 0344-crop.svg:$[ICON_SIZE], MiniIcon 0344-crop.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
 Style "Layers - Brushes" MiniIcon 0015-images.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-Style MPlayer Icon 0278-play2.svg:$[ICON_SIZE], MiniIcon 0278-play2.svg:$[MINI_ICON_SIZE]
+Style "Minetest*" NoTitle
+Style "MPlayer" Icon 0278-play2.svg:$[ICON_SIZE], MiniIcon 0278-play2.svg:$[MINI_ICON_SIZE]
 Style "*nautilus*" MiniIcon 0048-folder.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-Style POWDER Icon 0152-magic-wand.svg:$[ICON_SIZE], MiniIcon 0152-magic-wand.svg:$[MINI_ICON_SIZE]
+Style "oclock" NoTitle, StaysOnBottom, Sticky, WindowListSkip, NeverFocus, CirculateSkip
+Style "POWDER" Icon 0152-magic-wand.svg:$[ICON_SIZE], MiniIcon 0152-magic-wand.svg:$[MINI_ICON_SIZE]
 Style "*rox*" MiniIcon 0048-folder.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style "*rxvt*" MiniIcon 0386-terminal.svg:$[MINI_ICON_SIZE]
 Style "Steam" NoIcon, Icon 0430-steam.svg:$[ICON_SIZE], MiniIcon 0430-steam.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
 Style "Toolbox*" MiniIcon 0151-hammer.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
 Style "URxvt" Icon 0386-terminal.svg:$[ICON_SIZE], Icon 0386-terminal.svg:$[ICON_SIZE], MiniIcon 0386-terminal.svg:$[MINI_ICON_SIZE]
-Style "Vim *" MiniIcon 0385-embed2.svg:$[MINI_ICON_SIZE]
 Style "Vim" Icon 0385-embed2.svg:$[ICON_SIZE], MiniIcon 0385-embed2.svg:$[MINI_ICON_SIZE]
+Style "Vim *" MiniIcon 0385-embed2.svg:$[MINI_ICON_SIZE]
 Style "xcalc" MiniIcon 0065-calculator.svg:$[MINI_ICON_SIZE]
 Style "XClipboard" Icon 0185-clipboard.svg:$[ICON_SIZE], MiniIcon 0185-clipboard.svg:$[MINI_ICON_SIZE]
-Style "*rxvt*" MiniIcon 0386-terminal.svg:$[MINI_ICON_SIZE]
-Style "Minetest*" NoTitle
-Style "FightTheDragon" NoTitle
-Style "oclock" NoTitle, StaysOnBottom, Sticky, WindowListSkip, NeverFocus, CirculateSkip
-
 
 # Bind left clicking I-1 to the options menu, but double-click should close the
 # window.  More specifically, double click will close, single clicking will
@@ -402,17 +409,17 @@ AddToFunc UpdateColors
 + I Schedule 250 Restart
 
 # Dynamic App Menu Generation
-# If they exist, put rxvt, xterm, rox, and nautilus in Apps menu:
+# If they exist, put rxvt, xterm, rox, nautilus ... in Apps menu:
 Test (x rxvt) AddToMenu DynamicAppMenu "%0386-terminal.svg:$[MINI_ICON_SIZE]%RXvt" Exec exec rxvt
 Test (x xterm) AddToMenu DynamicAppMenu "%0386-terminal.svg:$[MINI_ICON_SIZE]%XTerm" Exec exec xterm
 Test (x rox) AddToMenu DynamicAppMenu "%0049-folder-open.svg:$[MINI_ICON_SIZE]%Rox Filer" Exec exec rox
 Test (x nautilus) AddToMenu DynamicAppMenu "%0049-folder-open.svg:$[MINI_ICON_SIZE]%Nautilus" Exec exec nautilus --no-desktop
-Test (x oclock) AddToMenu DynamicAppMenu "%0079-clock.svg:$[MINI_ICON_SIZE]%oclock" Exec exec oclock -geometry +0-0 -bg black -fg ${BG_COLOR_LIGHTER} -bd ${BG_COLOR} -transparent
-
+Test (x oclock) AddToMenu DynamicAppMenu "%0079-clock.svg:$[MINI_ICON_SIZE]%oclock" Exec exec oclock -geometry +0+0 -bg black -fg ${BG_COLOR_LIGHTER} -bd ${BG_COLOR} -transparent
 
 # Internet-related stuff
 # If they exist, put firefox, chromium, and steam into the Apps menu:
 Test (x firefox) AddToMenu DynamicAppMenu "%0487-firefox.svg:$[MINI_ICON_SIZE]%Firefox" Exec exec firefox
+Test (x finch, x x-terminal-emulator) AddToMenu DynamicAppMenu "%0111-bubble2.svg:$[MINI_ICON_SIZE]%Finch" Exec exec x-terminal-emulator -tn rxvt -e finch
 Test (x chromium-browser) AddToMenu DynamicAppMenu "%0486-chrome.svg:$[MINI_ICON_SIZE]%Chromium" Exec exec chromium-browser
 Test (x mumble) AddToMenu DynamicAppMenu "%0027-bullhorn.svg:$[MINI_ICON_SIZE]%Mumble" Exec exec mumble
 Test (x steam) AddToMenu DynamicAppMenu "%0430-steam.svg:$[MINI_ICON_SIZE]%Steam" Exec exec steam
@@ -558,7 +565,8 @@ AddToFunc Focus-Next-Class
 #
 # Creates the browser for wallpaper and puts it into a menu 
 DestroyFunc WallpaperBrowser
-AddToFunc WallpaperBrowser I PipeRead 'test ! -d "$0/.thumbs" && mkdir "$0/.thumbs"; \
+AddToFunc WallpaperBrowser
++ I PipeRead 'test ! -d "$0/.thumbs" && mkdir "$0/.thumbs"; \
    for i in "$0/"*; do \
       iname=${i##*/} ; \
       test -f "$0/.thumbs/${iname}" \
@@ -568,13 +576,13 @@ AddToFunc WallpaperBrowser I PipeRead 'test ! -d "$0/.thumbs" && mkdir "$0/.thum
          }; \
    done; \
    for i in "$0/.thumbs/"*; do \
-      test -f "$0/${i##*/}" || rm $i ; \
+      test -f "$0/${i##*/}" || rm "${i}" ; \
    done'
-+ I DestroyMenu $0
-+ I AddToMenu $0 Refresh DestroyMenu $0
++ I DestroyMenu "$0"
++ I AddToMenu "$0" Refresh DestroyMenu "$0"
 + I PipeRead 'for file in "$0/".thumbs/*; do \
       iname=${file##*/} ; \
-      echo AddToMenu $0 "\*$0/.thumbs/$iname*$iname" ChangeWallpaper \"$0/$iname\" ;\
+      echo AddToMenu \\"$0\\" \\"\*$0/.thumbs/$iname*$iname\\" ChangeWallpaper \\"$0/$iname\\" ;\
       done'
 # Add an option to browse the wallpaper directory with Rox (if installed)
 + I Test (x rox) AddToMenu $0 "\*0049-folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory (rox)" Exec exec rox "$0"
@@ -582,7 +590,7 @@ AddToFunc WallpaperBrowser I PipeRead 'test ! -d "$0/.thumbs" && mkdir "$0/.thum
 + I Test (x nautilus) AddToMenu $0 "\*0049-folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory (nautilus)" Exec exec nautilus --no-desktop "$0"
 
 DestroyFunc ScreenshotBrowser
-AddToFunc ScreenshotBrowser 
+AddToFunc ScreenshotBrowser
 + I PipeRead 'test ! -d "$0/.thumbs" && mkdir "$0/.thumbs"; \
    for i in "$0/"*; do \
       test -f "$0/.thumbs/${i##*/}" \
@@ -626,15 +634,15 @@ AddToFunc LoadWallpaper
 AddToFunc StartFunction
 + I LoadWallpaper
 + I Module FvwmCommandS
-+ I Test (init) Exec exec ibus-daemon -drx
-+ I Test (init, x xcompmgr, x transset) Exec exec xcompmgr
 + I Module FvwmEvent
-+ I Test (Restart, x xcompmgr, x transset) Retransit
-+ I Test (init, x bluetooth-applet) Exec exec bluetooth-applet
++ I Test (init) Exec exec ibus-daemon -drx
 + I Test (init, x blueman-applet) Exec exec blueman-applet
++ I Test (init, x bluetooth-applet) Exec exec bluetooth-applet
 + I Test (init, x synclient) Exec exec synclient HorizTwoFingerScroll=1
 + I Test (init, x synclient) Exec exec synclient TapButton3=2
++ I Test (init, x xcompmgr, x transset) Exec exec xcompmgr
 + I Test (init, x xscreensaver) Exec exec xscreensaver -no-splash
++ I Test (Restart, x xcompmgr, x transset) Retransit
 
 *FvwmEvent: Cmd
 *FvwmEvent: add_window WindowAdded
@@ -697,11 +705,13 @@ Style RightBar NoTitle, WindowListSkip, NeverFocus, Sticky
 
 AddToFunc StartFunction
 + I FvwmButtons RightBar
++ I UpdateConky
 
+# This function calls an external script for regenerating the conky config that
+# displays network info.
 DestroyFunc UpdateConky
 AddToFunc UpdateConky
 + I Test (x regenconf.sh) Exec exec regenconf.sh > $[FVWM_USERDIR]/conkyconf
-
 
 *RightBar: Geometry $[RIGHT_BAR_GEOMETRY]
 *RightBar: Font $[DEFAULT_FONT]
@@ -754,7 +764,8 @@ AddToFunc DynamicWindowOpsMenuFunction
 + I AddToMenu DynamicWindowOpsMenu "" Nop
 + I AddToMenu DynamicWindowOpsMenu "%0048-folder.svg:$[MINI_ICON_SIZE]%Group Actions" Popup DynamicGroupMenuThingy
 
-# Function to do screenshots
+# Function to do screenshots and save them to the screenshot pref dir using
+# date/time as the name.
 DestroyFunc Screenshot
 AddToFunc Screenshot
 + I Raise
@@ -804,12 +815,12 @@ AddToFunc NewAltTabFunction
 # Used to create a menu of non-iconified windows
 DestroyFunc EvalQuickWindowList
 AddToFunc EvalQuickWindowList
-+ I Current AddToMenu $0 %$[w.miniiconfile]:30x30%"$[w.class]: $[w.name]" WindowId $[w.id] Warp-Focus
++ I Current AddToMenu "$0" %$[w.miniiconfile]:30x30%"$[w.class]: $[w.name]" WindowId $[w.id] Warp-Focus
 
 # Used to create a menu of the iconified windows
 DestroyFunc EvalQuickWindowListIcons
 AddToFunc EvalQuickWindowListIcons
-+ I Current AddToMenu $0 %$[w.miniiconfile]:30x30%"(i) $[w.class]: $[w.name]" WindowId $[w.id] Warp-Focus
++ I Current AddToMenu "$0" %$[w.miniiconfile]:30x30%"(i) $[w.class]: $[w.name]" WindowId $[w.id] Warp-Focus
 #+ I Current AddToMenu $0 %$[temp_icon_dir]/icon.tmp.$[w.id].png%"$[w.class]: $[w.name]" WindowId $[w.id] WindowListSelectFunction
 # Note the above function will not work because I'm not using the temp_icon_dir stuff in this config
 
