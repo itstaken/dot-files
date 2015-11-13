@@ -17,7 +17,7 @@ SetEnv FG_COLOR_INACTIVE grey
 SetEnv BG_COLOR #4a516a
 SetEnv BG_COLOR_LIGHTER #7d849d
 # The BG_COLOR_LIGHTER is just the BG_COLOR lightened a bit so it can be used
-# as a highlight color in menus.
+# as a highlight color in menus, pagers, etc.
 
 # Icons on the desk will be this size:
 SetEnv ICON_SIZE 64x64
@@ -92,7 +92,7 @@ SetEnv fvwm_wallpaper_preference "$[fvwm_preferences_dir]/wallpaper"
 
 # This block creates the directories needed for my config to function
 # correctly.
-#Test (!x $[fvwm_wallpapers_dir]) Exec exec mkdir -p "$[fvwm_wallpapers_dir]"
+Test (!x "$[fvwm_wallpapers_dir]") Exec exec mkdir -p "$[fvwm_wallpapers_dir]"
 Test (!x "$[fvwm_screenshots_dir]") Exec exec mkdir -p "$[fvwm_screenshots_dir]"
 Test (!x "$[fvwm_preferences_dir]") Exec exec mkdir -p "$[fvwm_preferences_dir]"
 #Test (!x $[fvwm_icons_dir]) Exec exec mkdir -p "$[fvwm_icons_dir]"
@@ -140,7 +140,9 @@ OpaqueMoveSize unlimited
 #
 # Window titles are a blueish color with white text and inactive windows have a
 # gray title.  The blue really looks better with transparency turned on (ala
-# xcompmgr.)  All titles have a flat look with no 3D bevels.
+# xcompmgr.)  All titles have a flat look with no 3D bevels.  (Colorset colors
+# are controlled via variables, so these are configurable and can be changed at
+# run time through a menu.)
 #
 # Icon 1 is a mini icon for the window that pops up a dynamic options list and
 # Icon 2 is a paper clip icon that toggles window stickiness.
@@ -157,24 +159,36 @@ OpaqueMoveSize unlimited
 # between menus effect.  So, set the PopupOffset's first argument to the
 # negative value of the border width for menus.
 
+# Reads the ColorSet values from preference file and then
+# schedules updating the ones that are actively in use.
+DestroyFunc DoColorSets
+AddToFunc DoColorSets
++ I Read "$[fvwm_color_scheme_preference]"
++ I Schedule 250 FinishColorUpdate
 
-ColorSet 0 bg $[BG_COLOR], fg $[FG_COLOR_INACTIVE]
-ColorSet 1 Tint $[BG_COLOR] 50, bg $[BG_COLOR], fg $[FG_COLOR], fgsh black
-ColorSet 2 Tint $[BG_COLOR] 50, bg $[BG_COLOR], fg $[FG_COLOR], fgsh black, hi black, sh black
+#
+# Updates the ColorSets so that a restart isn't needed when
+# they are modified.
+DestroyFunc FinishColorUpdate
+AddToFunc FinishColorUpdate
++ I ColorSet 0 bg $[BG_COLOR], fg $[FG_COLOR_INACTIVE]
++ I ColorSet 1 Tint $[BG_COLOR] 50, bg $[BG_COLOR], fg $[FG_COLOR], fgsh black
++ I ColorSet 2 Tint $[BG_COLOR] 50, bg $[BG_COLOR], fg $[FG_COLOR], fgsh black, hi black, sh black
++ I ColorSet 3 bg $[BG_COLOR_LIGHTER], fg $[FG_COLOR]
++ I TitleStyle (Colorset 0 -- flat)
++ I Style "*" Colorset 0
++ I Style "*" HilightIconTitleColorset 1
+
 BorderStyle -- flat
 ButtonStyle All (Colorset 0 -- flat)
 AddButtonStyle $[fvwm_title_button_miniicon] Active MiniIcon (HiddenHandles NoInset Hilight3Doff -- flat)
-TitleStyle (Colorset 0 -- flat)
 
 Style "*" BorderWidth 0
-Style "*" Colorset 0
 Style "*" HilightBack $[BG_COLOR]
 Style "*" HilightFore white
-Style "*" HilightIconTitleColorset 1
 Style "*" IconBackgroundPadding 1
 Style "*" IconBackgroundRelief 0
-Style "*" IconBox $[ICONBOX_GEOMETRY]
-Style "*" IconFill $[ICONFILL_UD] $[ICONFILL_LR]
+Style "*" IconBox $[ICONBOX_GEOMETRY], IconFill $[ICONFILL_UD] $[ICONFILL_LR]
 Style "*" IconOverride
 Style "*" IconTitleColorset 0
 Style "*" IconTitleRelief 0
@@ -210,7 +224,7 @@ Mouse 1 $[fvwm_title_button_arrow_up] N CustomMax
 MenuStyle * MenuColorset 2, BorderWidth 2, ItemFormat "%s %| %i %l %|% %> ", \
           PopupOffset -2 100, Hilight3DOff, ActiveFore black, ForeGround \
           $[FG_COLOR], HilightBack $[BG_COLOR_LIGHTER], Font "$[MENU_FONT]", \
-          TrianglesSolid
+          TrianglesSolid, PopdownDelay 500
 
 # Set up icons for stuff...
 Style "Android SDK Manager" Icon 0097-download.svg:$[ICON_SIZE], MiniIcon 0097-download.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride, DecorateTransient
@@ -304,7 +318,7 @@ AddToFunc FetchFeeds
 + I DestroyMenu recreate $0
 + I AddToMenu "$0" "Fetching feed..." Title
 + I AddToMenu "$0" "Retry" FetchFeeds "$0"
-+ I Exec exec python '$[FVWM_USERDIR]'/rss.py -m "$0" "$0"
++ I Exec exec python "$[FVWM_USERDIR]"/rss.py -m "$0" "$0"
 
 #
 # The settings menu consists of the following:
@@ -333,7 +347,7 @@ AddToMenu WifiMenu
 DestroyFunc CreateWifiMenu
 AddToFunc CreateWifiMenu
 + I DestroyMenu recreate WifiMenu
-+ I PipeRead 'SSID=$(wifi.sh -e) ; test ! -z $SSID && echo "AddToMenu WifiMenu \\"Connected: $SSID\\"" Title'
++ I PipeRead 'SSID=$(wifi.sh -e) ; test ! -z "$SSID" && echo "AddToMenu WifiMenu \\"Connected: $SSID\\" Title" || echo "AddToMenu WifiMenu \\"Not Connected\\" Title"'
 + I AddToMenu WifiMenu "Connect to any" Exec exec x-terminal-emulator +sb -e wifi.sh -a
 + I AddToMenu WifiMenu "Disconnect" Exec exec x-terminal-emulator +sb -e wifi.sh -k
 + I Test (x regenconf.sh) AddToMenu WifiMenu "Refresh Conky Config" UpdateConky
@@ -405,8 +419,8 @@ AddToMenu ColorMenu
 # restarts
 DestroyFunc UpdateColors
 AddToFunc UpdateColors
-+ I Exec exec python $[FVWM_USERDIR]/color_helper.py $0 > $[fvwm_color_scheme_preference]
-+ I Schedule 250 Restart
++ I Exec exec python "$[FVWM_USERDIR]"/color_helper.py $0 > "$[fvwm_color_scheme_preference]"
++ I Schedule 250 DoColorSets
 
 # Dynamic App Menu Generation
 # If they exist, put rxvt, xterm, rox, nautilus ... in Apps menu:
@@ -414,7 +428,7 @@ Test (x rxvt) AddToMenu DynamicAppMenu "%0386-terminal.svg:$[MINI_ICON_SIZE]%RXv
 Test (x xterm) AddToMenu DynamicAppMenu "%0386-terminal.svg:$[MINI_ICON_SIZE]%XTerm" Exec exec xterm
 Test (x rox) AddToMenu DynamicAppMenu "%0049-folder-open.svg:$[MINI_ICON_SIZE]%Rox Filer" Exec exec rox
 Test (x nautilus) AddToMenu DynamicAppMenu "%0049-folder-open.svg:$[MINI_ICON_SIZE]%Nautilus" Exec exec nautilus --no-desktop
-Test (x oclock) AddToMenu DynamicAppMenu "%0079-clock.svg:$[MINI_ICON_SIZE]%oclock" Exec exec oclock -geometry +0+0 -bg black -fg ${BG_COLOR_LIGHTER} -bd ${BG_COLOR} -transparent
+Test (x oclock) AddToMenu DynamicAppMenu "%0079-clock.svg:$[MINI_ICON_SIZE]%oclock" Exec exec oclock -geometry +0+0 -bg black -fg $[BG_COLOR_LIGHTER] -bd $[BG_COLOR] -transparent
 
 # Internet-related stuff
 # If they exist, put firefox, chromium, and steam into the Apps menu:
@@ -461,7 +475,13 @@ Test (x inkscape) AddToMenu DynamicAppMenu "%0344-crop.svg:$[MINI_ICON_SIZE]%Ink
 Test (x bluetooth-wizard) AddToMenu SettingsMenu "Bluetooth Wizard" Exec exec bluetooth-wizard
 Test (x blueman-manager) AddToMenu SettingsMenu "Bluetooth Manager" Exec exec blueman-manager
 
+# Pop up the current window options on Win+o
 Key o FSTW $[MOD_KEY] Current Popup DynamicWindowOpsMenu Window 0 0
+
+# Pull all Fvwm stuff to the foreground on Win+Space
+Key Space A $[MOD_KEY] All (Fvwm*) Raise
+# Push all Fvwm stuff to the background on Win+Shift+Space
+Key Space A $[MOD_KEY]S All (Fvwm*) Lower
 
 # Resize on win+r
 Key r A $[MOD_KEY] Resize Direction SE
@@ -632,6 +652,7 @@ AddToFunc LoadWallpaper
 
 # Make sure wallpaper loading happens on startup:
 AddToFunc StartFunction
++ I DoColorSets
 + I LoadWallpaper
 + I Module FvwmCommandS
 + I Module FvwmEvent
@@ -716,14 +737,14 @@ AddToFunc UpdateConky
 *RightBar: Geometry $[RIGHT_BAR_GEOMETRY]
 *RightBar: Font $[DEFAULT_FONT]
 
-*FvwmPager: Colorset 0
 *FvwmPager: Font none
 *FvwmPager: SmallFont "xft:Droid Sans Mono:size=6"
 *FvwmPager: WindowLabelFormat "%t"
 *FvwmPager: Balloons
 *FvwmPager: BalloonFont "xft:Droid Sans Mono:size=12"
 *FvwmPager: MiniIcons
-*FvwmPager: WindowColors wheat $[BG_COLOR] white $[BG_COLOR_LIGHTER]
+*FvwmPager: WindowColorsets 0 3
+*FvwmPager: HilightColorset * 3
 *FvwmPager: Colorset * 1
 *FvwmPager: UseSkipList
 #*FvwmPager: Hilight gray
