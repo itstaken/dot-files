@@ -190,6 +190,24 @@ def invoke_xrandr():
 
     return displays
 
+def display_active(display):
+    '''
+    Returns true if the specified displays has a currently active resolution.
+    '''
+    active = False
+    for resolution in display['resolutions']:
+        active = resolution['active'] or active
+    return active
+
+def count_active(displays):
+    '''
+    Counts the number of displays that are in a connected and active state.
+    '''
+    count = 0
+    for display in displays.iterkeys():
+        count += displays[display]['connected'] and display_active(displays[display]) and 1 or 0
+    return count
+
 def count_connected(displays):
     '''
     Counts the number of displays that are in a connected state.
@@ -205,7 +223,7 @@ def do_mirrors_menu(prefix, function, display, displays):
     '''
     mirror = 'DestroyMenu recreate "{prefix}-{display}"\n'.format(prefix=prefix, display=display) #pylint: disable=line-too-long
     for current in displays.iterkeys():
-        if current != display:
+        if current != display and displays[current]['connected']:
             mirror += 'AddToMenu "{prefix}-{display}" "{current}" {function} "{display}" "{current}"\n'.format( #pylint: disable=line-too-long
                     prefix=prefix, display=display, current=current,
                     function=function)
@@ -238,7 +256,7 @@ def do_position_menu(prefix, function, display, displays):
                 display=display,
                 direction=direction)
         for current in displays.iterkeys():
-            if current != display:
+            if current != display and displays[current]['connected']:
                 submenus += 'AddToMenu "Pick-{display}-{direction}" "{current}" "{function}" "{display}" "{current}" "{direction}"\n'.format( #pylint: disable=line-too-long
                         current=current,
                         function=function,
@@ -291,17 +309,30 @@ def functions():
     '''
     print('DestroyFunc SetDisplayPosition')
     print('AddToFunc SetDisplayPosition')
-    print('+ I xrandr --output "$0" "$2" "$1"')
+    print('+ I Exec exec xrandr --output "$0" "$2" "$1"')
     print('+ I Schedule 250 Restart')
     print()
     print('DestroyFunc SetPrimaryDisplay')
     print('AddToFunc SetPrimaryDisplay')
-    print('+ I xrandr --output "$0" --primary')
+    print('+ I Exec exec xrandr --output "$0" --primary')
     print('+ I Schedule 250 Restart')
+    print()
+    print('DestroyFunc TurnOnDisplay')
+    print('AddToFunc TurnOnDisplay')
+    print('+ I Exec exec xrandr --output "$0" --auto')
+    print()
+    print('DestroyFunc TurnOffDisplay')
+    print('AddToFunc TurnOffDisplay')
+    print('+ I Exec exec xrandr --output "$0" --off')
     print()
     print('DestroyFunc SetResolution')
     print('AddToFunc SetResolution')
-    print('+ I xrandr --output "$0" --mode "$1"')
+    print('+ I Exec exec xrandr --output "$0" --mode "$1"')
+    print('+ I Schedule 250 Restart')
+    print()
+    print('DestroyFunc SetMirrorMode')
+    print('AddToFunc SetMirrorMode')
+    print('+ I Exec exec xrandr --output "$0" --same-as "$1"')
     print('+ I Schedule 250 Restart')
     print()
     print('DestroyMenu DisplaysMenu')
@@ -333,6 +364,10 @@ def menus():
             if not displays[display]['primary']:
                 menu += 'AddToMenu "%s" "Set Primary" SetPrimaryDisplay "%s"\n' % (display, display) #pylint: disable=line-too-long
             if count_connected(displays) > 1:
+                if count_active(displays) > 1 and display_active(displays[display]):
+                    menu += 'AddToMenu "%s" "Turn off" TurnOffDisplay "%s"\n' % (display, display)
+                elif not display_active(displays[display]):
+                    menu += 'AddToMenu "%s" "Turn on" TurnOnDisplay "%s"\n' % (display, display)
                 menu += 'AddToMenu "%s" "Mirror" Popup "Mirror-%s"\n' % (display, display) #pylint: disable=line-too-long
                 mirrors += do_mirrors_menu("Mirror", 'SetMirrorMode', display, displays) #pylint: disable=line-too-long
                 menu += 'AddToMenu "%s" Position Popup "Position-%s"\n' % (display, display) #pylint: disable=line-too-long
