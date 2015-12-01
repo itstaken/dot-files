@@ -271,7 +271,6 @@ AddToFunc Ops-or-Close
 # ┌─────────────────┐
 # │ Apps          ▷ │
 # │ Games         ▷ │
-# │ Console         │
 # │ Screenshots   ▷ │
 # │ Settings      ▷ │
 # ├─────────────────┤
@@ -284,7 +283,6 @@ AddToMenu MenuFvwmRoot
 + "%0276-enter.svg:$[MINI_ICON_SIZE]%Apps" Popup DynamicAppMenu
 + "%0224-happy.svg:$[MINI_ICON_SIZE]%Games" Popup DynamicGameMenu
 + "%0030-feed.svg:$[MINI_ICON_SIZE]%Feeds" Popup FeedMenu
-+ "%0386-terminal.svg:$[MINI_ICON_SIZE]%Console" FvwmConsole
 + MissingSubmenuFunction ScreenshotBrowser
 + "%0087-display.svg:$[MINI_ICON_SIZE]%Screenshots" Popup "$[fvwm_screenshots_dir]"
 + "%0147-equalizer.svg:$[MINI_ICON_SIZE]%Settings" Popup SettingsMenu
@@ -322,24 +320,37 @@ AddToFunc FetchFeeds
 
 #
 # The settings menu consists of the following:
-# ┌─────────────────┐
-# │ Wallpaper     ▷ │
-# │ Colors        ▷ │
-# │ Fonts         ▷ │
-# └─────────────────┘
+# ┌─────────────────────────┐
+# │      FVWM Settings      │
+# ├─────────────────────────┤
+# │ Console                 │
+# │ Colors                ▷ │
+# │ Fonts                 ▷ │
+# │ Modifier Key          ▷ │
+# │ Wallpaper             ▷ │
+# │ Window Title Position ▷ │
+# ├─────────────────────────┤
+# │         System          │
+# │ Wifi                  ▷ │
+# │ Displays              ▷ │
+# │ Volume Control          │
+# │ Bluetooth Wizard        │
+# │ Bluetooth Manager       │
+# └─────────────────────────┘
 DestroyMenu SettingsMenu
 AddToMenu SettingsMenu
 + "FVWM Settings" Title
 + MissingSubmenuFunction WallpaperBrowser
-+ "%0015-images.svg:$[MINI_ICON_SIZE]%Wallpaper" Popup "$[fvwm_wallpapers_dir]"
++ "%0386-terminal.svg:$[MINI_ICON_SIZE]%Console" FvwmConsole
 + "%0013-paint-format.svg:$[MINI_ICON_SIZE]%Colors" Popup ColorMenu
 + "%0349-font.svg:$[MINI_ICON_SIZE]%Fonts" Popup FontsMenu
 + "%0086-keyboard.svg:$[MINI_ICON_SIZE]%Modifier Key" Popup KeysMenu
++ "%0015-images.svg:$[MINI_ICON_SIZE]%Wallpaper" Popup "$[fvwm_wallpapers_dir]"
 + "%0268-minus.svg:$[MINI_ICON_SIZE]%Window Title Position" Popup TitlesMenu
 + "System" Title
 Test (x wifi.sh) AddToMenu SettingsMenu "%0028-connection.svg:$[MINI_ICON_SIZE]%Wifi" Popup WifiMenu
-AddToMenu SettingsMenu Displays Popup DisplaysMenu
-AddToMenu SettingsMenu "%0295-volume-high.svg:$[MINI_ICON_SIZE]%Volume Control" Exec exec $[VOLUME_APP]
+AddToMenu SettingsMenu "%0087-display.svg:$[MINI_ICON_SIZE]%Displays" Popup DisplaysMenu
+AddToMenu SettingsMenu "%0295-volume-high.svg:$[MINI_ICON_SIZE]%Volume Control" LaunchWarp "$[VOLUME_APP]"
 
 DestroyMenu WifiMenu
 AddToMenu WifiMenu
@@ -349,8 +360,8 @@ DestroyFunc CreateWifiMenu
 AddToFunc CreateWifiMenu
 + I DestroyMenu recreate WifiMenu
 + I PipeRead 'SSID=$(wifi.sh -e) ; test ! -z "$SSID" && echo "AddToMenu WifiMenu \\"Connected: $SSID\\" Title" || echo "AddToMenu WifiMenu \\"Not Connected\\" Title"'
-+ I AddToMenu WifiMenu "Connect to any" Exec exec x-terminal-emulator +sb -e wifi.sh -a
-+ I AddToMenu WifiMenu "Disconnect" Exec exec x-terminal-emulator +sb -e wifi.sh -k
++ I AddToMenu WifiMenu "Connect to any" LaunchWarp exec x-terminal-emulator +sb -e wifi.sh -a
++ I AddToMenu WifiMenu "Disconnect" LaunchWarp exec x-terminal-emulator +sb -e wifi.sh -k
 + I Test (x regenconf.sh) AddToMenu WifiMenu "Refresh Conky Config" UpdateConky
 
 DestroyFunc MakeTitleMenu
@@ -425,56 +436,56 @@ AddToFunc UpdateColors
 
 # Dynamic App Menu Generation
 # If they exist, put rxvt, xterm, rox, nautilus ... in Apps menu:
-Test (x rxvt) AddToMenu DynamicAppMenu "%0386-terminal.svg:$[MINI_ICON_SIZE]%RXvt" Exec exec rxvt
-Test (x xterm) AddToMenu DynamicAppMenu "%0386-terminal.svg:$[MINI_ICON_SIZE]%XTerm" Exec exec xterm
-Test (x rox) AddToMenu DynamicAppMenu "%0049-folder-open.svg:$[MINI_ICON_SIZE]%Rox Filer" Exec exec rox
-Test (x nautilus) AddToMenu DynamicAppMenu "%0049-folder-open.svg:$[MINI_ICON_SIZE]%Nautilus" Exec exec nautilus --no-desktop
+Test (x rxvt) AddToMenu DynamicAppMenu "%0386-terminal.svg:$[MINI_ICON_SIZE]%RXvt" LaunchWarp rxvt
+Test (x xterm) AddToMenu DynamicAppMenu "%0386-terminal.svg:$[MINI_ICON_SIZE]%XTerm" LaunchWarp xterm
+Test (x rox) AddToMenu DynamicAppMenu "%0049-folder-open.svg:$[MINI_ICON_SIZE]%Rox Filer" LaunchWarp rox
+Test (x nautilus) AddToMenu DynamicAppMenu "%0049-folder-open.svg:$[MINI_ICON_SIZE]%Nautilus" LaunchWarp nautilus --no-desktop
 Test (x oclock) AddToMenu DynamicAppMenu "%0079-clock.svg:$[MINI_ICON_SIZE]%oclock" Exec exec oclock -geometry +0+0 -bg black -fg $[BG_COLOR_LIGHTER] -bd $[BG_COLOR] -transparent
 
 # Internet-related stuff
 # If they exist, put firefox, chromium, and steam into the Apps menu:
-Test (x firefox) AddToMenu DynamicAppMenu "%0487-firefox.svg:$[MINI_ICON_SIZE]%Firefox" Exec exec firefox
-Test (x finch, x x-terminal-emulator) AddToMenu DynamicAppMenu "%0111-bubble2.svg:$[MINI_ICON_SIZE]%Finch" Exec exec x-terminal-emulator -tn rxvt -e finch
-Test (x chromium-browser) AddToMenu DynamicAppMenu "%0486-chrome.svg:$[MINI_ICON_SIZE]%Chromium" Exec exec chromium-browser
-Test (x mumble) AddToMenu DynamicAppMenu "%0027-bullhorn.svg:$[MINI_ICON_SIZE]%Mumble" Exec exec mumble
-Test (x steam) AddToMenu DynamicAppMenu "%0430-steam.svg:$[MINI_ICON_SIZE]%Steam" Exec exec steam
-Test (x steam) AddToMenu DynamicAppMenu "%0113-bubbles4.svg:$[MINI_ICON_SIZE]%Steam Friends" Exec exec steam "steam://open/friends"
-Test (x steam) AddToMenu DynamicAppMenu "%0430-steam.svg:$[MINI_ICON_SIZE]%Steam Library" Exec exec steam "steam://open/games"
+Test (x firefox) AddToMenu DynamicAppMenu "%0487-firefox.svg:$[MINI_ICON_SIZE]%Firefox" LaunchWarp firefox
+Test (x finch, x x-terminal-emulator) AddToMenu DynamicAppMenu "%0111-bubble2.svg:$[MINI_ICON_SIZE]%Finch" LaunchWarp x-terminal-emulator -tn rxvt -e finch
+Test (x chromium-browser) AddToMenu DynamicAppMenu "%0486-chrome.svg:$[MINI_ICON_SIZE]%Chromium" LaunchWarp chromium-browser
+Test (x mumble) AddToMenu DynamicAppMenu "%0027-bullhorn.svg:$[MINI_ICON_SIZE]%Mumble" LaunchWarp mumble
+Test (x steam) AddToMenu DynamicAppMenu "%0430-steam.svg:$[MINI_ICON_SIZE]%Steam" LaunchWarp steam
+Test (x steam) AddToMenu DynamicAppMenu "%0113-bubbles4.svg:$[MINI_ICON_SIZE]%Steam Friends" LaunchWarp steam "steam://open/friends"
+Test (x steam) AddToMenu DynamicAppMenu "%0430-steam.svg:$[MINI_ICON_SIZE]%Steam Library" LaunchWarp steam "steam://open/games"
 
 # Games
 # If they exist, put various games in the Games menu:
-Test (x abe) AddToMenu DynamicGameMenu "%0151-hammer.svg:$[MINI_ICON_SIZE]%Abe's Amazing Adventure" Exec exec abe
-Test (x blobwars) AddToMenu DynamicGameMenu "%0343-radio-unchecked.svg:$[MINI_ICON_SIZE]%Blobwars: Metal Blob Solid" Exec exec blobwars
-Test (x freeciv) AddToMenu DynamicGameMenu "%0004-office.svg:$[MINI_ICON_SIZE]%FreeCiv" Exec exec freeciv
-Test (x freecol) AddToMenu DynamicGameMenu "%0202-sphere.svg:$[MINI_ICON_SIZE]%FreeCol" Exec exec freecol
-Test (x freedink) AddToMenu DynamicGameMenu "%0171-lab.svg:$[MINI_ICON_SIZE]%Dink Smallwood" Exec exec freedink
-Test (x freedroidRPG) AddToMenu DynamicGameMenu "%0266-question.svg:$[MINI_ICON_SIZE]%FreeDroid RPG" Exec exec freedroidRPG
-Test (x nethack,x x-terminal-emulator) AddToMenu DynamicGameMenu "Nethack (console)" Exec exec x-terminal-emulator +sb -e nethack
-Test (x nexuiz) AddToMenu DynamicGameMenu "nexuiz" Exec exec nexuiz
-Test (x powder) AddToMenu DynamicGameMenu "%0152-magic-wand.svg:$[MINI_ICON_SIZE]%Powder" Exec exec powder
-Test (x sauerbraten) AddToMenu DynamicGameMenu "sauerbraten" Exec exec sauerbraten
-Test (x slashem,x x-terminal-emulator) AddToMenu DynamicGameMenu "%0154-bug.svg:!$[MINI_ICON_SIZE]%Slashem (console)" Exec exec x-terminal-emulator +sb -e slashem
-Test (x tmw) AddToMenu DynamicGameMenu "%0266-question.svg:!$[MINI_ICON_SIZE]%The Mana World" Exec exec tmw
+Test (x abe) AddToMenu DynamicGameMenu "%0151-hammer.svg:$[MINI_ICON_SIZE]%Abe's Amazing Adventure" LaunchWarp abe
+Test (x blobwars) AddToMenu DynamicGameMenu "%0343-radio-unchecked.svg:$[MINI_ICON_SIZE]%Blobwars: Metal Blob Solid" LaunchWarp blobwars
+Test (x freeciv) AddToMenu DynamicGameMenu "%0004-office.svg:$[MINI_ICON_SIZE]%FreeCiv" LaunchWarp freeciv
+Test (x freecol) AddToMenu DynamicGameMenu "%0202-sphere.svg:$[MINI_ICON_SIZE]%FreeCol" LaunchWarp freecol
+Test (x freedink) AddToMenu DynamicGameMenu "%0171-lab.svg:$[MINI_ICON_SIZE]%Dink Smallwood" LaunchWarp freedink
+Test (x freedroidRPG) AddToMenu DynamicGameMenu "%0266-question.svg:$[MINI_ICON_SIZE]%FreeDroid RPG" LaunchWarp freedroidRPG
+Test (x nethack,x x-terminal-emulator) AddToMenu DynamicGameMenu "Nethack (console)" LaunchWarp x-terminal-emulator +sb -e nethack
+Test (x nexuiz) AddToMenu DynamicGameMenu "nexuiz" LaunchWarp nexuiz
+Test (x powder) AddToMenu DynamicGameMenu "%0152-magic-wand.svg:$[MINI_ICON_SIZE]%Powder" LaunchWarp powder
+Test (x sauerbraten) AddToMenu DynamicGameMenu "sauerbraten" LaunchWarp sauerbraten
+Test (x slashem,x x-terminal-emulator) AddToMenu DynamicGameMenu "%0154-bug.svg:!$[MINI_ICON_SIZE]%Slashem (console)" LaunchWarp x-terminal-emulator +sb -e slashem
+Test (x tmw) AddToMenu DynamicGameMenu "%0266-question.svg:!$[MINI_ICON_SIZE]%The Mana World" LaunchWarp tmw
 
 #I have some shortcuts in ~/bin ending in .exe that invoke wine,
 #if they exist, put these in the Games menu, too.
-Test (x poe.exe) AddToMenu DynamicGameMenu "%0151-hammer.svg:$[MINI_ICON_SIZE]%Path of Exile" Exec exec poe.exe
-Test (x marvel.exe) AddToMenu DynamicGameMenu "Marvel heroes" Exec exec marvel.exe
-Test (x warframe.exe) AddToMenu DynamicGameMenu "Warframe" Exec exec warframe.exe
+Test (x poe.exe) AddToMenu DynamicGameMenu "%0151-hammer.svg:$[MINI_ICON_SIZE]%Path of Exile" LaunchWarp poe.exe
+Test (x marvel.exe) AddToMenu DynamicGameMenu "Marvel heroes" LaunchWarp marvel.exe
+Test (x warframe.exe) AddToMenu DynamicGameMenu "Warframe" LaunchWarp warframe.exe
 
 # Editors/Utilities
 # If they exist, put various editors into the Apps menu:
-Test (x vim,x x-terminal-emulator) AddToMenu DynamicAppMenu "%0385-embed2.svg:$[MINI_ICON_SIZE]%Vim" Exec exec x-terminal-emulator +sb -T Vim -e vim
-Test (x gvim) AddToMenu DynamicAppMenu "%0385-embed2.svg:$[MINI_ICON_SIZE]%GVim" Exec exec gvim
-Test (x gedit) AddToMenu DynamicAppMenu "%0039-file-text2.svg:$[MINI_ICON_SIZE]%GEdit" Exec exec gedit
-Test (x xclipboard) AddToMenu DynamicAppMenu "%0185-clipboard.svg:$[MINI_ICON_SIZE]%Clipboard" Exec exec xclipboard
-Test (x gimp) AddToMenu DynamicAppMenu "%0014-image.svg:$[MINI_ICON_SIZE]%Gimp" Exec exec gimp
-Test (x inkscape) AddToMenu DynamicAppMenu "%0344-crop.svg:$[MINI_ICON_SIZE]%Inkscape" Exec exec inkscape
+Test (x vim,x x-terminal-emulator) AddToMenu DynamicAppMenu "%0385-embed2.svg:$[MINI_ICON_SIZE]%Vim" LaunchWarp x-terminal-emulator +sb -T Vim -e vim
+Test (x gvim) AddToMenu DynamicAppMenu "%0385-embed2.svg:$[MINI_ICON_SIZE]%GVim" LaunchWarp gvim
+Test (x gedit) AddToMenu DynamicAppMenu "%0039-file-text2.svg:$[MINI_ICON_SIZE]%GEdit" LaunchWarp gedit
+Test (x xclipboard) AddToMenu DynamicAppMenu "%0185-clipboard.svg:$[MINI_ICON_SIZE]%Clipboard" LaunchWarp xclipboard
+Test (x gimp) AddToMenu DynamicAppMenu "%0014-image.svg:$[MINI_ICON_SIZE]%Gimp" LaunchWarp gimp
+Test (x inkscape) AddToMenu DynamicAppMenu "%0344-crop.svg:$[MINI_ICON_SIZE]%Inkscape" LaunchWarp inkscape
 
 # Settings
 # If it exists, put the bluetooth-wizard into the Settings menu
-Test (x bluetooth-wizard) AddToMenu SettingsMenu "Bluetooth Wizard" Exec exec bluetooth-wizard
-Test (x blueman-manager) AddToMenu SettingsMenu "Bluetooth Manager" Exec exec blueman-manager
+Test (x bluetooth-wizard) AddToMenu SettingsMenu "Bluetooth Wizard" LaunchWarp bluetooth-wizard
+Test (x blueman-manager) AddToMenu SettingsMenu "Bluetooth Manager" LaunchWarp blueman-manager
 
 # Pop up the current window options on Win+o
 Key o FSTW $[MOD_KEY] Current Popup DynamicWindowOpsMenu Window 0 0
