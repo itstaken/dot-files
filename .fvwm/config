@@ -360,8 +360,8 @@ DestroyFunc CreateWifiMenu
 AddToFunc CreateWifiMenu
 + I DestroyMenu recreate WifiMenu
 + I PipeRead 'SSID=$(wifi.sh -e) ; test ! -z "$SSID" && echo "AddToMenu WifiMenu \\"Connected: $SSID\\" Title" || echo "AddToMenu WifiMenu \\"Not Connected\\" Title"'
-+ I AddToMenu WifiMenu "Connect to any" Exec exec x-terminal-emulator +sb -e wifi.sh -a
-+ I AddToMenu WifiMenu "Disconnect" Exec exec x-terminal-emulator +sb -e wifi.sh -k
++ I AddToMenu WifiMenu "Connect to any" LaunchWarp x-terminal-emulator +sb -e wifi.sh -a
++ I AddToMenu WifiMenu "Disconnect" LaunchWarp x-terminal-emulator +sb -e wifi.sh -k
 + I Test (x "$[FVWM_USERDIR]"/regenconf.sh) AddToMenu WifiMenu "Refresh Conky Config" UpdateConky
 
 DestroyFunc MakeTitleMenu
