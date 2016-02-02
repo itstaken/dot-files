@@ -41,7 +41,7 @@ SetEnv DEFAULT_FONT_SIZE 12
 SetEnv PAGES_X 1
 SetEnv PAGES_Y 9
 
-# The RightBar size can be over-ridden via a preference file, but the default
+# The Pager size can be over-ridden via a preference file, but the default
 # (which looks okay on my 1920x1080 laptop) is 1/9th the screen width by 1
 # screen height.  To over-ride this to, for example 203x900, put the following
 # into a file in the .fvwm/preferences directory:
@@ -63,6 +63,12 @@ SetEnv ICONFILL_LR Left
 # Settings menu entry for volume control
 SetEnv VOLUME_APP "x-terminal-emulator -e alsamixer"
 Test (x pavucontrol) SetEnv VOLUME_APP pavucontrol
+# Various file browsing entries need this
+SetEnv FILEBROWSER_APP "x-terminal-emulator -e vim"
+Test (x nautilus) SetEnv FILEBROWSER_APP "nautilus --no-desktop"
+Test (x rox) SetEnv FILEBROWSER_APP "rox"
+Test (x thunar) SetEnv FILEBROWSER_APP "thunar"
+Test (x pcmanfm) SetEnv FILEBROWSER_APP "pcmanfm"
 
 # These are used to avoid hard-coded paths in the config file.
 SetEnv fvwm_wallpapers_dir "$[FVWM_USERDIR]/wallpapers"
@@ -95,7 +101,7 @@ SetEnv fvwm_wallpaper_preference "$[fvwm_preferences_dir]/wallpaper"
 Test (!x "$[fvwm_wallpapers_dir]") Exec exec mkdir -p "$[fvwm_wallpapers_dir]"
 Test (!x "$[fvwm_screenshots_dir]") Exec exec mkdir -p "$[fvwm_screenshots_dir]"
 Test (!x "$[fvwm_preferences_dir]") Exec exec mkdir -p "$[fvwm_preferences_dir]"
-#Test (!x $[fvwm_icons_dir]) Exec exec mkdir -p "$[fvwm_icons_dir]"
+#Test (!x "$[fvwm_icons_dir]") Exec exec mkdir -p "$[fvwm_icons_dir]"
 
 # Now, read all over-rides from the preferences directory
 # This must happen early in the config so that colorsets and other
@@ -178,10 +184,18 @@ AddToFunc FinishColorUpdate
 + I TitleStyle (Colorset 0 -- flat)
 + I Style "*" Colorset 0
 + I Style "*" HilightIconTitleColorset 1
++ I MenuStyle "*" MenuColorset 2, BorderWidth 2, ItemFormat "%s %| %i %l %|% %> ", \
+          PopupOffset -2 100, Hilight3DOff, ActiveFore black, ForeGround \
+          $[FG_COLOR], HilightBack $[BG_COLOR_LIGHTER], Font "$[MENU_FONT]", \
+          TrianglesSolid, PopdownDelay 500
++ I BorderStyle -- flat
++ I ButtonStyle All (Colorset 0 -- flat)
++ I AddButtonStyle $[fvwm_title_button_miniicon] Active MiniIcon (HiddenHandles NoInset Hilight3Doff -- flat)
+# Put a paperclip icon (I-2) in the upper right of the active window
++ I AddButtonStyle $[fvwm_title_button_clip] Active (Pixmap 0206-attachment.svg:14x14 -- flat)
+# Put an up arrow (I-4) in the upper right of the active window
++ I AddButtonStyle $[fvwm_title_button_arrow_up] Active (Pixmap 0315-arrow-up2.svg:14x14 -- flat)
 
-BorderStyle -- flat
-ButtonStyle All (Colorset 0 -- flat)
-AddButtonStyle $[fvwm_title_button_miniicon] Active MiniIcon (HiddenHandles NoInset Hilight3Doff -- flat)
 
 Style "*" BorderWidth 0
 Style "*" HilightBack $[BG_COLOR]
@@ -197,6 +211,7 @@ Style "*" NoHandles
 Style "*" SloppyFocus
 Style "*" SnapAttraction 3 SameType Screen
 Style "*" $[TITLE_POSITION]
+Style trayer NoTitle, WindowListSkip, NeverFocus
 
 # Style "*" IconBackgroundColorset 0 -- specify a colorset to add a background
 Mouse 1 $[fvwm_title_button_arrow_up] N CustomMax
@@ -221,10 +236,6 @@ Mouse 1 $[fvwm_title_button_arrow_up] N CustomMax
 #  └────┴──────────────────────────┘
 #
 #
-MenuStyle * MenuColorset 2, BorderWidth 2, ItemFormat "%s %| %i %l %|% %> ", \
-          PopupOffset -2 100, Hilight3DOff, ActiveFore black, ForeGround \
-          $[FG_COLOR], HilightBack $[BG_COLOR_LIGHTER], Font "$[MENU_FONT]", \
-          TrianglesSolid, PopdownDelay 500
 
 # Set up icons for stuff...
 Style "Android SDK Manager" Icon 0097-download.svg:$[ICON_SIZE], MiniIcon 0097-download.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride, DecorateTransient
@@ -337,6 +348,7 @@ AddToFunc FetchFeeds
 # │ Bluetooth Wizard        │
 # │ Bluetooth Manager       │
 # └─────────────────────────┘
+
 DestroyMenu SettingsMenu
 AddToMenu SettingsMenu
 + "FVWM Settings" Title
@@ -347,6 +359,7 @@ AddToMenu SettingsMenu
 + "%0086-keyboard.svg:$[MINI_ICON_SIZE]%Modifier Key" Popup KeysMenu
 + "%0015-images.svg:$[MINI_ICON_SIZE]%Wallpaper" Popup "$[fvwm_wallpapers_dir]"
 + "%0268-minus.svg:$[MINI_ICON_SIZE]%Window Title Position" Popup TitlesMenu
++ "%0190-menu.svg:$[MINI_ICON_SIZE]%Toggle Pager" TogglePager
 + "System" Title
 Test (x wifi.sh) AddToMenu SettingsMenu "%0028-connection.svg:$[MINI_ICON_SIZE]%Wifi" Popup WifiMenu
 AddToMenu SettingsMenu "%0087-display.svg:$[MINI_ICON_SIZE]%Displays" Popup DisplaysMenu
@@ -362,7 +375,7 @@ AddToFunc CreateWifiMenu
 + I PipeRead 'SSID=$(wifi.sh -e) ; test ! -z "$SSID" && echo "AddToMenu WifiMenu \\"Connected: $SSID\\" Title" || echo "AddToMenu WifiMenu \\"Not Connected\\" Title"'
 + I AddToMenu WifiMenu "Connect to any" LaunchWarp x-terminal-emulator +sb -e wifi.sh -a
 + I AddToMenu WifiMenu "Disconnect" LaunchWarp x-terminal-emulator +sb -e wifi.sh -k
-+ I Test (x "$[FVWM_USERDIR]"/regenconf.sh) AddToMenu WifiMenu "Refresh Conky Config" UpdateConky
++ I Test (f "$[FVWM_USERDIR]"/regenconf.sh) AddToMenu WifiMenu "Refresh Conky Config" UpdateConky
 
 DestroyFunc MakeTitleMenu
 AddToFunc MakeTitleMenu
@@ -425,6 +438,7 @@ AddToMenu ColorMenu
 + "Clouds" UpdateColors 236a64
 + "Swirl" UpdateColors 232323
 + "Zombies" UpdateColors 38512e
++ "Purple" UpdateColors 4b1338
 
 #
 # This function calls the color_helper script with a background color and then
@@ -438,9 +452,9 @@ AddToFunc UpdateColors
 # If they exist, put rxvt, xterm, rox, nautilus ... in Apps menu:
 Test (x rxvt) AddToMenu DynamicAppMenu "%0386-terminal.svg:$[MINI_ICON_SIZE]%RXvt" LaunchWarp rxvt
 Test (x xterm) AddToMenu DynamicAppMenu "%0386-terminal.svg:$[MINI_ICON_SIZE]%XTerm" LaunchWarp xterm
-Test (x rox) AddToMenu DynamicAppMenu "%0049-folder-open.svg:$[MINI_ICON_SIZE]%Rox Filer" LaunchWarp rox
-Test (x nautilus) AddToMenu DynamicAppMenu "%0049-folder-open.svg:$[MINI_ICON_SIZE]%Nautilus" LaunchWarp nautilus --no-desktop
-Test (x oclock) AddToMenu DynamicAppMenu "%0079-clock.svg:$[MINI_ICON_SIZE]%oclock" Exec exec oclock -geometry +0+0 -bg black -fg $[BG_COLOR_LIGHTER] -bd $[BG_COLOR] -transparent
+AddToMenu DynamicAppMenu "%0049-folder-open.svg:$[MINI_ICON_SIZE]%File Browser" LaunchWarp $[FILEBROWSER_APP]
+Test (x password-gorilla) AddToMenu DynamicAppMenu "%0142-key.svg:$[MINI_ICON_SIZE]%Password Gorilla" LaunchWarp password-gorilla
+Test (x oclock) AddToMenu DynamicAppMenu "%0079-clock.svg:$[MINI_ICON_SIZE]%oclock" Exec exec oclock -geometry +0+0 -bg black -fg "$[BG_COLOR_LIGHTER]" -bd "$[BG_COLOR]" -transparent
 
 # Internet-related stuff
 # If they exist, put firefox, chromium, and steam into the Apps menu:
@@ -616,10 +630,8 @@ AddToFunc WallpaperBrowser
       iname=${file##*/} ; \
       echo AddToMenu \\"$0\\" \\"\*$0/.thumbs/$iname*$iname\\" ChangeWallpaper \\"$0/$iname\\" ;\
       done'
-# Add an option to browse the wallpaper directory with Rox (if installed)
-+ I Test (x rox) AddToMenu $0 "\*0049-folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory (rox)" Exec exec rox "$0"
-# Add an option to browse the wallpaper directory with Nautilus (if installed)
-+ I Test (x nautilus) AddToMenu $0 "\*0049-folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory (nautilus)" Exec exec nautilus --no-desktop "$0"
+# Add an option to browse the wallpaper directory with whatever filebrowser is installed
++ I AddToMenu "$0" "\*0049-folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory" LaunchWarp "$[FILEBROWSER_APP]" "$0"
 
 DestroyFunc ScreenshotBrowser
 AddToFunc ScreenshotBrowser
@@ -640,11 +652,8 @@ AddToFunc ScreenshotBrowser
       iname=${file##*/} ; \
       echo AddToMenu \\"$0\\" \\"\*$0/.thumbs/$iname*$iname\\" Exec exec display \\"$0/$iname\\" ;\
       done'
-# Add an option to browse the Screenshot directory with Rox (if installed)
-+ I Test (x rox) AddToMenu "$0" "\*0049-folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory (rox)" Exec exec rox "$0"
-# Add an option to browse the Screenshot directory with Nautilus (if installed)
-+ I Test (x nautilus) AddToMenu "$0" "\*0049-folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory (nautilus)" Exec exec nautilus --no-desktop "$0"
-
+# Add an option to browse the screenshots directory with whatever filebrowser is installed
++ I AddToMenu "$0" "\*0049-folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory" LaunchWarp "$[FILEBROWSER_APP]" "$0"
 
 # The user can select different images to use as the wallpaper at any time.
 # Such selections are saved to and loaded from the wallpaper file in the
@@ -707,49 +716,35 @@ DestroyFunc MakeTrans
 AddToFunc MakeTrans
 + I Exec exec transset -i $[w.id] 0.9
 
-# I have a ButtonBar on the right edge of the screen
-#   ┌─────────┐  that is comprised of a pager, a system
-#   │    0    │  tray, and a conky network graph.
-#   │┄┄┄┄┄┄┄┄┄│
-#   │    1    │  The network graph displays something
-#   │┄┄┄┄┄┄┄┄┄│  like this:
-#   │    2    │
-#   │┄┄┄┄┄┄┄┄┄│    eth1: up, addr 192.168.4.102
-#   │    3    │    Up                      Down
-#   │┄┄┄┄┄┄┄┄┄│    ┌─────────────┬─────────────┐
-#   │    4    │    │      ╱╲     │             │
-#   │┄┄┄┄┄┄┄┄┄│    │┄┄┄╱╲╱┄┄╲┄┄┄ │┄┄┄╱╲╱╲╱╲┄┄┄ │
-#   │    ⋮    │    └─────────────┴─────────────┘
-#   ├─────────┤
-#   │ trayer  │
-#   ├─────────┤
-#   │ conky   │
-#   └─────────┘
+# On the lower left portion of the screen (root window) I have a conky display
+# with battery and network display.
+#
+# The network graph displays something
+# like this:
+#
+#   eth1: up, addr 192.168.4.102
+#   Up                      Down
+#   ┌─────────────┬─────────────┐
+#   │      ╱╲     │             │
+#   │┄┄┄╱╲╱┄┄╲┄┄┄ │┄┄┄╱╲╱╲╱╲┄┄┄ │
+#   └─────────────┴─────────────┘
 #
 
-DestroyModuleConfig RightBar
-*RightBar: Colorset 0
-*RightBar: Rows 22
-*RightBar: (1x18, Swallow (UseOld, NoKill, Respawn) "FvwmPager" FvwmPager)
-*RightBar: (1x1, Swallow (UseOld, NoKill, Respawn) "trayer" "Exec exec trayer --widthtype request --heighttype request --align right 2>/dev/null")
-*RightBar: (1x3, Swallow (UseOld, NoKill, Respawn) "Conky" "Exec exec conky -o -c $[FVWM_USERDIR]/conkyconf -a top_left 2>/dev/null")
-*RightBar: Frame 0
-*RightBar: Font "$[DEFAULT_FONT]"
-Style RightBar NoTitle, WindowListSkip, NeverFocus, Sticky
 
 AddToFunc StartFunction
-+ I FvwmButtons RightBar
 + I UpdateConky
++ I FvwmPager
++ I Test (x trayer, init) Exec exec trayer --widthtype request --heighttype request --align right 2>/dev/null
++ I Test (x conky, init) Exec exec conky -c "$[FVWM_USERDIR]"/conkyconf -a bottom_left 2>/dev/null
 
 # This function calls an external script for regenerating the conky config that
 # displays network info.
 DestroyFunc UpdateConky
 AddToFunc UpdateConky
-+ I Test (x "$[FVWM_USERDIR]"/regenconf.sh) Exec exec "$[FVWM_USERDIR]"/regenconf.sh > "$[FVWM_USERDIR]"/conkyconf
++ I Test (f "$[FVWM_USERDIR]"/regenconf.sh) Exec exec bash "$[FVWM_USERDIR]"/regenconf.sh > "$[FVWM_USERDIR]"/conkyconf
 
-*RightBar: Geometry $[RIGHT_BAR_GEOMETRY]
-*RightBar: Font $[DEFAULT_FONT]
-
+Style FvwmPager NoTitle, WindowListSkip, NeverFocus, Sticky
+*FvwmPager: Geometry "$[RIGHT_BAR_GEOMETRY]"
 *FvwmPager: Font none
 *FvwmPager: SmallFont "xft:Droid Sans Mono:size=6"
 *FvwmPager: WindowLabelFormat "%t"
@@ -761,6 +756,11 @@ AddToFunc UpdateConky
 *FvwmPager: Colorset * 1
 *FvwmPager: UseSkipList
 #*FvwmPager: Hilight gray
+
+DestroyFunc TogglePager
+AddToFunc TogglePager
++ I All (FvwmPager) Close
++ I TestRc (NoMatch) FvwmPager
 
 Test (x $[FVWM_USERDIR]/font_helper.sh) PipeRead '$[FVWM_USERDIR]/font_helper.sh'
 
@@ -961,12 +961,6 @@ Style "*" !FPGrabFocus, GrabFocusOff
 DestroyFunc Retransit
 AddToFunc Retransit
 + I All WindowAdded $[w.id]
-
-# Put a paperclip icon (I-2) in the upper right of the active window
-AddButtonStyle $[fvwm_title_button_clip] Active (Pixmap 0206-attachment.svg:14x14 -- flat)
-
-# Put an up arrow (I-4) in the upper right of the active window
-AddButtonStyle $[fvwm_title_button_arrow_up] Active (Pixmap 0315-arrow-up2.svg:14x14 -- flat)
 
 # Make clicking the paper clip (I-2) call the toggle sticky function
 Mouse 1 $[fvwm_title_button_clip] N ToggleSticky
