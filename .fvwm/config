@@ -212,6 +212,7 @@ Style "*" SloppyFocus
 Style "*" SnapAttraction 3 SameType Screen
 Style "*" $[TITLE_POSITION]
 Style trayer NoTitle, WindowListSkip, NeverFocus
+Style tint2 NoTitle, WindowListSkip, NeverFocus
 
 # Style "*" IconBackgroundColorset 0 -- specify a colorset to add a background
 Mouse 1 $[fvwm_title_button_arrow_up] N CustomMax
@@ -678,6 +679,8 @@ AddToFunc StartFunction
 + I Module FvwmCommandS
 + I Module FvwmEvent
 + I Test (init) Exec exec ibus-daemon -drx
++ I Test (init, x nm-applet) Exec exec nm-applet
++ I Test (init, x pasystray) Exec exec pasystray
 + I Test (init, x blueman-applet) Exec exec blueman-applet
 + I Test (init, x bluetooth-applet) Exec exec bluetooth-applet
 + I Test (init, x synclient) Exec exec synclient HorizTwoFingerScroll=1
@@ -734,7 +737,9 @@ AddToFunc MakeTrans
 AddToFunc StartFunction
 + I UpdateConky
 + I FvwmPager
-+ I Test (x trayer, init) Exec exec trayer --widthtype request --heighttype request --align right 2>/dev/null
++ I Test (!x tint2, x trayer, init) Exec exec trayer --widthtype request --heighttype request --align left 2>/dev/null
++ I Test (x tint2, init) Exec exec tint2 2>/dev/null
++ I Test (x nm-applet, init) Exec exec nm-applet 2>/dev/null
 + I Test (x conky, init) Exec exec conky -c "$[FVWM_USERDIR]"/conkyconf -a bottom_left 2>/dev/null
 
 # This function calls an external script for regenerating the conky config that
