@@ -42,7 +42,7 @@ def limit(text, length):
 def escape_title(text):
     '''
     Escape the provided string so that when it is interpretted by FVWM as a
-    title it will correctly dispay @ ^ * % &.
+    title it will correctly dispay @ ^ % &.
     '''
     return (text.replace('@', '@@').
                  replace('^', '^^').
@@ -210,18 +210,20 @@ def get_single_tag_attr(element, tag, attr):
 
     return entry
 
-ENTRY_IMAGE_LEFT = (u"AddToMenu {menu} \"%{media}%{title}\" "
+ENTRY_IMAGE_LEFT = (u"AddToMenu \"{menu}\" \"%{media}%{title}\" "
                     "Exec exec x-www-browser {opts} \"{link}\"")
-ENTRY_IMAGE_ABOVE = (u"AddToMenu {menu} \"*{media}*{title}\" "
+ENTRY_IMAGE_ABOVE = (u"AddToMenu \"{menu}\" \"*{media}*{title}\" "
                      "Exec exec x-www-browser {opts} \"{link}\"")
-ENTRY_NO_IMAGE = (u"AddToMenu {menu} \"{title}\" "
+ENTRY_NO_IMAGE = (u"AddToMenu \"{menu}\" \"{title}\" "
                   "Exec exec x-www-browser {opts} \"{link}\"")
-ENTRY_TITLE = u"AddToMenu {menu} \"{title}\" Title"
-ENTRY_PARENT = u"AddToMenu {parent} \"{title}\" Popup \"{menu}\""
-ENTRY_ERROR = u'AddToMenu {menu} \"{title}\" "Nop"'
+ENTRY_TITLE = u"AddToMenu \"{menu}\" \"{title}\" Title"
+ENTRY_PARENT = u"AddToMenu \"{parent}\" \"{title}\" Popup \"{menu}\""
+ENTRY_ERROR = u'AddToMenu \"{menu}\" \"{title}\" "Nop"'
 ERROR_CONNECT = "Error connecting to feed"
 
-DESTROY_MENU = u"DestroyMenu {menu}"
+ENTRY_REFRESH = u"AddToMenu \"{menu}\" \"Refresh\" DestroyMenu \"{menu}\""
+
+DESTROY_MENU = u"DestroyMenu \"{menu}\""
 
 OUTPUT_FILE = tempfile.NamedTemporaryFile(delete=False)
 
@@ -250,6 +252,8 @@ def main(args):  # pylint: disable=missing-docstring
                 title = options.title
 
             items = dom.getElementsByTagName("item")
+            if items is None or len(items)==0:
+                items = dom.getElementsByTagName("entry")
             if options.parent is not None:
                 output(ENTRY_PARENT.format(
                        parent=options.parent,
@@ -258,9 +262,9 @@ def main(args):  # pylint: disable=missing-docstring
             output(ENTRY_TITLE.format(menu=menu,
                    title=title).encode("utf-8"))
             for item in items:
-                title = escape_title(limit(sanitize(get_single_tag(item,
-                              'title')),
-                              options.limit))
+                title = limit(escape_title(sanitize(get_single_tag(item,
+                              'title'))),
+                              options.limit)
                 link = sanitize_link(get_single_tag(item, 'link'))
                 # media:thumbnail is what reddit uses
                 media = get_single_tag_attr(item, 'media:thumbnail', 'url')
@@ -282,6 +286,7 @@ def main(args):  # pylint: disable=missing-docstring
                                opts=options.browseopt,
                                title=title,
                                link=link).encode("utf-8"))
+            output(ENTRY_REFRESH.format(menu=menu).encode("utf-8"))
         except urllib2.URLError:
             output(ENTRY_ERROR.format(menu=menu, title=ERROR_CONNECT))
     OUTPUT_FILE.close()
