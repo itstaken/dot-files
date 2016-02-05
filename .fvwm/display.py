@@ -324,6 +324,7 @@ def functions():
     print('DestroyFunc TurnOffDisplay')
     print('AddToFunc TurnOffDisplay')
     print('+ I Exec exec xrandr --output "$0" --off')
+    print('+ I Schedule 250 Restart')
     print()
     print('DestroyFunc SetResolution')
     print('AddToFunc SetResolution')
