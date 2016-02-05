@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 ''' Helper script for generating FVWM color schemes
 
 Given an input color, this script generates a set of output SetEnv statements
@@ -43,7 +44,7 @@ def split_color(color):
 
 def lighter(color):
     '''
-    Given an input color, returna slightly lighter color.
+    Given an input color, return a slightly lighter color.
     '''
     r, g, b = split_color(color)
     r = inc_mask(r, 0x33)
