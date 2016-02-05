@@ -34,6 +34,9 @@ SetEnv WALLPAPER_SCALE 512
 SetEnv MENU_FONT_FAMILY "DejaVu Sans Mono"
 SetEnv MENU_FONT_SIZE 20
 
+SetEnv MENU_BORDER_SIZE 2
+SetEnv WINDOW_BORDER_SIZE 2
+
 SetEnv DEFAULT_FONT_FAMILY "Droid Sans Mono"
 SetEnv DEFAULT_FONT_SIZE 12
 
@@ -184,7 +187,8 @@ AddToFunc FinishColorUpdate
 + I TitleStyle (Colorset 0 -- flat)
 + I Style "*" Colorset 0
 + I Style "*" HilightIconTitleColorset 1
-+ I MenuStyle "*" MenuColorset 2, BorderWidth 2, ItemFormat "%s %| %i %l %|% %> ", \
++ I Style "*" BorderWidth $[WINDOW_BORDER_SIZE] 
++ I MenuStyle "*" MenuColorset 2, BorderWidth $[MENU_BORDER_SIZE], ItemFormat "%s %| %i %l %|% %> ", \
           PopupOffset -2 100, Hilight3DOff, ActiveFore black, ForeGround \
           $[FG_COLOR], HilightBack $[BG_COLOR_LIGHTER], Font "$[MENU_FONT]", \
           TrianglesSolid, PopdownDelay 500
@@ -197,7 +201,6 @@ AddToFunc FinishColorUpdate
 + I AddButtonStyle $[fvwm_title_button_arrow_up] Active (Pixmap 0315-arrow-up2.svg:14x14 -- flat)
 
 
-Style "*" BorderWidth 0
 Style "*" HilightBack $[BG_COLOR]
 Style "*" HilightFore white
 Style "*" IconBackgroundPadding 1
@@ -357,6 +360,7 @@ AddToMenu SettingsMenu
 + "%0386-terminal.svg:$[MINI_ICON_SIZE]%Console" FvwmConsole
 + "%0013-paint-format.svg:$[MINI_ICON_SIZE]%Colors" Popup ColorMenu
 + "%0349-font.svg:$[MINI_ICON_SIZE]%Fonts" Popup FontsMenu
++ "Borders" Popup BordersMenu
 + "%0086-keyboard.svg:$[MINI_ICON_SIZE]%Modifier Key" Popup KeysMenu
 + "%0015-images.svg:$[MINI_ICON_SIZE]%Wallpaper" Popup "$[fvwm_wallpapers_dir]"
 + "%0268-minus.svg:$[MINI_ICON_SIZE]%Window Title Position" Popup TitlesMenu
@@ -381,7 +385,7 @@ AddToFunc CreateWifiMenu
 DestroyFunc MakeTitleMenu
 AddToFunc MakeTitleMenu
 + I DestroyMenu recreate TitlesMenu
-+ I PipeRead ' \
++ I PipeRead '\
 if [ "$TITLE_POSITION" = "TitleAtTop" ] ; then \
     echo "AddToMenu TitlesMenu \\"[x] Top\\" SetTitlePosition TitleAtTop" ; \
 else \
@@ -417,12 +421,21 @@ DestroyFunc ReTitle
 AddToFunc ReTitle
 + I Style "*" $[TITLE_POSITION]
 
+DestroyFunc MakeKeysMenu
+AddToFunc MakeKeysMenu
++ I DestroyMenu recreate KeysMenu
++ I Test (EnvMatch MOD_KEY "4")   AddToMenu KeysMenu "[x] Windows Key" Nop
++ I Test (!EnvMatch MOD_KEY "4")  AddToMenu KeysMenu     "Windows Key" SetModifierKey 4
++ I Test (EnvMatch MOD_KEY "M")   AddToMenu KeysMenu "[x] Alt Key"     Nop
++ I Test (!EnvMatch MOD_KEY "M")  AddToMenu KeysMenu     "Alt Key"     SetModifierKey M
++ I Test (EnvMatch MOD_KEY "C")   AddToMenu KeysMenu "[x] Control Key" Nop
++ I Test (!EnvMatch MOD_KEY "C")  AddToMenu KeysMenu     "Control Key" SetModifierKey C
++ I Test (EnvMatch MOD_KEY "CM")  AddToMenu KeysMenu "[x] Control+Alt" Nop
++ I Test (!EnvMatch MOD_KEY "CM") AddToMenu KeysMenu     "Control+Alt" SetModifierKey CM
+
 DestroyMenu KeysMenu
 AddToMenu KeysMenu
-+ "Windows Key" SetModifierKey 4
-+ "Alt Key" SetModifierKey M
-+ "Control Key" SetModifierKey C
-+ "Contrl+Alt" SetModifierKey CM
++ DynamicPopupAction MakeKeysMenu
 
 DestroyFunc SetModifierKey
 AddToFunc SetModifierKey
@@ -430,7 +443,7 @@ AddToFunc SetModifierKey
 + I Schedule 250 Restart
 
 #
-# These colors are from various wallpapers, they're hideous, but they sort of
+# These colors are from various wallpapers, they are hideous, but they sort of
 # work.
 DestroyMenu ColorMenu
 AddToMenu ColorMenu
@@ -768,6 +781,7 @@ AddToFunc TogglePager
 + I TestRc (NoMatch) FvwmPager
 
 Test (x $[FVWM_USERDIR]/font_helper.sh) PipeRead '$[FVWM_USERDIR]/font_helper.sh'
+Test (x $[FVWM_USERDIR]/border_helper.sh) PipeRead '$[FVWM_USERDIR]/border_helper.sh'
 
 # Window options menu
 DestroyMenu DynamicWindowOpsMenu
