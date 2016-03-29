@@ -32,3 +32,11 @@ install: $(INSTALLED_FILES)
 # Target to match any relative file to a file in the user's home.
 ~/%: %
 	@$(call copy_if_dne,$<,$@)
+
+pathogen:
+	mkdir -p ~/.vim/autoload ~/.vim/bundle && \
+	curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
+
+syntastic:
+	cd ~/.vim/bundle && \
+	git clone https://github.com/scrooloose/syntastic.git
