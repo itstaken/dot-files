@@ -199,10 +199,10 @@ AddToFunc FinishColorUpdate
 + I AddButtonStyle $[fvwm_title_button_clip] Active (Pixmap 0206-attachment.svg:14x14 -- flat)
 # Put an up arrow (I-4) in the upper right of the active window
 + I AddButtonStyle $[fvwm_title_button_arrow_up] Active (Pixmap 0315-arrow-up2.svg:14x14 -- flat)
++ I Style "*" HilightBack $[BG_COLOR]
++ I Style "*" HilightFore white 
+#fixme, see if previous line can go into the colorset definition
 
-
-Style "*" HilightBack $[BG_COLOR]
-Style "*" HilightFore white
 Style "*" IconBackgroundPadding 1
 Style "*" IconBackgroundRelief 0
 Style "*" IconBox $[ICONBOX_GEOMETRY], IconFill $[ICONFILL_UD] $[ICONFILL_LR]
@@ -214,11 +214,9 @@ Style "*" NoHandles
 Style "*" SloppyFocus
 Style "*" SnapAttraction 3 SameType Screen
 Style "*" $[TITLE_POSITION]
+
 Style trayer NoTitle, WindowListSkip, NeverFocus
 Style tint2 NoTitle, WindowListSkip, NeverFocus
-
-# Style "*" IconBackgroundColorset 0 -- specify a colorset to add a background
-Mouse 1 $[fvwm_title_button_arrow_up] N CustomMax
 
 #
 #  Menu formats are a little tricky to describe, but the FVWM man page does a
@@ -916,6 +914,10 @@ AddToFunc WindowListSelectFunction
 #  0 1  -> Restore and set (0 0)
 #
 Key F A $[MOD_KEY] CustomMax
+
+# Mouse click on the icon triggers CustomMax, too
+Mouse 1 $[fvwm_title_button_arrow_up] N CustomMax
+
 # Entry-point to custom maximization state machine
 # Transition from initial state to half max (2)
 # or figure out what other state it could be in via Resolve1or2
