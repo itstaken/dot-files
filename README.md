@@ -21,6 +21,7 @@ Features
 * Xmodmap Settings
     - Converts `KP_Enter` into Insert Key (I like Shift+Insert pasting)
     - Converts Caps lock into `Super_L`
+    - Convers Windows key into Escape
 
 Installation
 ------------
