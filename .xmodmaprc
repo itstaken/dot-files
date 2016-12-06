@@ -2,7 +2,9 @@
 ! Make fn+Enter = insert on OS X keyboards (in vmware)
 keysym KP_Enter = Insert Insert Insert Insert
 
-! Make the Caps lock an Escape key
-clear Lock
-keycode 0x42 = Escape
+! Make the Caps lock a windows key (Super_L)
+clear lock
+keycode 0x42 = Super_L
 
+! Make the windows key an escape key
+keycode 0x85 = Escape
