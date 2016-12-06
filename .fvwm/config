@@ -483,21 +483,14 @@ AddToFunc SetModifierKey
 # work.
 DestroyMenu ColorMenu
 AddToMenu ColorMenu
-+ "Blue/Gray" ChangeColor gray90 #4A516A gray70 #4A516A white #7d849d gray80 gray80 gray80 gray80
-+ "Blue/Black" ChangeColor gray90 #4A516A gray70 #4A516A white #7d849d black black black black
-+ "Cake"       ChangeColor white #6f4d10 gray70 #6f4d10 white #a28043 black black black black
-#+ "Clouds" UpdateColors 236a64
-#+ "Swirl" UpdateColors 232323
-#+ "Zombies" UpdateColors 38512e
-#+ "Purple" UpdateColors 4b1338
-
-# old method, less flexible - #
-# old method, less flexible - # This function calls the color_helper script with a background color and then
-# old method, less flexible - # restarts
-# old method, less flexible - DestroyFunc UpdateColors
-# old method, less flexible - AddToFunc UpdateColors
-# old method, less flexible - + I Exec exec python "$[FVWM_USERDIR]"/color_helper.py $0 > "$[fvwm_color_scheme_preference]"
-# old method, less flexible - + I Schedule 250 DoColorSets
++ "Gray"       ChangeColor gray90 gray20  gray70  gray20 white  gray30 gray80 gray80 gray80 gray80
++ "Blue/Gray"  ChangeColor gray90 #4A516A gray70 #4A516A white #7d849d gray80 gray80 gray80 gray80
++ "Blue/Black" ChangeColor gray90 #4A516A gray70 #4A516A white #7d849d black  black black black
++ "Cake"       ChangeColor white  #6f4d10 gray70 #6f4d10 white #a28043 black  black black black
++ "Clouds"     ChangeColor white  #236a64 gray70 #236a64 white #569d97 black  black black black
++ "Swirl"      ChangeColor white  #232323 gray70 #232323 white #565656 black  black black black
++ "Zombies"    ChangeColor white  #38512e gray70 #38512e white #6b846a black  black black black
++ "Purple"     ChangeColor white  #4b1338 gray70 #4b1338 white #7e466b black  black black black
 
 # Dynamic App Menu Generation
 # If they exist, put rxvt, xterm, rox, nautilus ... in Apps menu:
