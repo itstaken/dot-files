@@ -103,7 +103,9 @@ def fetch_rss(url):
     '''
     Fetch the xml at the specified location and return it as a dom.
     '''
-    feed = urllib2.urlopen(url)
+    opener = urllib2.build_opener()
+    opener.addheaders = [('User-Agent', 'feeds.py')]
+    feed = opener.open(url)
     data = feed.read()
     feed.close()
     dom = parseString(data)
@@ -192,7 +194,7 @@ def get_single_tag(element, tag):
     '''
     entry = None
     entries = element.getElementsByTagName(tag)
-    if len(entries) > 0:
+    if entries:
         entry = get_text(entries[0])
     return entry
 
@@ -245,29 +247,41 @@ def main(args):  # pylint: disable=missing-docstring
             menu = options.menu
         try:
             dom = fetch_rss(url)
-            if options.title is None:
-                title = limit(sanitize(get_single_tag(dom, "title")),
-                              options.limit)
-            else:
+            if options.title:
                 title = options.title
+            else:
+                title = limit(sanitize(get_single_tag(dom, "title")), options.limit)
 
-            items = dom.getElementsByTagName("item")
-            if items is None or len(items)==0:
-                items = dom.getElementsByTagName("entry")
+            items = dom.getElementsByTagName("item") or dom.getElementsByTagName("entry")
             if options.parent is not None:
-                output(ENTRY_PARENT.format(
-                       parent=options.parent,
-                       title=title, menu=menu).encode("utf-8"))
+                output(
+                    ENTRY_PARENT.format(
+                        parent=options.parent,
+                        title=title, menu=menu).encode("utf-8"))
             output(DESTROY_MENU.format(menu=menu).encode("utf-8"))
             output(ENTRY_TITLE.format(menu=menu,
-                   title=title).encode("utf-8"))
+                                      title=title).encode("utf-8"))
             for item in items:
-                title = limit(escape_title(sanitize(get_single_tag(item,
-                              'title'))),
-                              options.limit)
-                link = sanitize_link(get_single_tag(item, 'link'))
-                # media:thumbnail is what reddit uses
-                media = get_single_tag_attr(item, 'media:thumbnail', 'url')
+                title = get_single_tag(item, 'title')
+
+                content = get_single_tag(item, 'content')
+                if content:
+                    ##
+                    # If it's reddit, good chance all the details are stuffed in an html entity...
+                    content = parseString(content)
+                    title = get_single_tag_attr(content, 'img', 'alt')
+                    link = get_single_tag_attr(content, 'a', 'href')
+                    media = get_single_tag_attr(content, 'img', 'src')
+
+                else:
+
+                    title = limit(escape_title(sanitize(title)),
+                                  options.limit)
+                    link = sanitize_link(get_single_tag(item, 'link'))
+                    # media:thumbnail is what reddit uses
+                    media = get_single_tag_attr(item, 'media:thumbnail', 'url')
+
+                # FIXME: if media is None: try something else for thumb uri
                 if media is not None:
                     png_path = fetch_media(media, options.thumbscale)
                     output(ENTRY_IMAGE_LEFT.format(menu=menu,

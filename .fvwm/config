@@ -9,15 +9,20 @@ SetEnv QT_IM_MODULE ibus
 # Configurable preference variables -- I set a bunch of variables at the top of
 # my config.  These are all default values for the preference.  To change these
 # values, I create additional configuration files under $[fvwm_preferences_dir]
-# where I over-ride the values set here.
+# where I over-ride the values set here (via SetEnv FOO bar in files there).
 
 # Color Preferences
 SetEnv FG_COLOR white
-SetEnv FG_COLOR_INACTIVE grey
 SetEnv BG_COLOR #4a516a
-SetEnv BG_COLOR_LIGHTER #7d849d
-# The BG_COLOR_LIGHTER is just the BG_COLOR lightened a bit so it can be used
-# as a highlight color in menus, pagers, etc.
+SetEnv FG_COLOR_INACTIVE grey
+SetEnv BG_COLOR_INACTIVE #4a516a
+SetEnv HILIGHT_FORE gray80
+SetEnv HILIGHT_BACK gray50
+SetEnv SHADE gray80
+SetEnv FGSHADOW gray80
+# Window borders
+SetEnv BORDER_ACTIVE gray80
+SetEnv BORDER_INACTIVE black
 
 # Icons on the desk will be this size:
 SetEnv ICON_SIZE 64x64
@@ -161,12 +166,38 @@ OpaqueMoveSize unlimited
 # In case I should ever toggle a border back on, handles are disabled (and set
 # to width zero just in case).
 #
-# Menus also be flat, the flat border is accomplished by setting the
-# MenuColorset hi and sh colors to the same value so that the border's fake 3D
-# look uses the same color.  Increasing the width then gives it a nice bold
-# look, but the popupoffset has to be adjusted to prevent the double border
-# between menus effect.  So, set the PopupOffset's first argument to the
-# negative value of the border width for menus.
+# Menus are also flat, the flat border is accomplished by setting the
+# MenuColorset hi and sh colors to the same value so that the border's fake
+# 3D look uses the same color.  Increasing the width then gives it a nice
+# bold look, but the popupoffset has to be adjusted to prevent the double
+# border between menus effect.  So, set the PopupOffset's first argument to
+# the negative value of the border width for menus.
+
+DestroyFunc ChangeColor
+AddToFunc ChangeColor
++ I SetEnv FG_COLOR $0
++ I SetEnv BG_COLOR $1
++ I SetEnv FG_COLOR_INACTIVE $2
++ I SetEnv BG_COLOR_INACTIVE $3
++ I SetEnv HILIGHT_FORE $4
++ I SetEnv HILIGHT_BACK $5
++ I SetEnv SHADE $6
++ I SetEnv FGSHADOW $7
++ I SetEnv BORDER_ACTIVE $8
++ I SetEnv BORDER_INACTIVE $9
++ I PipeRead ' \
+echo SetEnv FG_COLOR \'$0\' > $[fvwm_color_scheme_preference] ; \
+echo SetEnv BG_COLOR \'$1\' >> $[fvwm_color_scheme_preference] ; \
+echo SetEnv FG_COLOR_INACTIVE \'$2\' >> $[fvwm_color_scheme_preference] ; \
+echo SetEnv BG_COLOR_INACTIVE \'$3\' >> $[fvwm_color_scheme_preference] ; \
+echo SetEnv HILIGHT_FORE \'$4\' >> $[fvwm_color_scheme_preference] ; \
+echo SetEnv HILIGHT_BACK \'$5\' >> $[fvwm_color_scheme_preference] ; \
+echo SetEnv SHADE \'$6\' >> $[fvwm_color_scheme_preference] ; \
+echo SetEnv FGSHADOW \'$7\' >> $[fvwm_color_scheme_preference]; \
+echo SetEnv BORDER_ACTIVE \'$8\' >> $[fvwm_color_scheme_preference] ; \
+echo SetEnv BORDER_INACTIVE \'$9\' >> $[fvwm_color_scheme_preference]; \
+'
++ I Schedule 250 FinishColorUpdate
 
 # Reads the ColorSet values from preference file and then
 # schedules updating the ones that are actively in use.
@@ -180,40 +211,47 @@ AddToFunc DoColorSets
 # they are modified.
 DestroyFunc FinishColorUpdate
 AddToFunc FinishColorUpdate
-+ I ColorSet 0 bg $[BG_COLOR], fg $[FG_COLOR_INACTIVE]
-+ I ColorSet 1 Tint $[BG_COLOR] 50, bg $[BG_COLOR], fg $[FG_COLOR], fgsh black
-+ I ColorSet 2 Tint $[BG_COLOR] 50, bg $[BG_COLOR], fg $[FG_COLOR], fgsh black, hi black, sh black
-+ I ColorSet 3 bg $[BG_COLOR_LIGHTER], fg $[FG_COLOR]
-+ I TitleStyle (Colorset 0 -- flat)
-+ I Style "*" Colorset 0
-+ I Style "*" HilightIconTitleColorset 1
-+ I Style "*" BorderWidth $[WINDOW_BORDER_SIZE] 
-+ I MenuStyle "*" MenuColorset 2, BorderWidth $[MENU_BORDER_SIZE], ItemFormat "%s %| %i %l %|% %> ", \
-          PopupOffset -2 100, Hilight3DOff, ActiveFore black, ForeGround \
-          $[FG_COLOR], HilightBack $[BG_COLOR_LIGHTER], Font "$[MENU_FONT]", \
++ I ColorSet 0 Tint $[BG_COLOR] 50, bg $[BG_COLOR], fg $[FG_COLOR], fgsh $[FGSHADOW], hi $[FGSHADOW], sh $[SHADE]
++ I ColorSet 1 bg $[BG_COLOR_INACTIVE], fg $[FG_COLOR_INACTIVE],fgsh $[FGSHADOW], hi $[HILIGHT_FORE], sh $[SHADE]
++ I ColorSet 2 bg $[BG_COLOR_INACTIVE], fg $[FG_COLOR_INACTIVE], fgsh $[FGSHADOW], hi $[HILIGHT_FORE], sh $[SHADE]
++ I ColorSet 3 bg $[HILIGHT_BACK], fg $[FG_COLOR]
++ I ColorSet 4 Tint $[BG_COLOR] 50, bg $[BORDER_ACTIVE], fg $[FG_COLOR], fgsh $[FGSHADOW], hi $[FGSHADOW], sh $[SHADE]
++ I ColorSet 5 Tint $[BG_COLOR] 50, bg $[BORDER_INACTIVE], fg $[FG_COLOR], fgsh $[FGSHADOW], hi $[FGSHADOW], sh $[SHADE]
++ I TitleStyle Inactive (Colorset 1 -- flat)
++ I TitleStyle Active (Colorset 0 -- flat)
++ I Style "*" Colorset 1
++ I Style "*" HilightIconTitleColorset 0
++ I Style "*" BorderWidth $[WINDOW_BORDER_SIZE]
++ I Style "*" BorderColorset 5
++ I Style "*" HilightBorderColorset 4
++ I MenuStyle "*" MenuColorset 0, BorderWidth $[MENU_BORDER_SIZE], ItemFormat "%s %| %i %l %|% %> ", \
+          PopupOffset -2 100, Hilight3DOff, ActiveFore $[HILIGHT_FORE], ForeGround \
+          $[FG_COLOR], HilightBack $[HILIGHT_BACK], Font "$[MENU_FONT]", \
           TrianglesSolid, PopdownDelay 500
 + I BorderStyle -- flat
-+ I ButtonStyle All (Colorset 0 -- flat)
++ I ButtonStyle All Inactive (Colorset 1 -- flat)
++ I ButtonStyle All Active (Colorset 1 -- flat)
 + I AddButtonStyle $[fvwm_title_button_miniicon] Active MiniIcon (HiddenHandles NoInset Hilight3Doff -- flat)
 # Put a paperclip icon (I-2) in the upper right of the active window
-+ I AddButtonStyle $[fvwm_title_button_clip] Active (Pixmap 0206-attachment.svg:14x14 -- flat)
++ I AddButtonStyle $[fvwm_title_button_clip] Active (Pixmap 206-attachment.svg:14x14 -- flat)
 # Put an up arrow (I-4) in the upper right of the active window
-+ I AddButtonStyle $[fvwm_title_button_arrow_up] Active (Pixmap 0315-arrow-up2.svg:14x14 -- flat)
-+ I Style "*" HilightBack $[BG_COLOR]
-+ I Style "*" HilightFore white 
++ I AddButtonStyle $[fvwm_title_button_arrow_up] Active (Pixmap 315-arrow-up2.svg:14x14 -- flat)
++ I Style "*" HilightBack $[HILIGHT_BACK]
++ I Style "*" HilightFore $[HILIGHT_FORE]
 #fixme, see if previous line can go into the colorset definition
-
-Style "*" IconBackgroundPadding 1
-Style "*" IconBackgroundRelief 0
-Style "*" IconBox $[ICONBOX_GEOMETRY], IconFill $[ICONFILL_UD] $[ICONFILL_LR]
-Style "*" IconOverride
-Style "*" IconTitleColorset 0
-Style "*" IconTitleRelief 0
-Style "*" MinOverlapPlacement
-Style "*" NoHandles
-Style "*" SloppyFocus
-Style "*" SnapAttraction 3 SameType Screen
-Style "*" $[TITLE_POSITION]
++ I Style "*" IconBackgroundPadding 1
++ I Style "*" IconBackgroundRelief 0
++ I Style "*" IconBox $[ICONBOX_GEOMETRY], IconFill $[ICONFILL_UD] $[ICONFILL_LR]
++ I Style "*" IconOverride
++ I Style "*" IconTitleColorset 1
++ I Style "*" HilightIconTitleColorset 0
++ I Style "*" IconTitleRelief 0
++ I Style "*" MinOverlapPlacement
++ I Style "*" NoHandles
++ I Style "*" SloppyFocus
++ I Style "*" SnapAttraction 3 SameType Screen
++ I Style "*" $[TITLE_POSITION]
++ I Style "*" HilightColorset 0
 
 Style trayer NoTitle, WindowListSkip, NeverFocus
 Style tint2 NoTitle, WindowListSkip, NeverFocus
@@ -240,33 +278,33 @@ Style tint2 NoTitle, WindowListSkip, NeverFocus
 #
 
 # Set up icons for stuff...
-Style "Android SDK Manager" Icon 0097-download.svg:$[ICON_SIZE], MiniIcon 0097-download.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride, DecorateTransient
-Style "Apvlv" MiniIcon 0475-file-pdf.svg:$[MINI_ICON_SIZE]
-Style "blobwars" Icon 0343-radio-unchecked.svg:$[ICON_SIZE], MiniIcon 0343-radio-unchecked.svg:$[MINI_ICON_SIZE]
-Style "* - Chat" MiniIcon 0111-bubble2.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-Style "Chromium-browser" Icon 0486-chrome.svg:$[ICON_SIZE], MiniIcon 0486-chrome.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style "Android SDK Manager" Icon 097-download.svg:$[ICON_SIZE], MiniIcon 097-download.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride, DecorateTransient
+Style "Apvlv" MiniIcon 475-file-pdf.svg:$[MINI_ICON_SIZE]
+Style "blobwars" Icon 343-radio-unchecked.svg:$[ICON_SIZE], MiniIcon 343-radio-unchecked.svg:$[MINI_ICON_SIZE]
+Style "* - Chat" MiniIcon 111-bubble2.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style "Chromium-browser" Icon 486-chrome.svg:$[ICON_SIZE], MiniIcon 486-chrome.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
 Style "FightTheDragon" NoTitle
-Style "Firefox" MiniIcon 0487-0487-firefox.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-Style "Freeciv" Icon 0004-office.svg:$[ICON_SIZE], MiniIcon 0004-office.svg:$[MINI_ICON_SIZE]
-Style "Friends" MiniIcon 0113-bubbles4.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-Style "FvwmIdent" Icon 0266-question.svg:$[ICON_SIZE], MiniIcon 0266-question.svg:$[MINI_ICON_SIZE]
-Style "Gimp" MiniIcon 0014-image.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-Style "Inkscape" Icon 0344-crop.svg:$[ICON_SIZE], MiniIcon 0344-crop.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-Style "Layers - Brushes" MiniIcon 0015-images.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style "Firefox" MiniIcon 475-firefox.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style "Freeciv" Icon 004-office.svg:$[ICON_SIZE], MiniIcon 004-office.svg:$[MINI_ICON_SIZE]
+Style "Friends" MiniIcon 113-bubbles4.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style "FvwmIdent" Icon 266-question.svg:$[ICON_SIZE], MiniIcon 266-question.svg:$[MINI_ICON_SIZE]
+Style "Gimp" MiniIcon 014-image.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style "Inkscape" Icon 344-crop.svg:$[ICON_SIZE], MiniIcon 344-crop.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style "Layers - Brushes" MiniIcon 015-images.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
 Style "Minetest*" NoTitle
-Style "MPlayer" Icon 0278-play2.svg:$[ICON_SIZE], MiniIcon 0278-play2.svg:$[MINI_ICON_SIZE]
-Style "*nautilus*" MiniIcon 0048-folder.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style "MPlayer" Icon 278-play2.svg:$[ICON_SIZE], MiniIcon 278-play2.svg:$[MINI_ICON_SIZE]
+Style "*nautilus*" MiniIcon 048-folder.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
 Style "oclock" NoTitle, StaysOnBottom, Sticky, WindowListSkip, NeverFocus, CirculateSkip
-Style "POWDER" Icon 0152-magic-wand.svg:$[ICON_SIZE], MiniIcon 0152-magic-wand.svg:$[MINI_ICON_SIZE]
-Style "*rox*" MiniIcon 0048-folder.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-Style "*rxvt*" MiniIcon 0386-terminal.svg:$[MINI_ICON_SIZE]
-Style "Steam" NoIcon, Icon 0430-steam.svg:$[ICON_SIZE], MiniIcon 0430-steam.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-Style "Toolbox*" MiniIcon 0151-hammer.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-Style "URxvt" Icon 0386-terminal.svg:$[ICON_SIZE], Icon 0386-terminal.svg:$[ICON_SIZE], MiniIcon 0386-terminal.svg:$[MINI_ICON_SIZE]
-Style "Vim" Icon 0385-embed2.svg:$[ICON_SIZE], MiniIcon 0385-embed2.svg:$[MINI_ICON_SIZE]
-Style "Vim *" MiniIcon 0385-embed2.svg:$[MINI_ICON_SIZE]
-Style "xcalc" MiniIcon 0065-calculator.svg:$[MINI_ICON_SIZE]
-Style "XClipboard" Icon 0185-clipboard.svg:$[ICON_SIZE], MiniIcon 0185-clipboard.svg:$[MINI_ICON_SIZE]
+Style "POWDER" Icon 152-magic-wand.svg:$[ICON_SIZE], MiniIcon 152-magic-wand.svg:$[MINI_ICON_SIZE]
+Style "*rox*" MiniIcon 048-folder.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style "*rxvt*" MiniIcon 386-terminal.svg:$[MINI_ICON_SIZE]
+Style "Steam" NoIcon, Icon 429-steam.svg:$[ICON_SIZE], MiniIcon 429-steam.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style "Toolbox*" MiniIcon 151-hammer.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
+Style "URxvt" Icon 386-terminal.svg:$[ICON_SIZE], Icon 386-terminal.svg:$[ICON_SIZE], MiniIcon 386-terminal.svg:$[MINI_ICON_SIZE]
+Style "Vim" Icon 385-embed2.svg:$[ICON_SIZE], MiniIcon 385-embed2.svg:$[MINI_ICON_SIZE]
+Style "Vim *" MiniIcon 385-embed2.svg:$[MINI_ICON_SIZE]
+Style "xcalc" MiniIcon 065-calculator.svg:$[MINI_ICON_SIZE]
+Style "XClipboard" Icon 185-clipboard.svg:$[ICON_SIZE], MiniIcon 185-clipboard.svg:$[MINI_ICON_SIZE]
 
 # Bind left clicking I-1 to the options menu, but double-click should close the
 # window.  More specifically, double click will close, single clicking will
@@ -293,32 +331,32 @@ AddToFunc Ops-or-Close
 # └─────────────────┘
 DestroyMenu MenuFvwmRoot
 AddToMenu MenuFvwmRoot
-+ "%0276-enter.svg:$[MINI_ICON_SIZE]%Apps" Popup DynamicAppMenu
-+ "%0224-happy.svg:$[MINI_ICON_SIZE]%Games" Popup DynamicGameMenu
-+ "%0030-feed.svg:$[MINI_ICON_SIZE]%Feeds" Popup FeedMenu
++ "%276-enter.svg:$[MINI_ICON_SIZE]%Apps" Popup DynamicAppMenu
++ "%224-happy.svg:$[MINI_ICON_SIZE]%Games" Popup DynamicGameMenu
++ "%030-feed.svg:$[MINI_ICON_SIZE]%Feeds" Popup FeedMenu
 + MissingSubmenuFunction ScreenshotBrowser
-+ "%0087-display.svg:$[MINI_ICON_SIZE]%Screenshots" Popup "$[fvwm_screenshots_dir]"
-+ "%0147-equalizer.svg:$[MINI_ICON_SIZE]%Settings" Popup SettingsMenu
++ "%087-display.svg:$[MINI_ICON_SIZE]%Screenshots" Popup "$[fvwm_screenshots_dir]"
++ "%147-equalizer.svg:$[MINI_ICON_SIZE]%Settings" Popup SettingsMenu
 + "" Nop
-+ "%0303-loop2.svg:$[MINI_ICON_SIZE]%Reload" Restart
++ "%303-loop2.svg:$[MINI_ICON_SIZE]%Reload" Restart
 # Put a lock icon in the menu if xscreensaver is present
-Test (x xscreensaver) AddToMenu MenuFvwmRoot "%0144-lock.svg:$[MINI_ICON_SIZE]%Lock" Exec exec xscreensaver-command -lock
+Test (x xscreensaver) AddToMenu MenuFvwmRoot "%144-lock.svg:$[MINI_ICON_SIZE]%Lock" Exec exec xscreensaver-command -lock
 # Put the exit option at the end of the menu
 AddToMenu MenuFvwmRoot
-+ "%0277-exit.svg:$[MINI_ICON_SIZE]%Exit" FvwmForm FvwmForm-QuitVerify
++ "%277-exit.svg:$[MINI_ICON_SIZE]%Exit" FvwmForm FvwmForm-QuitVerify
 Style FvwmForm-QuitVerify !Title
 
 DestroyMenu FeedMenu
 AddtoMenu FeedMenu
 + MissingSubmenuFunction FetchFeeds
 + "Slashdot" Popup "http://rss.slashdot.org/Slashdot/slashdotMain"
-+ "%0005-newspaper.svg:$[MINI_ICON_SIZE]%SoylentNews" Popup "https://soylentnews.org/index.rss"
-+ "%0456-reddit.svg:$[MINI_ICON_SIZE]%Reddit" Title
++ "%005-newspaper.svg:$[MINI_ICON_SIZE]%SoylentNews" Popup "https://soylentnews.org/index.rss"
++ "%456-reddit.svg:$[MINI_ICON_SIZE]%Reddit" Title
 + "/r/pics" Popup "https://www.reddit.com/r/pics/.rss"
 + "/r/funny" Popup "https://www.reddit.com/r/funny/.rss"
 + "/r/Chinese" Popup "https://www.reddit.com/r/Chinese/.rss"
 + "/r/ChineseLanguage" Popup "https://www.reddit.com/r/ChineseLanguage/.rss"
-+ "%0216-star-empty.svg:$[MINI_ICON_SIZE]%NASA" Title
++ "%216-star-empty.svg:$[MINI_ICON_SIZE]%NASA" Title
 + "Breaking News" Popup "https://www.nasa.gov/rss/dyn/breaking_news.rss"
 + "Education News" Popup "https://www.nasa.gov/rss/dyn/educationnews.rss"
 + "Image of the Day" Popup "https://www.nasa.gov/rss/dyn/lg_image_of_the_day.rss"
@@ -355,18 +393,18 @@ DestroyMenu SettingsMenu
 AddToMenu SettingsMenu
 + "FVWM Settings" Title
 + MissingSubmenuFunction WallpaperBrowser
-+ "%0386-terminal.svg:$[MINI_ICON_SIZE]%Console" FvwmConsole
-+ "%0013-paint-format.svg:$[MINI_ICON_SIZE]%Colors" Popup ColorMenu
-+ "%0349-font.svg:$[MINI_ICON_SIZE]%Fonts" Popup FontsMenu
++ "%386-terminal.svg:$[MINI_ICON_SIZE]%Console" FvwmConsole
++ "%013-paint-format.svg:$[MINI_ICON_SIZE]%Colors" Popup ColorMenu
++ "%349-font.svg:$[MINI_ICON_SIZE]%Fonts" Popup FontsMenu
 + "Borders" Popup BordersMenu
-+ "%0086-keyboard.svg:$[MINI_ICON_SIZE]%Modifier Key" Popup KeysMenu
-+ "%0015-images.svg:$[MINI_ICON_SIZE]%Wallpaper" Popup "$[fvwm_wallpapers_dir]"
-+ "%0268-minus.svg:$[MINI_ICON_SIZE]%Window Title Position" Popup TitlesMenu
-+ "%0190-menu.svg:$[MINI_ICON_SIZE]%Toggle Pager" TogglePager
++ "%086-keyboard.svg:$[MINI_ICON_SIZE]%Modifier Key" Popup KeysMenu
++ "%015-images.svg:$[MINI_ICON_SIZE]%Wallpaper" Popup "$[fvwm_wallpapers_dir]"
++ "%268-minus.svg:$[MINI_ICON_SIZE]%Window Title Position" Popup TitlesMenu
++ "%190-menu.svg:$[MINI_ICON_SIZE]%Toggle Pager" TogglePager
 + "System" Title
-Test (x wifi.sh) AddToMenu SettingsMenu "%0028-connection.svg:$[MINI_ICON_SIZE]%Wifi" Popup WifiMenu
-AddToMenu SettingsMenu "%0087-display.svg:$[MINI_ICON_SIZE]%Displays" Popup DisplaysMenu
-AddToMenu SettingsMenu "%0295-volume-high.svg:$[MINI_ICON_SIZE]%Volume Control" LaunchWarp "$[VOLUME_APP]"
+Test (x wifi.sh) AddToMenu SettingsMenu "%028-connection.svg:$[MINI_ICON_SIZE]%Wifi" Popup WifiMenu
+AddToMenu SettingsMenu "%087-display.svg:$[MINI_ICON_SIZE]%Displays" Popup DisplaysMenu
+AddToMenu SettingsMenu "%295-volume-high.svg:$[MINI_ICON_SIZE]%Volume Control" LaunchWarp "$[VOLUME_APP]"
 
 DestroyMenu WifiMenu
 AddToMenu WifiMenu
@@ -445,73 +483,77 @@ AddToFunc SetModifierKey
 # work.
 DestroyMenu ColorMenu
 AddToMenu ColorMenu
-+ "Blue" UpdateColors 4A516A
-+ "Cake" UpdateColors 6f4d10
-+ "Clouds" UpdateColors 236a64
-+ "Swirl" UpdateColors 232323
-+ "Zombies" UpdateColors 38512e
-+ "Purple" UpdateColors 4b1338
++ "Blue/Gray" ChangeColor gray90 #4A516A gray70 #4A516A white #7d849d gray80 gray80 gray80 gray80
++ "Blue/Black" ChangeColor gray90 #4A516A gray70 #4A516A white #7d849d black black black black
++ "Cake"       ChangeColor white #6f4d10 gray70 #6f4d10 white #a28043 black black black black
+#+ "Clouds" UpdateColors 236a64
+#+ "Swirl" UpdateColors 232323
+#+ "Zombies" UpdateColors 38512e
+#+ "Purple" UpdateColors 4b1338
 
-#
-# This function calls the color_helper script with a background color and then
-# restarts
-DestroyFunc UpdateColors
-AddToFunc UpdateColors
-+ I Exec exec python "$[FVWM_USERDIR]"/color_helper.py $0 > "$[fvwm_color_scheme_preference]"
-+ I Schedule 250 DoColorSets
+# old method, less flexible - #
+# old method, less flexible - # This function calls the color_helper script with a background color and then
+# old method, less flexible - # restarts
+# old method, less flexible - DestroyFunc UpdateColors
+# old method, less flexible - AddToFunc UpdateColors
+# old method, less flexible - + I Exec exec python "$[FVWM_USERDIR]"/color_helper.py $0 > "$[fvwm_color_scheme_preference]"
+# old method, less flexible - + I Schedule 250 DoColorSets
 
 # Dynamic App Menu Generation
 # If they exist, put rxvt, xterm, rox, nautilus ... in Apps menu:
-Test (x rxvt) AddToMenu DynamicAppMenu "%0386-terminal.svg:$[MINI_ICON_SIZE]%RXvt" LaunchWarp rxvt
-Test (x xterm) AddToMenu DynamicAppMenu "%0386-terminal.svg:$[MINI_ICON_SIZE]%XTerm" LaunchWarp xterm
-AddToMenu DynamicAppMenu "%0049-folder-open.svg:$[MINI_ICON_SIZE]%File Browser" LaunchWarp $[FILEBROWSER_APP]
-Test (x password-gorilla) AddToMenu DynamicAppMenu "%0142-key.svg:$[MINI_ICON_SIZE]%Password Gorilla" LaunchWarp password-gorilla
-Test (x oclock) AddToMenu DynamicAppMenu "%0079-clock.svg:$[MINI_ICON_SIZE]%oclock" Exec exec oclock -geometry +0+0 -bg black -fg "$[BG_COLOR_LIGHTER]" -bd "$[BG_COLOR]" -transparent
+Test (x rxvt) AddToMenu DynamicAppMenu "%386-terminal.svg:$[MINI_ICON_SIZE]%RXvt" LaunchWarp rxvt
+Test (x xterm) AddToMenu DynamicAppMenu "%386-terminal.svg:$[MINI_ICON_SIZE]%XTerm" LaunchWarp xterm
+AddToMenu DynamicAppMenu "%049-folder-open.svg:$[MINI_ICON_SIZE]%File Browser" LaunchWarp $[FILEBROWSER_APP]
+Test (x password-gorilla) AddToMenu DynamicAppMenu "%142-key.svg:$[MINI_ICON_SIZE]%Password Gorilla" LaunchWarp password-gorilla
+Test (x oclock) AddToMenu DynamicAppMenu "%079-clock.svg:$[MINI_ICON_SIZE]%oclock" Exec exec oclock -geometry +0+0 -bg black -fg "$[HILIGHT_BACK]" -bd "$[BG_COLOR]" -transparent
 
 # Internet-related stuff
 # If they exist, put firefox, chromium, and steam into the Apps menu:
-Test (x firefox) AddToMenu DynamicAppMenu "%0487-firefox.svg:$[MINI_ICON_SIZE]%Firefox" LaunchWarp firefox
-Test (x finch, x x-terminal-emulator) AddToMenu DynamicAppMenu "%0111-bubble2.svg:$[MINI_ICON_SIZE]%Finch" LaunchWarp x-terminal-emulator -tn rxvt -e finch
-Test (x chromium-browser) AddToMenu DynamicAppMenu "%0486-chrome.svg:$[MINI_ICON_SIZE]%Chromium" LaunchWarp chromium-browser
-Test (x mumble) AddToMenu DynamicAppMenu "%0027-bullhorn.svg:$[MINI_ICON_SIZE]%Mumble" LaunchWarp mumble
-Test (x steam) AddToMenu DynamicAppMenu "%0430-steam.svg:$[MINI_ICON_SIZE]%Steam" LaunchWarp steam
-Test (x steam) AddToMenu DynamicAppMenu "%0113-bubbles4.svg:$[MINI_ICON_SIZE]%Steam Friends" LaunchWarp steam "steam://open/friends"
-Test (x steam) AddToMenu DynamicAppMenu "%0430-steam.svg:$[MINI_ICON_SIZE]%Steam Library" LaunchWarp steam "steam://open/games"
+Test (x firefox) AddToMenu DynamicAppMenu "%475-firefox.svg:$[MINI_ICON_SIZE]%Firefox" LaunchWarp firefox
+Test (x finch, x x-terminal-emulator) AddToMenu DynamicAppMenu "%111-bubble2.svg:$[MINI_ICON_SIZE]%Finch" LaunchWarp x-terminal-emulator -tn rxvt -e finch
+Test (x chromium-browser) AddToMenu DynamicAppMenu "%486-chrome.svg:$[MINI_ICON_SIZE]%Chromium" LaunchWarp chromium-browser
+Test (x mumble) AddToMenu DynamicAppMenu "%027-bullhorn.svg:$[MINI_ICON_SIZE]%Mumble" LaunchWarp mumble
+Test (x steam) AddToMenu DynamicAppMenu "%429-steam.svg:$[MINI_ICON_SIZE]%Steam" LaunchWarp steam
+Test (x steam) AddToMenu DynamicAppMenu "%113-bubbles4.svg:$[MINI_ICON_SIZE]%Steam Friends" LaunchWarp steam "steam://open/friends"
+Test (x steam) AddToMenu DynamicAppMenu "%429-steam.svg:$[MINI_ICON_SIZE]%Steam Library" LaunchWarp steam "steam://open/games"
 
 # Games
 # If they exist, put various games in the Games menu:
-Test (x abe) AddToMenu DynamicGameMenu "%0151-hammer.svg:$[MINI_ICON_SIZE]%Abe's Amazing Adventure" LaunchWarp abe
-Test (x blobwars) AddToMenu DynamicGameMenu "%0343-radio-unchecked.svg:$[MINI_ICON_SIZE]%Blobwars: Metal Blob Solid" LaunchWarp blobwars
-Test (x freeciv) AddToMenu DynamicGameMenu "%0004-office.svg:$[MINI_ICON_SIZE]%FreeCiv" LaunchWarp freeciv
-Test (x freecol) AddToMenu DynamicGameMenu "%0202-sphere.svg:$[MINI_ICON_SIZE]%FreeCol" LaunchWarp freecol
-Test (x freedink) AddToMenu DynamicGameMenu "%0171-lab.svg:$[MINI_ICON_SIZE]%Dink Smallwood" LaunchWarp freedink
-Test (x freedroidRPG) AddToMenu DynamicGameMenu "%0266-question.svg:$[MINI_ICON_SIZE]%FreeDroid RPG" LaunchWarp freedroidRPG
+Test (x abe) AddToMenu DynamicGameMenu "%151-hammer.svg:$[MINI_ICON_SIZE]%Abe's Amazing Adventure" LaunchWarp abe
+Test (x blobwars) AddToMenu DynamicGameMenu "%343-radio-unchecked.svg:$[MINI_ICON_SIZE]%Blobwars: Metal Blob Solid" LaunchWarp blobwars
+Test (x freeciv) AddToMenu DynamicGameMenu "%004-office.svg:$[MINI_ICON_SIZE]%FreeCiv" LaunchWarp freeciv
+Test (x freecol) AddToMenu DynamicGameMenu "%202-sphere.svg:$[MINI_ICON_SIZE]%FreeCol" LaunchWarp freecol
+Test (x freedink) AddToMenu DynamicGameMenu "%171-lab.svg:$[MINI_ICON_SIZE]%Dink Smallwood" LaunchWarp freedink
+Test (x freedroidRPG) AddToMenu DynamicGameMenu "%266-question.svg:$[MINI_ICON_SIZE]%FreeDroid RPG" LaunchWarp freedroidRPG
 Test (x nethack,x x-terminal-emulator) AddToMenu DynamicGameMenu "Nethack (console)" LaunchWarp x-terminal-emulator +sb -e nethack
 Test (x nexuiz) AddToMenu DynamicGameMenu "nexuiz" LaunchWarp nexuiz
-Test (x powder) AddToMenu DynamicGameMenu "%0152-magic-wand.svg:$[MINI_ICON_SIZE]%Powder" LaunchWarp powder
+Test (x powder) AddToMenu DynamicGameMenu "%152-magic-wand.svg:$[MINI_ICON_SIZE]%Powder" LaunchWarp powder
 Test (x sauerbraten) AddToMenu DynamicGameMenu "sauerbraten" LaunchWarp sauerbraten
-Test (x slashem,x x-terminal-emulator) AddToMenu DynamicGameMenu "%0154-bug.svg:!$[MINI_ICON_SIZE]%Slashem (console)" LaunchWarp x-terminal-emulator +sb -e slashem
-Test (x tmw) AddToMenu DynamicGameMenu "%0266-question.svg:!$[MINI_ICON_SIZE]%The Mana World" LaunchWarp tmw
+Test (x slashem,x x-terminal-emulator) AddToMenu DynamicGameMenu "%154-bug.svg:!$[MINI_ICON_SIZE]%Slashem (console)" LaunchWarp x-terminal-emulator +sb -e slashem
+Test (x tmw) AddToMenu DynamicGameMenu "%266-question.svg:!$[MINI_ICON_SIZE]%The Mana World" LaunchWarp tmw
 
 #I have some shortcuts in ~/bin ending in .exe that invoke wine,
 #if they exist, put these in the Games menu, too.
-Test (x poe.exe) AddToMenu DynamicGameMenu "%0151-hammer.svg:$[MINI_ICON_SIZE]%Path of Exile" LaunchWarp poe.exe
+Test (x poe.exe) AddToMenu DynamicGameMenu "%151-hammer.svg:$[MINI_ICON_SIZE]%Path of Exile" LaunchWarp poe.exe
 Test (x marvel.exe) AddToMenu DynamicGameMenu "Marvel heroes" LaunchWarp marvel.exe
 Test (x warframe.exe) AddToMenu DynamicGameMenu "Warframe" LaunchWarp warframe.exe
 
 # Editors/Utilities
 # If they exist, put various editors into the Apps menu:
-Test (x vim,x x-terminal-emulator) AddToMenu DynamicAppMenu "%0385-embed2.svg:$[MINI_ICON_SIZE]%Vim" LaunchWarp x-terminal-emulator +sb -T Vim -e vim
-Test (x gvim) AddToMenu DynamicAppMenu "%0385-embed2.svg:$[MINI_ICON_SIZE]%GVim" LaunchWarp gvim
-Test (x gedit) AddToMenu DynamicAppMenu "%0039-file-text2.svg:$[MINI_ICON_SIZE]%GEdit" LaunchWarp gedit
-Test (x xclipboard) AddToMenu DynamicAppMenu "%0185-clipboard.svg:$[MINI_ICON_SIZE]%Clipboard" LaunchWarp xclipboard
-Test (x gimp) AddToMenu DynamicAppMenu "%0014-image.svg:$[MINI_ICON_SIZE]%Gimp" LaunchWarp gimp
-Test (x inkscape) AddToMenu DynamicAppMenu "%0344-crop.svg:$[MINI_ICON_SIZE]%Inkscape" LaunchWarp inkscape
+Test (x vim,x x-terminal-emulator) AddToMenu DynamicAppMenu "%385-embed2.svg:$[MINI_ICON_SIZE]%Vim" LaunchWarp x-terminal-emulator +sb -T Vim -e vim
+Test (x gvim) AddToMenu DynamicAppMenu "%385-embed2.svg:$[MINI_ICON_SIZE]%GVim" LaunchWarp gvim
+Test (x gedit) AddToMenu DynamicAppMenu "%039-file-text2.svg:$[MINI_ICON_SIZE]%GEdit" LaunchWarp gedit
+Test (x xclipboard) AddToMenu DynamicAppMenu "%185-clipboard.svg:$[MINI_ICON_SIZE]%Clipboard" LaunchWarp xclipboard
+Test (x gimp) AddToMenu DynamicAppMenu "%014-image.svg:$[MINI_ICON_SIZE]%Gimp" LaunchWarp gimp
+Test (x inkscape) AddToMenu DynamicAppMenu "%344-crop.svg:$[MINI_ICON_SIZE]%Inkscape" LaunchWarp inkscape
 
 # Settings
 # If it exists, put the bluetooth-wizard into the Settings menu
 Test (x bluetooth-wizard) AddToMenu SettingsMenu "Bluetooth Wizard" LaunchWarp bluetooth-wizard
 Test (x blueman-manager) AddToMenu SettingsMenu "Bluetooth Manager" LaunchWarp blueman-manager
+
+# Nice hinting, auto-complete app selecteor
+Key d FSTW $[MOD_KEY] Exec exec dmenu_run
 
 # Pop up the current window options on Win+o
 Key o FSTW $[MOD_KEY] Current Popup DynamicWindowOpsMenu Window 0 0
@@ -554,6 +596,10 @@ Mouse 1 I A Menu DynamicWindowOpsMenu
 # Move on Win+M
 Key M A $[MOD_KEY] Move
 
+# Raise/Lower window on MOD+U/D
+Key U A $[MOD_KEY] Raise
+Key D A $[MOD_KEY] Lower
+
 # Move up or down by a page when win+k or win+j are held
 Key k A $[MOD_KEY] GoToPage +0p -1p
 Key j A $[MOD_KEY] GoToPage +0p +1p
@@ -561,6 +607,8 @@ Key j A $[MOD_KEY] GoToPage +0p +1p
 # Move between windows on the current page with Win+h/l
 Key h A $[MOD_KEY] Focus-Prev-Window
 Key l A $[MOD_KEY] Focus-Next-Window
+
+Key s A 4 Screenshot $[w.id]
 
 # Win+Esc pop up the menu
 Key Escape A $[MOD_KEY] Menu MenuFvwmRoot
@@ -615,6 +663,12 @@ DestroyFunc Focus-Next-Class
 AddToFunc Focus-Next-Class
 + I Next (!WindowListSkip, AcceptsFocus, CurrentPage, $[w.class]) Warp-Focus
 
+Key G A $[MOD_KEY] ToggleWide
+
+DestroyFunc ToggleWide
+AddToFunc ToggleWide
++ I ThisWindow (Maximized) Maximize off
++ I TestRc (NoMatch) ResizeMoveMaximize 100% keep 0 keep
 
 #
 # Provides a means of letting the user pick a new wallpaper from a folder.
@@ -643,7 +697,7 @@ AddToFunc WallpaperBrowser
       echo AddToMenu \\"$0\\" \\"\*$0/.thumbs/$iname*$iname\\" ChangeWallpaper \\"$0/$iname\\" ;\
       done'
 # Add an option to browse the wallpaper directory with whatever filebrowser is installed
-+ I AddToMenu "$0" "\*0049-folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory" LaunchWarp "$[FILEBROWSER_APP]" "$0"
++ I AddToMenu "$0" "\*049-folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory" LaunchWarp "$[FILEBROWSER_APP]" "$0"
 
 DestroyFunc ScreenshotBrowser
 AddToFunc ScreenshotBrowser
@@ -665,7 +719,7 @@ AddToFunc ScreenshotBrowser
       echo AddToMenu \\"$0\\" \\"\*$0/.thumbs/$iname*$iname\\" Exec exec display \\"$0/$iname\\" ;\
       done'
 # Add an option to browse the screenshots directory with whatever filebrowser is installed
-+ I AddToMenu "$0" "\*0049-folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory" LaunchWarp "$[FILEBROWSER_APP]" "$0"
++ I AddToMenu "$0" "\*049-folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory" LaunchWarp "$[FILEBROWSER_APP]" "$0"
 
 # The user can select different images to use as the wallpaper at any time.
 # Such selections are saved to and loaded from the wallpaper file in the
@@ -790,30 +844,31 @@ DestroyFunc DynamicWindowOpsMenuFunction
 AddToFunc DynamicWindowOpsMenuFunction
 + I DestroyMenu recreate DynamicWindowOpsMenu
 + I AddToMenu DynamicWindowOpsMenu "Window Options: $[w.name]" Title
++ I ThisWindow ("Wine") AddToMenu DynamicWindowOpsMenu Focus Focus
 + I AddToMenu DynamicWindowOpsMenu "Toggle Title" ToggleTitle
 + I Test (x xcompmgr, x transset) AddToMenu DynamicWindowOpsMenu "Solidify" Exec exec transset -i $[w.id] 1.0
 + I ThisWindow ("Firefox",!Iconic) AddToMenu DynamicWindowOpsMenu "New Tab" Exec exec firefox -remote "openurl(about:blank,new-tab)"
 + I ThisWindow ("Firefox") AddToMenu DynamicWindowOpsMenu "New Window" Exec exec firefox -remote "openurl(about:blank,new-window)"
 + I TestRc (Match) AddToMenu DynamicWindowOpsMenu "" Nop
-+ I AddToMenu DynamicWindowOpsMenu "%0266-question.svg:$[MINI_ICON_SIZE]%Identify" FvwmIdent
-+ I ThisWindow (!Iconic) AddToMenu DynamicWindowOpsMenu "%0016-camera.svg:$[MINI_ICON_SIZE]%Get Screenshot" Screenshot $[w.id]
-+ I ThisWindow (!Iconic) AddToMenu DynamicWindowOpsMenu "%0015-images.svg:$[MINI_ICON_SIZE]%Get Screenshot (with borders)" Screenshot $[w.id] -frame
++ I AddToMenu DynamicWindowOpsMenu "%266-question.svg:$[MINI_ICON_SIZE]%Identify" FvwmIdent
++ I ThisWindow (!Iconic) AddToMenu DynamicWindowOpsMenu "%016-camera.svg:$[MINI_ICON_SIZE]%Get Screenshot" Screenshot $[w.id]
++ I ThisWindow (!Iconic) AddToMenu DynamicWindowOpsMenu "%015-images.svg:$[MINI_ICON_SIZE]%Get Screenshot (with borders)" Screenshot $[w.id] -frame
 + I AddToMenu DynamicWindowOpsMenu "" Nop
 + I ThisWindow (Iconic) AddToMenu DynamicWindowOpsMenu "%$[w.miniiconfile]:$[MINI_ICON_SIZE]%Deiconify" Iconify off
 + I ThisWindow (!Iconic) AddToMenu DynamicWindowOpsMenu "%$[w.miniiconfile]:$[MINI_ICON_SIZE]%Iconify" Iconify
-+ I TestRc (Match) AddToMenu DynamicWindowOpsMenu "%0318-arrow-down-right2.svg:$[MINI_ICON_SIZE]%Resize" Resize
-+ I AddToMenu DynamicWindowOpsMenu "%0317-arrow-right2.svg:$[MINI_ICON_SIZE]%Move" Move
-+ I ThisWindow (Maximized) AddToMenu DynamicWindowOpsMenu "%0139-shrink.svg:$[MINI_ICON_SIZE]%Un-Maximize" Maximize
-+ I TestRc (NoMatch) AddToMenu DynamicWindowOpsMenu "%0138-enlarge.svg:$[MINI_ICON_SIZE]%Maximize" Maximize
++ I TestRc (Match) AddToMenu DynamicWindowOpsMenu "%318-arrow-down-right2.svg:$[MINI_ICON_SIZE]%Resize" Resize
++ I AddToMenu DynamicWindowOpsMenu "%317-arrow-right2.svg:$[MINI_ICON_SIZE]%Move" Move
++ I ThisWindow (Maximized) AddToMenu DynamicWindowOpsMenu "%139-shrink.svg:$[MINI_ICON_SIZE]%Un-Maximize" Maximize
++ I TestRc (NoMatch) AddToMenu DynamicWindowOpsMenu "%138-enlarge.svg:$[MINI_ICON_SIZE]%Maximize" Maximize
 + I ThisWindow (Shaded) AddToMenu DynamicWindowOpsMenu "Un-Shade" WindowShade
-+ I TestRc (NoMatch) AddToMenu DynamicWindowOpsMenu "%0268-minus.svg:$[MINI_ICON_SIZE]%Shade" WindowShade
-+ I ThisWindow (Sticky) AddToMenu DynamicWindowOpsMenu "%0071-pushpin.svg:$[MINI_ICON_SIZE]%Un-Stick" WindowStyle !Sticky
-+ I TestRc (NoMatch) AddToMenu DynamicWindowOpsMenu "%0071-pushpin.svg:$[MINI_ICON_SIZE]%Stick" WindowStyle Sticky
++ I TestRc (NoMatch) AddToMenu DynamicWindowOpsMenu "%268-minus.svg:$[MINI_ICON_SIZE]%Shade" WindowShade
++ I ThisWindow (Sticky) AddToMenu DynamicWindowOpsMenu "%071-pushpin.svg:$[MINI_ICON_SIZE]%Un-Stick" WindowStyle !Sticky
++ I TestRc (NoMatch) AddToMenu DynamicWindowOpsMenu "%071-pushpin.svg:$[MINI_ICON_SIZE]%Stick" WindowStyle Sticky
 + I AddToMenu DynamicWindowOpsMenu "" Nop
-+ I AddToMenu DynamicWindowOpsMenu "%0183-switch.svg:$[MINI_ICON_SIZE]%Close" Close
-+ I AddToMenu DynamicWindowOpsMenu "%0151-hammer.svg:$[MINI_ICON_SIZE]%Kill" Destroy
++ I AddToMenu DynamicWindowOpsMenu "%183-switch.svg:$[MINI_ICON_SIZE]%Close" Close
++ I AddToMenu DynamicWindowOpsMenu "%151-hammer.svg:$[MINI_ICON_SIZE]%Kill" Destroy
 + I AddToMenu DynamicWindowOpsMenu "" Nop
-+ I AddToMenu DynamicWindowOpsMenu "%0048-folder.svg:$[MINI_ICON_SIZE]%Group Actions" Popup DynamicGroupMenuThingy
++ I AddToMenu DynamicWindowOpsMenu "%048-folder.svg:$[MINI_ICON_SIZE]%Group Actions" Popup DynamicGroupMenuThingy
 
 # Function to do screenshots and save them to the screenshot pref dir using
 # date/time as the name.
@@ -1005,3 +1060,7 @@ Test (x amixer) Key XF86AudioLowerVolume A A Exec exec amixer -D pulse sset Mast
 Key XF86PowerOff A A FvwmForm FvwmForm-QuitVerify
 
 PipeRead "echo Echo Config load ended at $(date)"
+
+
+*FvwmForm-QuitVerify: Colorset 0
+*FvwmForm-QuitVerify: ItemColorset 0
