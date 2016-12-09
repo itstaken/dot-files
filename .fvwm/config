@@ -12,21 +12,21 @@ SetEnv QT_IM_MODULE ibus
 # where I over-ride the values set here (via SetEnv FOO bar in files there).
 
 # Color Preferences
-SetEnv FG_COLOR white
-SetEnv BG_COLOR #4a516a
-SetEnv FG_COLOR_INACTIVE grey
-SetEnv BG_COLOR_INACTIVE #4a516a
-SetEnv HILIGHT_FORE gray80
-SetEnv HILIGHT_BACK gray50
-SetEnv SHADE gray80
-SetEnv FGSHADOW gray80
+SetEnv FG_COLOR gray90
+SetEnv BG_COLOR #4A516A
+SetEnv FG_COLOR_INACTIVE gray70
+SetEnv BG_COLOR_INACTIVE #4A516A
+SetEnv HILIGHT_FORE white
+SetEnv HILIGHT_BACK #7d849d
+SetEnv SHADE #000000
+SetEnv FGSHADOW #000000
 # Window borders
-SetEnv BORDER_ACTIVE gray80
-SetEnv BORDER_INACTIVE black
+SetEnv BORDER_ACTIVE #4a516a
+SetEnv BORDER_INACTIVE #4a516a
 
 ##
-# Valid options: -- flat
-SetEnv BORDER_STYLE "simple -- NoInset HiddenHandles"
+# Valid options: -- flat NoInset
+SetEnv BORDER_STYLE "simple -- HiddenHandles"
 
 # Icons on the desk will be this size:
 SetEnv ICON_SIZE 64x64
@@ -158,9 +158,15 @@ OpaqueMoveSize unlimited
 #
 # Window titles are a blueish color with white text and inactive windows have a
 # gray title.  The blue really looks better with transparency turned on (ala
-# xcompmgr.)  All titles have a flat look with no 3D bevels.  (Colorset colors
-# are controlled via variables, so these are configurable and can be changed at
-# run time through a menu.)
+# xcompmgr.)  All titles have a flat-ish look with no 3D bevels.  I eschewed
+# the flat style option and instead got rid of the handles but not the inset so
+# that I could get a sort of double-single-line border.  It still doesn't have
+# the annoying 3d look, but it does make it easier to see a window border when
+# the background would otherwise blend in -- such as was happening with
+# terminals.
+#
+# (Colorset colors are controlled via variables, so these are configurable and
+# can be changed at run time through a menu.)
 #
 # Icon 1 is a mini icon for the window that pops up a dynamic options list and
 # Icon 2 is a paper clip icon that toggles window stickiness.
