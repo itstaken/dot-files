@@ -24,6 +24,10 @@ SetEnv FGSHADOW gray80
 SetEnv BORDER_ACTIVE gray80
 SetEnv BORDER_INACTIVE black
 
+##
+# Valid options: -- flat
+SetEnv BORDER_STYLE "simple -- NoInset HiddenHandles"
+
 # Icons on the desk will be this size:
 SetEnv ICON_SIZE 64x64
 
@@ -221,14 +225,14 @@ AddToFunc FinishColorUpdate
 + I TitleStyle Active (Colorset 0 -- flat)
 + I Style "*" Colorset 1
 + I Style "*" HilightIconTitleColorset 0
-+ I Style "*" BorderWidth $[WINDOW_BORDER_SIZE]
++ I Style "*" BorderWidth $[WINDOW_BORDER_SIZE], HandleWidth $[WINDOW_BORDER_SIZE]
 + I Style "*" BorderColorset 5
 + I Style "*" HilightBorderColorset 4
 + I MenuStyle "*" MenuColorset 0, BorderWidth $[MENU_BORDER_SIZE], ItemFormat "%s %| %i %l %|% %> ", \
           PopupOffset -2 100, Hilight3DOff, ActiveFore $[HILIGHT_FORE], ForeGround \
           $[FG_COLOR], HilightBack $[HILIGHT_BACK], Font "$[MENU_FONT]", \
           TrianglesSolid, PopdownDelay 500
-+ I BorderStyle -- flat
++ I BorderStyle $[BORDER_STYLE]
 + I ButtonStyle All Inactive (Colorset 1 -- flat)
 + I ButtonStyle All Active (Colorset 1 -- flat)
 + I AddButtonStyle $[fvwm_title_button_miniicon] Active MiniIcon (HiddenHandles NoInset Hilight3Doff -- flat)
@@ -247,7 +251,6 @@ AddToFunc FinishColorUpdate
 + I Style "*" HilightIconTitleColorset 0
 + I Style "*" IconTitleRelief 0
 + I Style "*" MinOverlapPlacement
-+ I Style "*" NoHandles
 + I Style "*" SloppyFocus
 + I Style "*" SnapAttraction 3 SameType Screen
 + I Style "*" $[TITLE_POSITION]
@@ -483,14 +486,21 @@ AddToFunc SetModifierKey
 # work.
 DestroyMenu ColorMenu
 AddToMenu ColorMenu
-+ "Gray"       ChangeColor gray90 gray20  gray70  gray20 white  gray30 gray80 gray80 gray80 gray80
-+ "Blue/Gray"  ChangeColor gray90 #4A516A gray70 #4A516A white #7d849d gray80 gray80 gray80 gray80
-+ "Blue/Black" ChangeColor gray90 #4A516A gray70 #4A516A white #7d849d black  black black black
-+ "Cake"       ChangeColor white  #6f4d10 gray70 #6f4d10 white #a28043 black  black black black
-+ "Clouds"     ChangeColor white  #236a64 gray70 #236a64 white #569d97 black  black black black
-+ "Swirl"      ChangeColor white  #232323 gray70 #232323 white #565656 black  black black black
-+ "Zombies"    ChangeColor white  #38512e gray70 #38512e white #6b846a black  black black black
-+ "Purple"     ChangeColor white  #4b1338 gray70 #4b1338 white #7e466b black  black black black
++ "Gray"         ChangeColor gray90 gray20  gray70  gray20 white  gray30 gray80 gray80 gray80 gray80
++ "Gray/line"    ChangeColor gray90 gray20  gray70  gray20 white  gray30 black  black  gray80 gray80
++ "Blue/Gray"    ChangeColor gray90 #4A516A gray70 #4A516A white #7d849d gray80 gray80 gray80 gray80
++ "Blue/Black"   ChangeColor gray90 #4A516A gray70 #4A516A white #7d849d black  black black black
++ "Blue/line"    ChangeColor gray90 #4A516A gray70 #4A516A white #7d849d #000000 #000000 #4a516a #4a516a
++ "Cake"         ChangeColor white  #6f4d10 gray70 #6f4d10 white #a28043 black  black black black
++ "Cake/line"    ChangeColor white #6f4d10 gray70 #6f4d10 white #a28043 black black #8f5902 #8f5902
++ "Clouds"       ChangeColor white  #236a64 gray70 #236a64 white #569d97 black  black black black
++ "Clouds/line"  ChangeColor white  #236a64 gray70 #236a64 white #569d97 black  black #236164 #236164
++ "Swirl"        ChangeColor white  #232323 gray70 #232323 white #565656 black  black black black
++ "Swirl/line"   ChangeColor white  #232323 gray70 #232323 white #565656 black  black black black
++ "Zombies"      ChangeColor white  #38512e gray70 #38512e white #6b846a black  black black black
++ "Zombies/line" ChangeColor white  #38512e gray70 #38512e white #6b846a black  black #38512e #38512e
++ "Purple"       ChangeColor white  #4b1338 gray70 #4b1338 white #7e466b black  black black black
++ "Purple/line"  ChangeColor white  #4b1338 gray70 #4b1338 white #7e466b black  black #4b1338 #4b1338
 + "Custom" Popup ThemeMenu
 
 # Dynamic App Menu Generation
@@ -737,7 +747,8 @@ AddToFunc StartFunction
 + I LoadWallpaper
 + I Module FvwmCommandS
 + I Module FvwmEvent
-+ I Test (init) Exec exec ibus-daemon -drx
++ I Test (init, x ibus-daemon) Exec exec ibus-daemon -drx
++ I TestRc (NoMatch, x fcitx) Exec exec fcitx
 + I Test (init, x nm-applet) Exec exec nm-applet
 + I Test (init, x pasystray) Exec exec pasystray
 + I Test (init, x blueman-applet) Exec exec blueman-applet
@@ -748,7 +759,7 @@ AddToFunc StartFunction
 + I Test (init, x xscreensaver) Exec exec xscreensaver -no-splash
 + I Test (Restart, x xcompmgr, x transset) Retransit
 + I PipeRead 'python "$[FVWM_USERDIR]"/display.py -f'
-+ I PipeRead 'bash $[FVWM_USERDIR]/theme_customize.sh -m ThemeMenu'
++ I PipeRead 'bash $[FVWM_USERDIR]/theme_customize.sh -f ThemeMenu'
 
 *FvwmEvent: Cmd
 *FvwmEvent: add_window WindowAdded
