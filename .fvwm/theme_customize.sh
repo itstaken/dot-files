@@ -1,5 +1,4 @@
 #!/bin/bash
-
 ##
 # This script generates some color selection menus for customizing the color
 # schemes.
@@ -52,7 +51,7 @@ do_color_pick(){
 update_images(){
     for KEY in FG_COLOR BG_COLOR FG_COLOR_INACTIVE BG_COLOR_INACTIVE HILIGHT_FORE HILIGHT_BACK SHADE FGSHADOW BORDER_ACTIVE BORDER_INACTIVE ; do
         eval "export COLOR=\$${KEY}"
-        convert -size 64x64 xc:${COLOR} /tmp/${KEY}.png
+        convert -border 1x1 -size 64x64 xc:${COLOR} /tmp/${KEY}.png
     done
 }
 
