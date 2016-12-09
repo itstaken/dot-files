@@ -173,9 +173,6 @@ OpaqueMoveSize unlimited
 # Icon 4 is an up arrow that does a custom maximize (see CustomMax function).
 # Icons are only displayed for the currently active window.
 #
-# In case I should ever toggle a border back on, handles are disabled (and set
-# to width zero just in case).
-#
 # Menus are also flat, the flat border is accomplished by setting the
 # MenuColorset hi and sh colors to the same value so that the border's fake
 # 3D look uses the same color.  Increasing the width then gives it a nice
