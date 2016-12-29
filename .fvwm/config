@@ -54,11 +54,8 @@ SetEnv PAGES_X 1
 SetEnv PAGES_Y 9
 
 # The Pager size can be over-ridden via a preference file, but the default
-# (which looks okay on my 1920x1080 laptop) is 1/9th the screen width by 1
-# screen height.  To over-ride this to, for example 203x900, put the following
-# into a file in the .fvwm/preferences directory:
-# SetEnv RIGHT_BAR_GEOMETRY 203x900-0+0
-PipeRead 'echo SetEnv RIGHT_BAR_GEOMETRY \$(($[vp.width]/9))x$[vp.height]-0+0'
+# Is on the right side of the desk, at the bottom of the screen.
+PipeRead 'echo SetEnv RIGHT_BAR_GEOMETRY -0-0'
 
 # Default modifier key is 4 (Win Key) for key bindings
 SetEnv MOD_KEY 4
@@ -224,6 +221,7 @@ AddToFunc FinishColorUpdate
 + I ColorSet 3 bg $[HILIGHT_BACK], fg $[FG_COLOR]
 + I ColorSet 4 Tint $[BG_COLOR] 50, bg $[BORDER_ACTIVE], fg $[FG_COLOR], fgsh $[FGSHADOW], hi $[FGSHADOW], sh $[SHADE]
 + I ColorSet 5 Tint $[BG_COLOR] 50, bg $[BORDER_INACTIVE], fg $[FG_COLOR], fgsh $[FGSHADOW], hi $[FGSHADOW], sh $[SHADE]
++ I ColorSet 6 RootTransparent Buffer, Tint $[BG_COLOR] 50, bg $[BORDER_INACTIVE], fg $[FG_COLOR], fgsh $[FGSHADOW], hi $[FGSHADOW], sh $[SHADE]
 + I TitleStyle Inactive (Colorset 1 -- flat)
 + I TitleStyle Active (Colorset 0 -- flat)
 + I Style "*" Colorset 1
@@ -822,7 +820,7 @@ DestroyFunc UpdateConky
 AddToFunc UpdateConky
 + I Test (f "$[FVWM_USERDIR]"/regenconf.sh) Exec exec bash "$[FVWM_USERDIR]"/regenconf.sh > "$[FVWM_USERDIR]"/conkyconf
 
-Style FvwmPager NoTitle, WindowListSkip, NeverFocus, Sticky
+Style FvwmPager NoTitle, WindowListSkip, NeverFocus, Sticky, StaysOnBottom
 *FvwmPager: Geometry "$[RIGHT_BAR_GEOMETRY]"
 *FvwmPager: Font none
 *FvwmPager: SmallFont "xft:Droid Sans Mono:size=6"
@@ -832,8 +830,10 @@ Style FvwmPager NoTitle, WindowListSkip, NeverFocus, Sticky
 *FvwmPager: MiniIcons
 *FvwmPager: WindowColorsets 0 3
 *FvwmPager: HilightColorset * 3
-*FvwmPager: Colorset * 1
+*FvwmPager: Colorset * 6
 *FvwmPager: UseSkipList
+*FvwmPager: DeskTopScale 10
+*FvwmPager: SloppyFocus
 #*FvwmPager: Hilight gray
 
 DestroyFunc TogglePager
