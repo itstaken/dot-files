@@ -51,7 +51,7 @@ SetEnv DEFAULT_FONT_SIZE 12
 
 # Sizes for DesktopSize
 SetEnv PAGES_X 1
-SetEnv PAGES_Y 9
+SetEnv PAGES_Y 2
 
 # The Pager size can be over-ridden via a preference file, but the default
 # Is on the right side of the desk, at the bottom of the screen.
@@ -496,6 +496,8 @@ AddToMenu ColorMenu
 + "Cake/line"    ChangeColor white #6f4d10 gray70 #6f4d10 white #a28043 black black #8f5902 #8f5902
 + "Clouds"       ChangeColor white  #236a64 gray70 #236a64 white #569d97 black  black black black
 + "Clouds/line"  ChangeColor white  #236a64 gray70 #236a64 white #569d97 black  black #236164 #236164
++ "Fire"         ChangeColor white #cc0000 gray70 #a40000 white #ef2929 black black black black
++ "Fire/line"    ChangeColor white #cc0000 gray70 #a40000 white #ef2929 black black #a40000 #a40000
 + "Swirl"        ChangeColor white  #232323 gray70 #232323 white #565656 black  black black black
 + "Swirl/line"   ChangeColor white  #232323 gray70 #232323 white #565656 black  black black black
 + "Zombies"      ChangeColor white  #38512e gray70 #38512e white #6b846a black  black black black
@@ -510,10 +512,11 @@ Test (x rxvt) AddToMenu DynamicAppMenu "%386-terminal.svg:$[MINI_ICON_SIZE]%RXvt
 Test (x xterm) AddToMenu DynamicAppMenu "%386-terminal.svg:$[MINI_ICON_SIZE]%XTerm" LaunchWarp xterm
 AddToMenu DynamicAppMenu "%049-folder-open.svg:$[MINI_ICON_SIZE]%File Browser" LaunchWarp $[FILEBROWSER_APP]
 Test (x password-gorilla) AddToMenu DynamicAppMenu "%142-key.svg:$[MINI_ICON_SIZE]%Password Gorilla" LaunchWarp password-gorilla
-Test (x oclock) AddToMenu DynamicAppMenu "%079-clock.svg:$[MINI_ICON_SIZE]%oclock" Exec exec oclock -geometry +0+0 -bg black -fg "$[HILIGHT_BACK]" -bd "$[BG_COLOR]" -transparent
+Test (x oclock) AddToMenu DynamicAppMenu "%079-clock.svg:$[MINI_ICON_SIZE]%oclock" Exec exec oclock -geometry -0+0 -bg black -fg "$[HILIGHT_BACK]" -bd "$[BG_COLOR]" -transparent
 
 # Internet-related stuff
 # If they exist, put firefox, chromium, and steam into the Apps menu:
+Test (x elinks, x x-terminal-emulator) AddToMenu DynamicAppMenu "ELinks" LaunchWarp x-terminal-emulator -e elinks
 Test (x firefox) AddToMenu DynamicAppMenu "%475-firefox.svg:$[MINI_ICON_SIZE]%Firefox" LaunchWarp firefox
 Test (x finch, x x-terminal-emulator) AddToMenu DynamicAppMenu "%111-bubble2.svg:$[MINI_ICON_SIZE]%Finch" LaunchWarp x-terminal-emulator -tn rxvt -e finch
 Test (x chromium-browser) AddToMenu DynamicAppMenu "%486-chrome.svg:$[MINI_ICON_SIZE]%Chromium" LaunchWarp chromium-browser
@@ -536,12 +539,7 @@ Test (x powder) AddToMenu DynamicGameMenu "%152-magic-wand.svg:$[MINI_ICON_SIZE]
 Test (x sauerbraten) AddToMenu DynamicGameMenu "sauerbraten" LaunchWarp sauerbraten
 Test (x slashem,x x-terminal-emulator) AddToMenu DynamicGameMenu "%154-bug.svg:!$[MINI_ICON_SIZE]%Slashem (console)" LaunchWarp x-terminal-emulator +sb -e slashem
 Test (x tmw) AddToMenu DynamicGameMenu "%266-question.svg:!$[MINI_ICON_SIZE]%The Mana World" LaunchWarp tmw
-
-#I have some shortcuts in ~/bin ending in .exe that invoke wine,
-#if they exist, put these in the Games menu, too.
-Test (x poe.exe) AddToMenu DynamicGameMenu "%151-hammer.svg:$[MINI_ICON_SIZE]%Path of Exile" LaunchWarp poe.exe
-Test (x marvel.exe) AddToMenu DynamicGameMenu "Marvel heroes" LaunchWarp marvel.exe
-Test (x warframe.exe) AddToMenu DynamicGameMenu "Warframe" LaunchWarp warframe.exe
+Test (x minetest) AddToMenu DynamicGameMenu "Minetest" LaunchWarp minetest
 
 # Editors/Utilities
 # If they exist, put various editors into the Apps menu:
@@ -595,6 +593,10 @@ Mouse 3 FSTW $[MOD_KEY] Resize-or-not
 # Bind Win+Left Mouse to Moving, raising, and lowering actions
 Mouse 1 FSTW 4 Move-Raise-or-Lower
 
+# Move up or down with Win+Mouse Wheel Up/Down
+Mouse 4 A $[MOD_KEY] GoToPage +0p -1p
+Mouse 5 A $[MOD_KEY] GoToPage +0p +1p
+
 # Bind Mouse 1 on Icons to DynamicWindowOpsMenu
 Mouse 1 I A Menu DynamicWindowOpsMenu
 
@@ -619,7 +621,6 @@ Key s A 4 Screenshot $[w.id]
 Key Escape A $[MOD_KEY] Menu MenuFvwmRoot
 
 Key Print A A Screenshot root -screen
-Key F4 A A Screenshot root -screen
 
 Key Tab A 4 Menu NewAltTabMenu
 
@@ -761,6 +762,7 @@ AddToFunc StartFunction
 + I Test (Restart, x xcompmgr, x transset) Retransit
 + I PipeRead 'python "$[FVWM_USERDIR]"/display.py -f'
 + I PipeRead 'bash $[FVWM_USERDIR]/theme_customize.sh -f ThemeMenu'
++ I Test (init, x steam) Exec exec steam
 
 *FvwmEvent: Cmd
 *FvwmEvent: add_window WindowAdded
