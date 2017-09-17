@@ -51,7 +51,9 @@ SetEnv DEFAULT_FONT_SIZE 12
 
 # Sizes for DesktopSize
 SetEnv PAGES_X 1
-SetEnv PAGES_Y 2
+SetEnv PAGES_Y 3
+
+SetEnv DESKTOP_SCALE 10
 
 # The Pager size can be over-ridden via a preference file, but the default
 # Is on the right side of the desk, at the bottom of the screen.
@@ -89,6 +91,7 @@ SetEnv fvwm_color_scheme_preference "$[fvwm_preferences_dir]/color_scheme"
 SetEnv fvwm_font_preferences "$[fvwm_preferences_dir]/font"
 SetEnv fvwm_key_preferences "$[fvwm_preferences_dir]/modifier_key"
 SetEnv fvwm_title_preferences "$[fvwm_preferences_dir]/title_position"
+SetEnv fvwm_pager_preferences "$[fvwm_preferences_dir]/pager_settings"
 
 # These are so it's easier to change titlebar button positions
 SetEnv fvwm_title_button_miniicon 1
@@ -222,6 +225,10 @@ AddToFunc FinishColorUpdate
 + I ColorSet 4 Tint $[BG_COLOR] 50, bg $[BORDER_ACTIVE], fg $[FG_COLOR], fgsh $[FGSHADOW], hi $[FGSHADOW], sh $[SHADE]
 + I ColorSet 5 Tint $[BG_COLOR] 50, bg $[BORDER_INACTIVE], fg $[FG_COLOR], fgsh $[FGSHADOW], hi $[FGSHADOW], sh $[SHADE]
 + I ColorSet 6 RootTransparent Buffer, Tint $[BG_COLOR] 50, bg $[BORDER_INACTIVE], fg $[FG_COLOR], fgsh $[FGSHADOW], hi $[FGSHADOW], sh $[SHADE]
++ I ReStyle
+
+DestroyFunc ReStyle
+AddToFunc ReStyle
 + I TitleStyle Inactive (Colorset 1 -- flat)
 + I TitleStyle Active (Colorset 0 -- flat)
 + I Style "*" Colorset 1
@@ -234,7 +241,7 @@ AddToFunc FinishColorUpdate
           $[FG_COLOR], HilightBack $[HILIGHT_BACK], Font "$[MENU_FONT]", \
           TrianglesSolid, PopdownDelay 500
 + I BorderStyle $[BORDER_STYLE]
-+ I ButtonStyle All Inactive (Colorset 1 -- flat)
++ I ButtonStyle All Inactive (Colorset 0 -- flat)
 + I ButtonStyle All Active (Colorset 1 -- flat)
 + I AddButtonStyle $[fvwm_title_button_miniicon] Active MiniIcon (HiddenHandles NoInset Hilight3Doff -- flat)
 # Put a paperclip icon (I-2) in the upper right of the active window
@@ -256,9 +263,10 @@ AddToFunc FinishColorUpdate
 + I Style "*" SnapAttraction 3 SameType Screen
 + I Style "*" $[TITLE_POSITION]
 + I Style "*" HilightColorset 0
-
-Style trayer NoTitle, WindowListSkip, NeverFocus
-Style tint2 NoTitle, WindowListSkip, NeverFocus
++ I Style "*Shroud of the Avatar*" NoTitle, BorderWidth 0, HandleWidth 0
++ I Style trayer NoTitle, WindowListSkip, NeverFocus, BorderWidth 0, HandleWidth 0
++ I Style tint2 NoTitle, WindowListSkip, NeverFocus, BorderWidth 0, HandleWidth 0
++ I Style "*" !FPGrabFocus, GrabFocusOff
 
 #
 #  Menu formats are a little tricky to describe, but the FVWM man page does a
@@ -337,7 +345,6 @@ DestroyMenu MenuFvwmRoot
 AddToMenu MenuFvwmRoot
 + "%276-enter.svg:$[MINI_ICON_SIZE]%Apps" Popup DynamicAppMenu
 + "%224-happy.svg:$[MINI_ICON_SIZE]%Games" Popup DynamicGameMenu
-+ "%030-feed.svg:$[MINI_ICON_SIZE]%Feeds" Popup FeedMenu
 + MissingSubmenuFunction ScreenshotBrowser
 + "%087-display.svg:$[MINI_ICON_SIZE]%Screenshots" Popup "$[fvwm_screenshots_dir]"
 + "%147-equalizer.svg:$[MINI_ICON_SIZE]%Settings" Popup SettingsMenu
@@ -350,28 +357,6 @@ AddToMenu MenuFvwmRoot
 + "%277-exit.svg:$[MINI_ICON_SIZE]%Exit" FvwmForm FvwmForm-QuitVerify
 Style FvwmForm-QuitVerify !Title
 
-DestroyMenu FeedMenu
-AddtoMenu FeedMenu
-+ MissingSubmenuFunction FetchFeeds
-+ "Slashdot" Popup "http://rss.slashdot.org/Slashdot/slashdotMain"
-+ "%005-newspaper.svg:$[MINI_ICON_SIZE]%SoylentNews" Popup "https://soylentnews.org/index.rss"
-+ "%456-reddit.svg:$[MINI_ICON_SIZE]%Reddit" Title
-+ "/r/pics" Popup "https://www.reddit.com/r/pics/.rss"
-+ "/r/funny" Popup "https://www.reddit.com/r/funny/.rss"
-+ "/r/Chinese" Popup "https://www.reddit.com/r/Chinese/.rss"
-+ "/r/ChineseLanguage" Popup "https://www.reddit.com/r/ChineseLanguage/.rss"
-+ "%216-star-empty.svg:$[MINI_ICON_SIZE]%NASA" Title
-+ "Breaking News" Popup "https://www.nasa.gov/rss/dyn/breaking_news.rss"
-+ "Education News" Popup "https://www.nasa.gov/rss/dyn/educationnews.rss"
-+ "Image of the Day" Popup "https://www.nasa.gov/rss/dyn/lg_image_of_the_day.rss"
-
-
-DestroyFunc FetchFeeds
-AddToFunc FetchFeeds
-+ I DestroyMenu recreate $0
-+ I AddToMenu "$0" "Fetching feed..." Title
-+ I AddToMenu "$0" "Retry" FetchFeeds "$0"
-+ I Exec exec python "$[FVWM_USERDIR]"/rss.py -m "$0" "$0"
 
 #
 # The settings menu consists of the following:
@@ -477,6 +462,49 @@ DestroyMenu KeysMenu
 AddToMenu KeysMenu
 + DynamicPopupAction MakeKeysMenu
 
+DestroyMenu PagerMenu
+AddToMenu PagerMenu
++ DynamicPopupAction MakePagerMenu
+
+DestroyFunc MakePagerMenu
+AddToFunc MakePagerMenu
++ I DestroyMenu recreate PagerMenu
++ I AddToMenu PagerMenu "Desktop Size: $[PAGES_X]x$[PAGES_Y]" Popup PagerSizeMenu
++ I AddToMenu PagerMenu "Desktop Scale: $[DESKTOP_SCALE]" Popup PagerScaleMenu
+
+DestroyFunc MakePagerScaleMenu
+AddToFunc MakePagerScaleMenu
++ I DestroyMenu recreate PagerScaleMenu
++ I AddToMenu PagerScaleMenu "Increase Scale" IncreaseDesktopScale 1
++ I AddToMenu PagerScaleMenu "Decrease Scale" IncreaseDesktopScale -1
+
+DestroyFunc IncreaseDesktopScale
+AddToFunc IncreaseDesktopScale
++ I PipeRead 'echo SetEnv DESKTOP_SCALE $((DESKTOP_SCALE+$0))'
++ I UpdatePager
+
+DestroyMenu PagerScaleMenu
+AddToMenu PagerScaleMenu
++ DynamicPopupAction MakePagerScaleMenu
+
+DestroyMenu PagerSizeMenu
+AddToMenu PagerSizeMenu
++ DynamicPopupAction MakePagerSizeMenu
+
+DestroyFunc MakePagerSizeMenu
+AddToFunc MakePagerSizeMenu
++ I DestroyMenu recreate PagerSizeMenu
++ I AddToMenu PagerSizeMenu "Increase Pages Vertically" IncreasePages 0 1
++ I AddToMenu PagerSizeMenu "Decrease Pages Vertically" IncreasePages 0 -1
++ I AddToMenu PagerSizeMenu "Increase Pages Horizontally" IncreasePages 1 0
++ I AddToMenu PagerSizeMenu "Decrease Pages Horizontally" IncreasePages -1 0
+
+DestroyFunc IncreasePages
+AddToFunc IncreasePages
++ I PipeRead 'echo SetEnv PAGES_X $((PAGES_X+$0))'
++ I PipeRead 'echo SetEnv PAGES_Y $((PAGES_Y+$1))'
++ I UpdatePager
+
 DestroyFunc SetModifierKey
 AddToFunc SetModifierKey
 + I Exec exec echo SetEnv MOD_KEY \"$0\" > "$[fvwm_key_preferences]"
@@ -556,7 +584,7 @@ Test (x bluetooth-wizard) AddToMenu SettingsMenu "Bluetooth Wizard" LaunchWarp b
 Test (x blueman-manager) AddToMenu SettingsMenu "Bluetooth Manager" LaunchWarp blueman-manager
 
 # Nice hinting, auto-complete app selecteor
-Key d FSTW $[MOD_KEY] Exec exec dmenu_run
+Key semicolon FSTW $[MOD_KEY] Exec exec dmenu_run
 
 # Pop up the current window options on Win+o
 Key o FSTW $[MOD_KEY] Current Popup DynamicWindowOpsMenu Window 0 0
@@ -584,8 +612,8 @@ Key Down A $[MOD_KEY] AnimatedMove keep -0 Warp
 # When Win+T is pressed, open a terminal
 Key t A $[MOD_KEY] LaunchWarp x-terminal-emulator +sb
 
-# When Win+S is pressed, shade the window
-Key s A $[MOD_KEY] WindowShade
+# When Win+S is pressed, shade the window (no, this is used for screenshot...
+#Key s A $[MOD_KEY] WindowShade
 
 # Bind Win+Right Mouse to resize function
 Mouse 3 FSTW $[MOD_KEY] Resize-or-not
@@ -750,7 +778,7 @@ AddToFunc StartFunction
 + I Module FvwmCommandS
 + I Module FvwmEvent
 + I Test (init, x ibus-daemon) Exec exec ibus-daemon -drx
-+ I TestRc (NoMatch, x fcitx) Exec exec fcitx
++ I TestRc (NoMatch) Test (x fcitx) Exec exec fcitx
 + I Test (init, x nm-applet) Exec exec nm-applet
 + I Test (init, x pasystray) Exec exec pasystray
 + I Test (init, x blueman-applet) Exec exec blueman-applet
@@ -763,6 +791,8 @@ AddToFunc StartFunction
 + I PipeRead 'python "$[FVWM_USERDIR]"/display.py -f'
 + I PipeRead 'bash $[FVWM_USERDIR]/theme_customize.sh -f ThemeMenu'
 + I Test (init, x steam) Exec exec steam
++ I UpdatePager
++ I DoGOGMenu
 
 *FvwmEvent: Cmd
 *FvwmEvent: add_window WindowAdded
@@ -822,21 +852,30 @@ DestroyFunc UpdateConky
 AddToFunc UpdateConky
 + I Test (f "$[FVWM_USERDIR]"/regenconf.sh) Exec exec bash "$[FVWM_USERDIR]"/regenconf.sh > "$[FVWM_USERDIR]"/conkyconf
 
-Style FvwmPager NoTitle, WindowListSkip, NeverFocus, Sticky, StaysOnBottom
-*FvwmPager: Geometry "$[RIGHT_BAR_GEOMETRY]"
-*FvwmPager: Font none
-*FvwmPager: SmallFont "xft:Droid Sans Mono:size=6"
-*FvwmPager: WindowLabelFormat "%t"
-*FvwmPager: Balloons
-*FvwmPager: BalloonFont "xft:Droid Sans Mono:size=12"
-*FvwmPager: MiniIcons
-*FvwmPager: WindowColorsets 0 3
-*FvwmPager: HilightColorset * 3
-*FvwmPager: Colorset * 6
-*FvwmPager: UseSkipList
-*FvwmPager: DeskTopScale 10
-*FvwmPager: SloppyFocus
-#*FvwmPager: Hilight gray
+DestroyFunc UpdatePager
+AddToFunc UpdatePager
++ I PipeRead ' \
+printf "Style FvwmPager NoTitle, WindowListSkip, NeverFocus, Sticky, StaysOnBottom\\n" ; \
+printf "*FvwmPager: Geometry $[RIGHT_BAR_GEOMETRY]\\n" ; \
+printf "*FvwmPager: Font none\\n" ; \
+printf "*FvwmPager: SmallFont \\"xft:Droid Sans Mono:size=6\\"\\n" ; \
+printf "*FvwmPager: WindowLabelFormat \\"%%t\\"\\n"; \
+printf "*FvwmPager: Balloons \\n"; \
+printf "*FvwmPager: BalloonFont \\"xft:Droid Sans Mono:size=12\\" \\n"; \
+printf "*FvwmPager: MiniIcons \\n"; \
+printf "*FvwmPager: WindowColorsets 0 3 \\n"; \
+printf "*FvwmPager: HilightColorset * 3 \\n"; \
+printf "*FvwmPager: Colorset * 6 \\n"; \
+printf "*FvwmPager: UseSkipList \\n"; \
+printf "*FvwmPager: DeskTopScale $[DESKTOP_SCALE] \\n"; \
+printf "*FvwmPager: SloppyFocus\\n" '
++ I DesktopSize $[PAGES_X]x$[PAGES_Y]
++ I Schedule 250 RelaunchPager
+
+DestroyFunc RelaunchPager
+AddToFunc RelaunchPager
++ I All (FvwmPager) Close
++ I Schedule 250 FvwmPager
 
 DestroyFunc TogglePager
 AddToFunc TogglePager
@@ -858,8 +897,10 @@ AddToFunc DynamicWindowOpsMenuFunction
 + I ThisWindow ("Wine") AddToMenu DynamicWindowOpsMenu Focus Focus
 + I AddToMenu DynamicWindowOpsMenu "Toggle Title" ToggleTitle
 + I Test (x xcompmgr, x transset) AddToMenu DynamicWindowOpsMenu "Solidify" Exec exec transset -i $[w.id] 1.0
-+ I ThisWindow ("Firefox",!Iconic) AddToMenu DynamicWindowOpsMenu "New Tab" Exec exec firefox -remote "openurl(about:blank,new-tab)"
-+ I ThisWindow ("Firefox") AddToMenu DynamicWindowOpsMenu "New Window" Exec exec firefox -remote "openurl(about:blank,new-window)"
++ I ThisWindow ("Firefox*",!Iconic) AddToMenu DynamicWindowOpsMenu "New Tab" Exec exec firefox --new-tab about:blank
++ I ThisWindow ("Firefox*") AddToMenu DynamicWindowOpsMenu "New Window" Exec exec firefox --new-window about:blank
++ I ThisWindow ("Firefox*") AddToMenu DynamicWindowOpsMenu "Paste && go (selection)" Exec exec firefox --new-tab "$(xclip -o)"
++ I ThisWindow ("Firefox*") AddToMenu DynamicWindowOpsMenu "Paste && go (clipboard)" Exec exec firefox --new-tab "$(xclip -o -selection clipboard)"
 + I TestRc (Match) AddToMenu DynamicWindowOpsMenu "" Nop
 + I AddToMenu DynamicWindowOpsMenu "%266-question.svg:$[MINI_ICON_SIZE]%Identify" FvwmIdent
 + I ThisWindow (!Iconic) AddToMenu DynamicWindowOpsMenu "%016-camera.svg:$[MINI_ICON_SIZE]%Get Screenshot" Screenshot $[w.id]
@@ -885,8 +926,7 @@ AddToFunc DynamicWindowOpsMenuFunction
 # date/time as the name.
 DestroyFunc Screenshot
 AddToFunc Screenshot
-+ I Raise
-+ I Exec exec import -window $0 $1 "$[fvwm_screenshots_dir]"/`date +%Y_%b_%d_%H:%M:%S.png`
++ I Exec exec import -window $0 $1 "$[fvwm_screenshots_dir]"/`date +%Y_%m_%d_%b_%H:%M:%S.png`
 + I Schedule 250 ScreenshotBrowser "$[fvwm_screenshots_dir]"
 
 # This is the context-sensitive group menu 
@@ -1042,7 +1082,6 @@ AddToFunc Restore
 
 # Disable Attention Grabbers
 DestroyFunc UrgencyFunc
-Style "*" !FPGrabFocus, GrabFocusOff
 
 # Transparent Windows on Restart
 DestroyFunc Retransit
