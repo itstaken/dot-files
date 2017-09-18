@@ -57,7 +57,7 @@ SetEnv DESKTOP_SCALE 10
 
 # The Pager size can be over-ridden via a preference file, but the default
 # Is on the right side of the desk, at the bottom of the screen.
-PipeRead 'echo SetEnv RIGHT_BAR_GEOMETRY -0-0'
+SetEnv RIGHT_BAR_GEOMETRY -0-0
 
 # Default modifier key is 4 (Win Key) for key bindings
 SetEnv MOD_KEY 4
@@ -250,7 +250,6 @@ AddToFunc ReStyle
 + I AddButtonStyle $[fvwm_title_button_arrow_up] Active (Pixmap 315-arrow-up2.svg:14x14 -- flat)
 + I Style "*" HilightBack $[HILIGHT_BACK]
 + I Style "*" HilightFore $[HILIGHT_FORE]
-#fixme, see if previous line can go into the colorset definition
 + I Style "*" IconBackgroundPadding 1
 + I Style "*" IconBackgroundRelief 0
 + I Style "*" IconBox $[ICONBOX_GEOMETRY], IconFill $[ICONFILL_UD] $[ICONFILL_LR]
@@ -347,7 +346,8 @@ AddToMenu MenuFvwmRoot
 + "%224-happy.svg:$[MINI_ICON_SIZE]%Games" Popup DynamicGameMenu
 + MissingSubmenuFunction ScreenshotBrowser
 + "%087-display.svg:$[MINI_ICON_SIZE]%Screenshots" Popup "$[fvwm_screenshots_dir]"
-+ "%147-equalizer.svg:$[MINI_ICON_SIZE]%Settings" Popup SettingsMenu
++ "%150-cogs.svg:$[MINI_ICON_SIZE]%Settings" Popup SettingsMenu
++ "%147-equalizer.svg:$[MINI_ICON_SIZE]%Status" Popup StatusMenu
 + "" Nop
 + "%303-loop2.svg:$[MINI_ICON_SIZE]%Reload" Restart
 # Put a lock icon in the menu if xscreensaver is present
@@ -389,7 +389,7 @@ AddToMenu SettingsMenu
 + "%086-keyboard.svg:$[MINI_ICON_SIZE]%Modifier Key" Popup KeysMenu
 + "%015-images.svg:$[MINI_ICON_SIZE]%Wallpaper" Popup "$[fvwm_wallpapers_dir]"
 + "%268-minus.svg:$[MINI_ICON_SIZE]%Window Title Position" Popup TitlesMenu
-+ "%190-menu.svg:$[MINI_ICON_SIZE]%Toggle Pager" TogglePager
++ "%190-menu.svg:$[MINI_ICON_SIZE]%Configure Pager" Popup PagerMenu
 + "System" Title
 Test (x wifi.sh) AddToMenu SettingsMenu "%028-connection.svg:$[MINI_ICON_SIZE]%Wifi" Popup WifiMenu
 AddToMenu SettingsMenu "%087-display.svg:$[MINI_ICON_SIZE]%Displays" Popup DisplaysMenu
@@ -405,7 +405,25 @@ AddToFunc CreateWifiMenu
 + I PipeRead 'SSID=$(wifi.sh -e) ; test ! -z "$SSID" && echo "AddToMenu WifiMenu \\"Connected: $SSID\\" Title" || echo "AddToMenu WifiMenu \\"Not Connected\\" Title"'
 + I AddToMenu WifiMenu "Connect to any" LaunchWarp x-terminal-emulator +sb -e wifi.sh -a
 + I AddToMenu WifiMenu "Disconnect" LaunchWarp x-terminal-emulator +sb -e wifi.sh -k
-+ I Test (f "$[FVWM_USERDIR]"/regenconf.sh) AddToMenu WifiMenu "Refresh Conky Config" UpdateConky
+
+DestroyMenu StatusMenu
+AddToMenu StatusMenu
++ DynamicPopupAction CreateStatusMenu
+
+DestroyFunc CreateStatusMenu
+AddToFunc CreateStatusMenu
++ I DestroyMenu recreate StatusMenu
++ I AddToMenu StatusMenu "Status Items" Title
++ I PipeRead ' \
+    echo "AddToMenu StatusMenu \\"Mem:   $(free -h | grep Mem | awk \'{printf "%s/%s",$$$4,$$$2}\')\\" Nop" ;\
+    echo "AddToMenu StatusMenu \\"Swap:  $(free -h | grep Swap | awk \'{printf "%s/%s",$$$3,$$$2}\')\\" Nop" '
++ I PipeRead ' \
+    ls -l /sys/class/power_supply/*/capacity >/dev/null 2>/dev/null ; \
+    if [ $? -eq 0 ] ; then \
+        for CAPS in /sys/class/power_supply/*/capacity ; do \
+            echo "AddToMenu StatusMenu \\"Battery: $(cat $CAPS)%%\\" Nop" ; \
+        done ; \
+    fi'
 
 DestroyFunc MakeTitleMenu
 AddToFunc MakeTitleMenu
@@ -471,6 +489,7 @@ AddToFunc MakePagerMenu
 + I DestroyMenu recreate PagerMenu
 + I AddToMenu PagerMenu "Desktop Size: $[PAGES_X]x$[PAGES_Y]" Popup PagerSizeMenu
 + I AddToMenu PagerMenu "Desktop Scale: $[DESKTOP_SCALE]" Popup PagerScaleMenu
++ I AddToMenu PagerMenu "%190-menu.svg:$[MINI_ICON_SIZE]%Toggle Pager" TogglePager
 
 DestroyFunc MakePagerScaleMenu
 AddToFunc MakePagerScaleMenu
@@ -811,6 +830,7 @@ DestroyFunc WindowAdded
 AddToFunc WindowAdded
 + I ThisWindow ( URxvt ) MakeTrans
 + I ThisWindow ( xterm ) MakeTrans
++ I ThisWindow ( stterm ) MakeTrans
 + I Test (EnvIsSet WarpCounter) Warp-Focus
 + I Test (EnvIsSet WarpCounter) PipeRead '\
     if [ $WarpCounter -gt 0 ] ; then \
@@ -823,34 +843,14 @@ DestroyFunc MakeTrans
 AddToFunc MakeTrans
 + I Exec exec transset -i $[w.id] 0.9
 
-# On the lower left portion of the screen (root window) I have a conky display
-# with battery and network display.
-#
-# The network graph displays something
-# like this:
-#
-#   eth1: up, addr 192.168.4.102
-#   Up                      Down
-#   ┌─────────────┬─────────────┐
-#   │      ╱╲     │             │
-#   │┄┄┄╱╲╱┄┄╲┄┄┄ │┄┄┄╱╲╱╲╱╲┄┄┄ │
-#   └─────────────┴─────────────┘
-#
 
 
 AddToFunc StartFunction
-+ I UpdateConky
 + I FvwmPager
 + I Test (!x tint2, x trayer, init) Exec exec trayer --widthtype request --heighttype request --align left 2>/dev/null
 + I Test (x tint2, init) Exec exec tint2 2>/dev/null
 + I Test (x nm-applet, init) Exec exec nm-applet 2>/dev/null
-+ I Test (x conky, init) Exec exec conky -c "$[FVWM_USERDIR]"/conkyconf -a bottom_left 2>/dev/null
 
-# This function calls an external script for regenerating the conky config that
-# displays network info.
-DestroyFunc UpdateConky
-AddToFunc UpdateConky
-+ I Test (f "$[FVWM_USERDIR]"/regenconf.sh) Exec exec bash "$[FVWM_USERDIR]"/regenconf.sh > "$[FVWM_USERDIR]"/conkyconf
 
 DestroyFunc UpdatePager
 AddToFunc UpdatePager
@@ -870,6 +870,9 @@ printf "*FvwmPager: UseSkipList \\n"; \
 printf "*FvwmPager: DeskTopScale $[DESKTOP_SCALE] \\n"; \
 printf "*FvwmPager: SloppyFocus\\n" '
 + I DesktopSize $[PAGES_X]x$[PAGES_Y]
++ I PipeRead ' \
+echo SetEnv PAGES_X "$[PAGES_X]" > "$[fvwm_preferences_dir]"/pager_settings ; \
+echo SetEnv PAGES_Y "$[PAGES_Y]" >> "$[fvwm_preferences_dir]"/pager_settings ; '
 + I Schedule 250 RelaunchPager
 
 DestroyFunc RelaunchPager
