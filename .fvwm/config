@@ -38,7 +38,7 @@ SetEnv MINI_ICON_SIZE 24x24
 SetEnv SCREEN_SHOT_SCALE 256
 
 # Size used in wallpaper menu
-SetEnv WALLPAPER_SCALE 512
+SetEnv WALLPAPER_SCALE 128
 
 SetEnv MENU_FONT_FAMILY "DejaVu Sans Mono"
 SetEnv MENU_FONT_SIZE 20
@@ -792,6 +792,7 @@ AddToFunc LoadWallpaper
 
 # Make sure wallpaper loading happens on startup:
 AddToFunc StartFunction
++ I DoGOGMenu
 + I DoColorSets
 + I LoadWallpaper
 + I Module FvwmCommandS
@@ -1111,6 +1112,12 @@ Test (x amixer) Key XF86AudioRaiseVolume A A Exec exec amixer -D pulse sset Mast
 Test (x amixer) Key XF86AudioLowerVolume A A Exec exec amixer -D pulse sset Master 2%-
 
 Key XF86PowerOff A A FvwmForm FvwmForm-QuitVerify
+
+DestroyFunc DoGOGMenu
+AddToFunc DoGOGMenu
++ I Test (! x "$[HOME]/GOG\ Games") Break
++ I AddToMenu DynamicGameMenu "Gold Old Games" Popup GoGGameMenu
++ I PipeRead 'for title in "$[HOME]/GOG\ Games/"* ; do echo AddToMenu GoGGameMenu \\\"\*${title}/support/icon.png\*${title##*/}\\\" LaunchWarp \\\"${title}/start.sh\\\" ; done'
 
 PipeRead "echo Echo Config load ended at $(date)"
 
