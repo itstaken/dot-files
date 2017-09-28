@@ -218,8 +218,8 @@ AddToFunc DoColorSets
 # they are modified.
 DestroyFunc FinishColorUpdate
 AddToFunc FinishColorUpdate
-+ I ColorSet 0 Tint $[BG_COLOR] 50, bg $[BG_COLOR], fg $[FG_COLOR], fgsh $[FGSHADOW], hi $[FGSHADOW], sh $[SHADE]
-+ I ColorSet 1 bg $[BG_COLOR_INACTIVE], fg $[FG_COLOR_INACTIVE],fgsh $[FGSHADOW], hi $[HILIGHT_FORE], sh $[SHADE]
++ I ColorSet 0 Tint $[BG_COLOR] 50, bg $[BG_COLOR], fg $[FG_COLOR], fgsh $[FGSHADOW], hi $[FGSHADOW], sh $[SHADE], VGradient 40 $[HILIGHT_BACK] $[BG_COLOR]
++ I ColorSet 1 bg $[BG_COLOR_INACTIVE], fg $[FG_COLOR_INACTIVE],fgsh $[FGSHADOW], hi $[HILIGHT_FORE], sh $[SHADE], VGradient 40 $[BG_COLOR_INACTIVE] $[HILIGHT_BACK]
 + I ColorSet 2 bg $[BG_COLOR_INACTIVE], fg $[FG_COLOR_INACTIVE], fgsh $[FGSHADOW], hi $[HILIGHT_FORE], sh $[SHADE]
 + I ColorSet 3 bg $[HILIGHT_BACK], fg $[FG_COLOR]
 + I ColorSet 4 Tint $[BG_COLOR] 50, bg $[BORDER_ACTIVE], fg $[FG_COLOR], fgsh $[FGSHADOW], hi $[FGSHADOW], sh $[SHADE]
@@ -241,8 +241,9 @@ AddToFunc ReStyle
           $[FG_COLOR], HilightBack $[HILIGHT_BACK], Font "$[MENU_FONT]", \
           TrianglesSolid, PopdownDelay 500
 + I BorderStyle $[BORDER_STYLE]
-+ I ButtonStyle All Inactive (Colorset 0 -- flat)
-+ I ButtonStyle All Active (Colorset 1 -- flat)
++ I ButtonStyle All Active (Colorset 0 -- flat)
++ I ButtonStyle All ActiveDown (Colorset 1 -- flat)
++ I ButtonStyle All Inactive (Colorset 1 -- flat)
 + I AddButtonStyle $[fvwm_title_button_miniicon] Active MiniIcon (HiddenHandles NoInset Hilight3Doff -- flat)
 # Put a paperclip icon (I-2) in the upper right of the active window
 + I AddButtonStyle $[fvwm_title_button_clip] Active (Pixmap 206-attachment.svg:14x14 -- flat)
@@ -415,6 +416,7 @@ AddToFunc CreateStatusMenu
 + I DestroyMenu recreate StatusMenu
 + I AddToMenu StatusMenu "Status Items" Title
 + I PipeRead ' \
+    echo "AddToMenu StatusMenu \\"Uptime:   $(uptime -p)\\" Nop" ;\
     echo "AddToMenu StatusMenu \\"Mem:   $(free -h | grep Mem | awk \'{printf "%s/%s",$$$4,$$$2}\')\\" Nop" ;\
     echo "AddToMenu StatusMenu \\"Swap:  $(free -h | grep Swap | awk \'{printf "%s/%s",$$$3,$$$2}\')\\" Nop" '
 + I PipeRead ' \
@@ -572,6 +574,13 @@ Test (x steam) AddToMenu DynamicAppMenu "%429-steam.svg:$[MINI_ICON_SIZE]%Steam"
 Test (x steam) AddToMenu DynamicAppMenu "%113-bubbles4.svg:$[MINI_ICON_SIZE]%Steam Friends" LaunchWarp steam "steam://open/friends"
 Test (x steam) AddToMenu DynamicAppMenu "%429-steam.svg:$[MINI_ICON_SIZE]%Steam Library" LaunchWarp steam "steam://open/games"
 
+
+DestroyFunc DoGOGMenu
+AddToFunc DoGOGMenu
++ I Test (! x "$[HOME]/GOG\ Games") Break
++ I AddToMenu DynamicGameMenu "Gold Ole Games" Popup GoGGameMenu
++ I PipeRead 'for title in "$[HOME]/GOG\ Games/"* ; do echo AddToMenu GoGGameMenu \\\"\*${title}/support/icon.png\*${title##*/}\\\" LaunchWarp \\\"${title}/start.sh\\\" ; done'
+
 # Games
 # If they exist, put various games in the Games menu:
 Test (x abe) AddToMenu DynamicGameMenu "%151-hammer.svg:$[MINI_ICON_SIZE]%Abe's Amazing Adventure" LaunchWarp abe
@@ -601,6 +610,24 @@ Test (x inkscape) AddToMenu DynamicAppMenu "%344-crop.svg:$[MINI_ICON_SIZE]%Inks
 # If it exists, put the bluetooth-wizard into the Settings menu
 Test (x bluetooth-wizard) AddToMenu SettingsMenu "Bluetooth Wizard" LaunchWarp bluetooth-wizard
 Test (x blueman-manager) AddToMenu SettingsMenu "Bluetooth Manager" LaunchWarp blueman-manager
+
+Key b FSTW $[MOD_KEY] ToggleDecorations
+
+DestroyFunc ToggleDecorations
+AddToFunc ToggleDecorations
++ I ThisWindow (!State 3) RemoveDecorations
++ I TestRc (NoMatch) PutDecorationsBack
+
+DestroyFunc RemoveDecorations
+AddToFunc RemoveDecorations
++ I State 3 on
++ I WindowStyle NoTitle, HandleWidth 0, BorderWidth 0
+
+DestroyFunc PutDecorationsBack
+AddToFunc PutDecorationsBack
++ I State 3 off
++ I WindowStyle !NoTitle, HandleWidth $[WINDOW_BORDER_SIZE], HandleWidth $[WINDOW_BORDER_SIZE]
+
 
 # Nice hinting, auto-complete app selecteor
 Key semicolon FSTW $[MOD_KEY] Exec exec dmenu_run
@@ -792,7 +819,6 @@ AddToFunc LoadWallpaper
 
 # Make sure wallpaper loading happens on startup:
 AddToFunc StartFunction
-+ I DoGOGMenu
 + I DoColorSets
 + I LoadWallpaper
 + I Module FvwmCommandS
@@ -1112,12 +1138,6 @@ Test (x amixer) Key XF86AudioRaiseVolume A A Exec exec amixer -D pulse sset Mast
 Test (x amixer) Key XF86AudioLowerVolume A A Exec exec amixer -D pulse sset Master 2%-
 
 Key XF86PowerOff A A FvwmForm FvwmForm-QuitVerify
-
-DestroyFunc DoGOGMenu
-AddToFunc DoGOGMenu
-+ I Test (! x "$[HOME]/GOG\ Games") Break
-+ I AddToMenu DynamicGameMenu "Gold Old Games" Popup GoGGameMenu
-+ I PipeRead 'for title in "$[HOME]/GOG\ Games/"* ; do echo AddToMenu GoGGameMenu \\\"\*${title}/support/icon.png\*${title##*/}\\\" LaunchWarp \\\"${title}/start.sh\\\" ; done'
 
 PipeRead "echo Echo Config load ended at $(date)"
 
