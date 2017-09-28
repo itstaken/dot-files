@@ -33,10 +33,15 @@ install: $(INSTALLED_FILES)
 ~/%: %
 	@$(call copy_if_dne,$<,$@)
 
-pathogen:
-	mkdir -p ~/.vim/autoload ~/.vim/bundle && \
-	curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
+~/.vim/autoload:
+	mkdir -p ~/.vim/autoload
 
-syntastic:
+~/.vim/bundle:
+	mkdir -p ~/.vim/bundle &&
+
+pathogen: ~/.vim/autoload ~/.vim/bundle
+	wget -O ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
+
+syntastic: ~/.vim/bundle
 	cd ~/.vim/bundle && \
 	git clone https://github.com/scrooloose/syntastic.git
