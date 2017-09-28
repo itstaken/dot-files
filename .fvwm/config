@@ -237,7 +237,7 @@ AddToFunc ReStyle
 + I Style "*" BorderColorset 5
 + I Style "*" HilightBorderColorset 4
 + I MenuStyle "*" MenuColorset 0, BorderWidth $[MENU_BORDER_SIZE], ItemFormat "%s %| %i %l %|% %> ", \
-          PopupOffset -2 100, Hilight3DOff, ActiveFore $[HILIGHT_FORE], ForeGround \
+          PopupOffset -0 100, Hilight3DOff, ActiveFore $[HILIGHT_FORE], ForeGround \
           $[FG_COLOR], HilightBack $[HILIGHT_BACK], Font "$[MENU_FONT]", \
           TrianglesSolid, PopdownDelay 500
 + I BorderStyle $[BORDER_STYLE]
@@ -417,7 +417,7 @@ AddToFunc CreateStatusMenu
 + I AddToMenu StatusMenu "Status Items" Title
 + I PipeRead ' \
     echo "AddToMenu StatusMenu \\"Uptime:   $(uptime -p)\\" Nop" ;\
-    echo "AddToMenu StatusMenu \\"Mem:   $(free -h | grep Mem | awk \'{printf "%s/%s",$$$4,$$$2}\')\\" Nop" ;\
+    echo "AddToMenu StatusMenu \\"Mem:   $(free -h | grep Mem | awk \'{printf "%s/%s",$$$3,$$$2}\')\\" Nop" ;\
     echo "AddToMenu StatusMenu \\"Swap:  $(free -h | grep Swap | awk \'{printf "%s/%s",$$$3,$$$2}\')\\" Nop" '
 + I PipeRead ' \
     ls -l /sys/class/power_supply/*/capacity >/dev/null 2>/dev/null ; \
