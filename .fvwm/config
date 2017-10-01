@@ -258,7 +258,7 @@ AddToFunc ReStyle
 + I Style "*" IconTitleColorset 1
 + I Style "*" HilightIconTitleColorset 0
 + I Style "*" IconTitleRelief 0
-+ I Style "*" MinOverlapPlacement
++ I Style "*" TileCascadePlacement
 + I Style "*" SloppyFocus
 + I Style "*" SnapAttraction 3 SameType Screen
 + I Style "*" $[TITLE_POSITION]
@@ -548,7 +548,7 @@ AddToMenu ColorMenu
 + "Fire"         ChangeColor white #cc0000 gray70 #a40000 white #ef2929 black black black black
 + "Fire/line"    ChangeColor white #cc0000 gray70 #a40000 white #ef2929 black black #a40000 #a40000
 + "Swirl"        ChangeColor white  #232323 gray70 #232323 white #565656 black  black black black
-+ "Swirl/line"   ChangeColor white  #232323 gray70 #232323 white #565656 black  black black black
++ "Swirl/line"   ChangeColor white  #232323 gray70 #232323 white #565656 black  black #232323 #232323
 + "Zombies"      ChangeColor white  #38512e gray70 #38512e white #6b846a black  black black black
 + "Zombies/line" ChangeColor white  #38512e gray70 #38512e white #6b846a black  black #38512e #38512e
 + "Purple"       ChangeColor white  #4b1338 gray70 #4b1338 white #7e466b black  black black black

@@ -9,7 +9,7 @@ Features
 
 * FVWM
     - Config - see comments, too many to mention
-    - Scripts for font selection, RSS feeds, XRandR display menu, ...
+    - Scripts for font selection, XRandR display menu, ...
 * Vim Config
     - Too many to mention, see comments in .vimrc and contents of .vim
       directory
@@ -17,7 +17,7 @@ Features
     - Foreground/background of white/black
     - Plain scrollbar style (xtermish)
     - Ubuntu Mono and WenQuanYi fonts
-    - Key bindings for b, B, e, E for bumping up font sizes
+    - Key bindings for ctrl+1 to ctrl+0 (change fonts)
 * Xmodmap Settings
     - Converts `KP_Enter` into Insert Key (I like Shift+Insert pasting)
     - Converts Caps lock into `Super_L`
@@ -26,12 +26,11 @@ Features
 Installation
 ------------
 
-Copy the various dot-files to your home directory.
+Copy the various dot-files to your home directory. (or use make install)
 
-In addition, the FVWM config requires FVWM, ImageMagick for generating thumbnail
-menus, and Conky for various status menus.  For Ubuntu, `sudo apt-get install
-imagemagick conky`. The RSS menu script requires PythonMagick.  For Ubuntu,
-`sudo apt-get install python-pythonmagick`.
+In addition, the FVWM config requires FVWM, ImageMagick for generating
+thumbnail menus, and some sort of x-terminal-emulator package.  For Ubuntu,
+`sudo apt-get install imagemagick rxvt-unicode`.
 
 The FVWM configuration optionally supports `xcompmgr`, `pavucontrol`,
 `blueman-manager`, `bluetooth-wizard`, and any other applications that appear
