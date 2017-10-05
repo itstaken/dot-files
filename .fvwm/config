@@ -267,6 +267,8 @@ AddToFunc ReStyle
 + I Style trayer NoTitle, WindowListSkip, NeverFocus, BorderWidth 0, HandleWidth 0
 + I Style tint2 NoTitle, WindowListSkip, NeverFocus, BorderWidth 0, HandleWidth 0
 + I Style "*" !FPGrabFocus, GrabFocusOff
++ I Style FvwmForm-QuitForm !Title
++ I Style FvwmForm-QuitVerify !Title
 
 #
 #  Menu formats are a little tricky to describe, but the FVWM man page does a
@@ -290,33 +292,34 @@ AddToFunc ReStyle
 #
 
 # Set up icons for stuff...
-Style "Android SDK Manager" Icon 097-download.svg:$[ICON_SIZE], MiniIcon 097-download.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride, DecorateTransient
-Style "Apvlv" MiniIcon 475-file-pdf.svg:$[MINI_ICON_SIZE]
-Style "blobwars" Icon 343-radio-unchecked.svg:$[ICON_SIZE], MiniIcon 343-radio-unchecked.svg:$[MINI_ICON_SIZE]
-Style "* - Chat" MiniIcon 111-bubble2.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-Style "Chromium-browser" Icon 486-chrome.svg:$[ICON_SIZE], MiniIcon 486-chrome.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-Style "FightTheDragon" NoTitle
-Style "Firefox" MiniIcon 475-firefox.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-Style "Freeciv" Icon 004-office.svg:$[ICON_SIZE], MiniIcon 004-office.svg:$[MINI_ICON_SIZE]
-Style "Friends" MiniIcon 113-bubbles4.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-Style "FvwmIdent" Icon 266-question.svg:$[ICON_SIZE], MiniIcon 266-question.svg:$[MINI_ICON_SIZE]
-Style "Gimp" MiniIcon 014-image.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-Style "Inkscape" Icon 344-crop.svg:$[ICON_SIZE], MiniIcon 344-crop.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-Style "Layers - Brushes" MiniIcon 015-images.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-Style "Minetest*" NoTitle
-Style "MPlayer" Icon 278-play2.svg:$[ICON_SIZE], MiniIcon 278-play2.svg:$[MINI_ICON_SIZE]
-Style "*nautilus*" MiniIcon 048-folder.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-Style "oclock" NoTitle, StaysOnBottom, Sticky, WindowListSkip, NeverFocus, CirculateSkip
-Style "POWDER" Icon 152-magic-wand.svg:$[ICON_SIZE], MiniIcon 152-magic-wand.svg:$[MINI_ICON_SIZE]
-Style "*rox*" MiniIcon 048-folder.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-Style "*rxvt*" MiniIcon 386-terminal.svg:$[MINI_ICON_SIZE]
-Style "Steam" NoIcon, Icon 429-steam.svg:$[ICON_SIZE], MiniIcon 429-steam.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-Style "Toolbox*" MiniIcon 151-hammer.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-Style "URxvt" Icon 386-terminal.svg:$[ICON_SIZE], Icon 386-terminal.svg:$[ICON_SIZE], MiniIcon 386-terminal.svg:$[MINI_ICON_SIZE]
-Style "Vim" Icon 385-embed2.svg:$[ICON_SIZE], MiniIcon 385-embed2.svg:$[MINI_ICON_SIZE]
-Style "Vim *" MiniIcon 385-embed2.svg:$[MINI_ICON_SIZE]
-Style "xcalc" MiniIcon 065-calculator.svg:$[MINI_ICON_SIZE]
-Style "XClipboard" Icon 185-clipboard.svg:$[ICON_SIZE], MiniIcon 185-clipboard.svg:$[MINI_ICON_SIZE]
+AddToFunc ReStyle
++ Style "Android SDK Manager" Icon 097-download.svg:$[ICON_SIZE], MiniIcon 097-download.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride, DecorateTransient
++ Style "Apvlv" MiniIcon 475-file-pdf.svg:$[MINI_ICON_SIZE]
++ Style "blobwars" Icon 343-radio-unchecked.svg:$[ICON_SIZE], MiniIcon 343-radio-unchecked.svg:$[MINI_ICON_SIZE]
++ Style "* - Chat" MiniIcon 111-bubble2.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
++ Style "Chromium-browser" Icon 486-chrome.svg:$[ICON_SIZE], MiniIcon 486-chrome.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
++ Style "FightTheDragon" NoTitle
++ Style "Firefox" MiniIcon 475-firefox.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
++ Style "Freeciv" Icon 004-office.svg:$[ICON_SIZE], MiniIcon 004-office.svg:$[MINI_ICON_SIZE]
++ Style "Friends" MiniIcon 113-bubbles4.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
++ Style "FvwmIdent" Icon 266-question.svg:$[ICON_SIZE], MiniIcon 266-question.svg:$[MINI_ICON_SIZE]
++ Style "Gimp" MiniIcon 014-image.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
++ Style "Inkscape" Icon 344-crop.svg:$[ICON_SIZE], MiniIcon 344-crop.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
++ Style "Layers - Brushes" MiniIcon 015-images.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
++ Style "Minetest*" NoTitle
++ Style "MPlayer" Icon 278-play2.svg:$[ICON_SIZE], MiniIcon 278-play2.svg:$[MINI_ICON_SIZE]
++ Style "*nautilus*" MiniIcon 048-folder.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
++ Style "oclock" NoTitle, StaysOnBottom, Sticky, WindowListSkip, NeverFocus, CirculateSkip
++ Style "POWDER" Icon 152-magic-wand.svg:$[ICON_SIZE], MiniIcon 152-magic-wand.svg:$[MINI_ICON_SIZE]
++ Style "*rox*" MiniIcon 048-folder.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
++ Style "*rxvt*" MiniIcon 386-terminal.svg:$[MINI_ICON_SIZE]
++ Style "Steam" NoIcon, Icon 429-steam.svg:$[ICON_SIZE], MiniIcon 429-steam.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
++ Style "Toolbox*" MiniIcon 151-hammer.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
++ Style "URxvt" Icon 386-terminal.svg:$[ICON_SIZE], Icon 386-terminal.svg:$[ICON_SIZE], MiniIcon 386-terminal.svg:$[MINI_ICON_SIZE]
++ Style "Vim" Icon 385-embed2.svg:$[ICON_SIZE], MiniIcon 385-embed2.svg:$[MINI_ICON_SIZE]
++ Style "Vim *" MiniIcon 385-embed2.svg:$[MINI_ICON_SIZE]
++ Style "xcalc" MiniIcon 065-calculator.svg:$[MINI_ICON_SIZE]
++ Style "XClipboard" Icon 185-clipboard.svg:$[ICON_SIZE], MiniIcon 185-clipboard.svg:$[MINI_ICON_SIZE]
 
 # Bind left clicking I-1 to the options menu, but double-click should close the
 # window.  More specifically, double click will close, single clicking will
@@ -329,6 +332,9 @@ AddToFunc Ops-or-Close
 + C Menu DynamicWindowOpsMenu
 + H Menu DynamicWindowOpsMenu
 + M Move
+
+# Bind a middle click on the root window to pop up the settings menu.
+Mouse 2 R N Menu SettingsMenu
 
 # The root menu consists of the following:
 # ┌─────────────────┐
@@ -355,8 +361,8 @@ AddToMenu MenuFvwmRoot
 Test (x xscreensaver) AddToMenu MenuFvwmRoot "%144-lock.svg:$[MINI_ICON_SIZE]%Lock" Exec exec xscreensaver-command -lock
 # Put the exit option at the end of the menu
 AddToMenu MenuFvwmRoot
++ "%277-exit.svg:$[MINI_ICON_SIZE]%Exit" FvwmForm FvwmForm-QuitForm
 + "%277-exit.svg:$[MINI_ICON_SIZE]%Exit" FvwmForm FvwmForm-QuitVerify
-Style FvwmForm-QuitVerify !Title
 
 
 #
@@ -626,19 +632,14 @@ AddToFunc RemoveDecorations
 DestroyFunc PutDecorationsBack
 AddToFunc PutDecorationsBack
 + I State 3 off
-+ I WindowStyle !NoTitle, HandleWidth $[WINDOW_BORDER_SIZE], HandleWidth $[WINDOW_BORDER_SIZE]
++ I WindowStyle !NoTitle, HandleWidth $[WINDOW_BORDER_SIZE], BorderWidth $[WINDOW_BORDER_SIZE]
 
 
 # Nice hinting, auto-complete app selecteor
-Key semicolon FSTW $[MOD_KEY] Exec exec dmenu_run
+Key semicolon A $[MOD_KEY] Exec exec dmenu_run
 
 # Pop up the current window options on Win+o
-Key o FSTW $[MOD_KEY] Current Popup DynamicWindowOpsMenu Window 0 0
-
-# Pull all Fvwm stuff to the foreground on Win+Space
-Key Space A $[MOD_KEY] All (Fvwm*) Raise
-# Push all Fvwm stuff to the background on Win+Shift+Space
-Key Space A $[MOD_KEY]S All (Fvwm*) Lower
+Key o A $[MOD_KEY] Current Popup DynamicWindowOpsMenu Window 0 0
 
 # Resize on win+r
 Key r A $[MOD_KEY] Resize Direction SE
@@ -665,7 +666,7 @@ Key t A $[MOD_KEY] LaunchWarp x-terminal-emulator +sb
 Mouse 3 FSTW $[MOD_KEY] Resize-or-not
 
 # Bind Win+Left Mouse to Moving, raising, and lowering actions
-Mouse 1 FSTW 4 Move-Raise-or-Lower
+Mouse 1 FSTW $[MOD_KEY] Move-Raise-or-Lower
 
 # Move up or down with Win+Mouse Wheel Up/Down
 Mouse 4 A $[MOD_KEY] GoToPage +0p -1p
@@ -885,10 +886,10 @@ AddToFunc UpdatePager
 printf "Style FvwmPager NoTitle, WindowListSkip, NeverFocus, Sticky, StaysOnBottom\\n" ; \
 printf "*FvwmPager: Geometry $[RIGHT_BAR_GEOMETRY]\\n" ; \
 printf "*FvwmPager: Font none\\n" ; \
-printf "*FvwmPager: SmallFont \\"xft:Droid Sans Mono:size=6\\"\\n" ; \
+printf "*FvwmPager: SmallFont \\"xft:$[DEFAULT_FONT_FAMILY]:size=6\\"\\n" ; \
 printf "*FvwmPager: WindowLabelFormat \\"%%t\\"\\n"; \
 printf "*FvwmPager: Balloons \\n"; \
-printf "*FvwmPager: BalloonFont \\"xft:Droid Sans Mono:size=12\\" \\n"; \
+printf "*FvwmPager: BalloonFont \\"xft:[DEFAULT_FONT_FAMILY]:size=12\\" \\n"; \
 printf "*FvwmPager: MiniIcons \\n"; \
 printf "*FvwmPager: WindowColorsets 0 3 \\n"; \
 printf "*FvwmPager: HilightColorset * 3 \\n"; \
@@ -1077,13 +1078,13 @@ AddToFunc FullMax
 + I State 1 off
 + I State 2 on
 + I Maximize on
++ I WindowStyle NoTitle
 
 # Called when the state machine is going to state 1
 DestroyFunc HalfMax
 AddToFunc HalfMax
 + I State 1 on
 + I MakePartlyFull
-+ I WindowStyle NoTitle
 
 ##
 # This function uses state 3 to decide what to do with a window title.  If
@@ -1142,5 +1143,64 @@ Key XF86PowerOff A A FvwmForm FvwmForm-QuitVerify
 PipeRead "echo Echo Config load ended at $(date)"
 
 
-*FvwmForm-QuitVerify: Colorset 0
-*FvwmForm-QuitVerify: ItemColorset 0
+
+# The following snippet creates a logout/reboot/shutdown form.
+DestroyModuleConfig FvwmForm-QuitForm
+*FvwmForm-QuitForm: Font "$[MENU_FONT]"
+*FvwmForm-QuitForm: ButtonFont "$[MENU_FONT]"
+*FvwmForm-QuitForm: TimeoutFont "$[MENU_FONT]"
+*FvwmForm-QuitForm: Colorset 0
+*FvwmForm-QuitForm: ItemColorset 0
+*FvwmForm-QuitForm: GrabServer
+*FvwmForm-QuitForm: WarpPointer
+*FvwmForm-QuitForm: Line center
+*FvwmForm-QuitForm: Title "Exit"
+*FvwmForm-QuitForm: Timeout 20 Quit "Log out will occur in %% seconds."
+*FvwmForm-QuitForm: Line center
+*FvwmForm-QuitForm: Button quit "Logout" ^M
+*FvwmForm-QuitForm: Command Quit
+*FvwmForm-QuitForm: Line center
+*FvwmForm-QuitForm: Button quit "Reboot" ^B
+*FvwmForm-QuitForm: Command FvwmForm FvwmForm-Reboot
+*FvwmForm-QuitForm: Line center
+*FvwmForm-QuitForm: Button quit "Shut Down" ^B
+*FvwmForm-QuitForm: Command FvwmForm FvwmForm-Poweroff
+*FvwmForm-QuitForm: Line center
+*FvwmForm-QuitForm: Button quit "Cancel" ^[
+
+##
+# The following snippet creates a reboot/cancel form.
+DestroyModuleConfig FvwmForm-Reboot
+*FvwmForm-Reboot: Font "$[MENU_FONT]"
+*FvwmForm-Reboot: ButtonFont "$[MENU_FONT]"
+*FvwmForm-Reboot: TimeoutFont "$[MENU_FONT]"
+*FvwmForm-Reboot: Colorset 0
+*FvwmForm-Reboot: ItemColorset 0
+*FvwmForm-Reboot: GrabServer
+*FvwmForm-Reboot: WarpPointer
+*FvwmForm-Reboot: Line center
+*FvwmForm-Reboot: Title "Reboot"
+*FvwmForm-Reboot: Text "Are you sure you wish to reboot?"
+*FvwmForm-Reboot: Line center
+*FvwmForm-Reboot: Button quit "Reboot" ^M
+*FvwmForm-Reboot: Command Exec exec "/sbin/reboot"
+*FvwmForm-Reboot: Button quit "Cancel" ^[
+
+##
+# The following snippet creates a shut down/cancel form.
+DestroyModuleConfig FvwmForm-Poweroff
+*FvwmForm-Poweroff: Font "$[MENU_FONT]"
+*FvwmForm-Poweroff: ButtonFont "$[MENU_FONT]"
+*FvwmForm-Poweroff: TimeoutFont "$[MENU_FONT]"
+*FvwmForm-Poweroff: Colorset 0
+*FvwmForm-Poweroff: ItemColorset 0
+*FvwmForm-Poweroff: GrabServer
+*FvwmForm-Poweroff: WarpPointer
+*FvwmForm-Poweroff: Line center
+*FvwmForm-Poweroff: Title "Shut Down"
+*FvwmForm-Poweroff: Text "Are you sure you wish to shut down?"
+*FvwmForm-Poweroff: Line center
+*FvwmForm-Poweroff: Button quit "Shut Down" ^M
+*FvwmForm-Poweroff: Command Exec exec "/sbin/poweroff"
+*FvwmForm-Poweroff: Button quit "Cancel" ^[
+
