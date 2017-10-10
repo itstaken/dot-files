@@ -362,7 +362,6 @@ Test (x xscreensaver) AddToMenu MenuFvwmRoot "%144-lock.svg:$[MINI_ICON_SIZE]%Lo
 # Put the exit option at the end of the menu
 AddToMenu MenuFvwmRoot
 + "%277-exit.svg:$[MINI_ICON_SIZE]%Exit" FvwmForm FvwmForm-QuitForm
-+ "%277-exit.svg:$[MINI_ICON_SIZE]%Exit" FvwmForm FvwmForm-QuitVerify
 
 
 #
