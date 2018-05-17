@@ -100,8 +100,8 @@ def create_parser():
     The second mode should be executed by the display menu, so FVWM needs to be
     able to find this script.
     '''
-    parser = optparse.OptionParser(usage=
-    '''
+    parser = optparse.OptionParser(
+        usage='''
     %prog [-f|--functions] | [-d|--displays]
 
 This script generates functions and menus so that FVWM can have an XRANDR
@@ -125,18 +125,30 @@ For example:
     AddToMenu MenuFvwmRoot
     + "Displays" Popup DisplaysMenu
     ''')
-    parser.add_option('-f', '--functions',
-            help='Generate top-level functions needed by FVWM to generate the DisplaysMenu.', #pylint: disable=line-too-long
-            action='store_true',
-            dest='functions',
-            default=False,
-            )
-    parser.add_option('-d', '--displays',
-            help="Generates the DisplaysMenu content.",
-            action='store_true',
-            dest='displays',
-            default=False
-            )
+    parser.add_option(
+        '-f', '--functions',
+        help='Generate top-level functions needed by FVWM to generate the DisplaysMenu.', #pylint: disable=line-too-long
+        action='store_true',
+        dest='functions',
+        default=False,
+        )
+    parser.add_option(
+        '-d', '--displays',
+        help="Generates the DisplaysMenu content.",
+        action='store_true',
+        dest='displays',
+        default=False
+        )
+    parser.add_option(
+        '-c', '--connected-icon',
+        help="Icon to display on a connected display.",
+        dest='connected',
+        default=None)
+    parser.add_option(
+        '-u', '--unconnected-icon',
+        help="Icon to display on an unconnected display.",
+        dest='unconnected',
+        default=None)
 
     return parser
 
@@ -280,27 +292,32 @@ def do_resolution_menu(prefix, function, name, display):
         if resolution['active']:
             label += " (active)"
         submenu += 'AddToMenu "{prefix}-{display}" "{label}" "{function}" "{display}" "{resolution}"\n'.format( #pylint: disable=line-too-long
-                prefix=prefix,
-                display=name,
-                label=label,
-                function=function,
-                resolution=resolution['resolution'])
+            prefix=prefix,
+            display=name,
+            label=label,
+            function=function,
+            resolution=resolution['resolution'])
 
     return submenu
 
-def do_top_level(menu, displays):
+def do_top_level(menu, displays, connected=None, disconnected=None):
     '''
     Produces the top-level DisplaysMenu featuring one display per entry.
     '''
     menu_text = 'DestroyMenu recreate %s\n' % menu
     for display in displays.iterkeys():
-        if not displays[display]['primary']:
-            menu_text += 'AddToMenu %s "%s" Popup "%s"\n' % (menu, display, display) #pylint: disable=line-too-long
+        extra = ''
+        if displays[display]['primary']:
+            extra += " (primary)"
+        if not displays[display]['connected']:
+            extra += " %{0}%".format(disconnected or '270-cancel-circle.svg')
         else:
-            menu_text += 'AddToMenu %s "%s (primary)" Popup "%s"\n' % (menu, display, display) #pylint: disable=line-too-long
+            extra += " %{0}%".format(connected or '184-power-cord.svg')
+
+        menu_text += 'AddToMenu %s "%s%s" Popup "%s"\n' % (menu, display, extra, display) #pylint: disable=line-too-long
     return menu_text
 
-def functions():
+def functions(connected=None, unconnected=None):
     '''
     Generates the one-time functions needed for configuring the dynamic
     DisplaysMenu.
@@ -338,11 +355,16 @@ def functions():
     print()
     print('DestroyMenu DisplaysMenu')
     print('AddToMenu DisplaysMenu')
-    print('+ DynamicPopupAction PipeRead \'"$[FVWM_USERDIR]"/display.py -d\'')
+    extra = ''
+    if connected:
+        extra += ' -c %s' % connected
+    if unconnected:
+        extra += ' -u %s' % unconnected
+    print('+ DynamicPopupAction PipeRead \'"$[FVWM_USERDIR]"/display.py %s -d\'' % extra)
     #print('+ "Displays" Title')
 
 
-def menus():
+def menus(connected=None, unconnected=None):
     '''
     Creates the DisplaysMenu menu and sub menus.
     '''
@@ -354,7 +376,7 @@ def menus():
     ##
     # Top-level menu
     menu = ''
-    menu += do_top_level(menu_name, displays)
+    menu += do_top_level(menu_name, displays, connected, unconnected)
 
     ##
     # Individual display menu
@@ -396,10 +418,10 @@ def main():
         options.functions = True
 
     if options.functions:
-        functions()
+        functions(options.connected, options.unconnected)
 
     if options.displays:
-        menus()
+        menus(options.connected, options.unconnected)
 
 if __name__ == "__main__":
     main()
