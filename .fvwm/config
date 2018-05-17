@@ -213,6 +213,9 @@ AddToFunc DoColorSets
 + I Read "$[fvwm_color_scheme_preference]"
 + I Schedule 250 FinishColorUpdate
 
+SetEnv ACTIVE_GRADIENT VGradient
+SetEnv INACTIVE_GRADIENT VGradient
+
 ##
 # Colorset 0 - "Default".  Active title bar, hilight, icon hilight, menus.
 # Colorset 1 - Default inactive.  Inactive title bar, inactive buttons in the
@@ -226,13 +229,13 @@ AddToFunc DoColorSets
 # they are modified.
 DestroyFunc FinishColorUpdate
 AddToFunc FinishColorUpdate
-+ I ColorSet 0 Tint $[BG_COLOR] 50, bg $[BG_COLOR], fg $[FG_COLOR], fgsh $[FGSHADOW], hi $[FGSHADOW], sh $[SHADE], VGradient 40 $[HILIGHT_BACK] $[BG_COLOR]
-+ I ColorSet 1 bg $[BG_COLOR_INACTIVE], fg $[FG_COLOR_INACTIVE],fgsh $[FGSHADOW], hi $[HILIGHT_FORE], sh $[SHADE], VGradient 40 $[BG_COLOR_INACTIVE] $[HILIGHT_BACK]
++ I ColorSet 0 Tint $[BG_COLOR] 50, bg $[BG_COLOR], fg $[FG_COLOR], fgsh $[FGSHADOW], hi $[HILIGHT_FORE], sh $[SHADE], $[ACTIVE_GRADIENT] 40 $[HILIGHT_BACK] $[BG_COLOR]
++ I ColorSet 1 bg $[BG_COLOR_INACTIVE], fg $[FG_COLOR_INACTIVE],fgsh $[FGSHADOW], hi $[HILIGHT_FORE], sh $[SHADE], $[INACTIVE_GRADIENT] 40 $[BG_COLOR] $[HILIGHT_BACK]
 + I ColorSet 2 bg $[BG_COLOR_INACTIVE], fg $[FG_COLOR_INACTIVE], fgsh $[FGSHADOW], hi $[HILIGHT_FORE], sh $[SHADE]
 + I ColorSet 3 bg $[HILIGHT_BACK], fg $[FG_COLOR]
-+ I ColorSet 4 Tint $[BG_COLOR] 50, bg $[BORDER_ACTIVE], fg $[FG_COLOR], fgsh $[FGSHADOW], hi $[FGSHADOW], sh $[SHADE]
-+ I ColorSet 5 Tint $[BG_COLOR] 50, bg $[BORDER_INACTIVE], fg $[FG_COLOR], fgsh $[FGSHADOW], hi $[FGSHADOW], sh $[SHADE]
-+ I ColorSet 6 RootTransparent Buffer, Tint $[BG_COLOR] 50, bg $[BORDER_INACTIVE], fg $[FG_COLOR], fgsh $[FGSHADOW], hi $[FGSHADOW], sh $[SHADE]
++ I ColorSet 4 Tint $[BG_COLOR] 50, bg $[BORDER_ACTIVE], fg $[FG_COLOR], fgsh $[FGSHADOW], hi $[HILIGHT_FORE], sh $[SHADE]
++ I ColorSet 5 Tint $[BG_COLOR] 50, bg $[BORDER_INACTIVE], fg $[FG_COLOR], fgsh $[FGSHADOW], hi $[HILIGHT_FORE], sh $[SHADE]
++ I ColorSet 6 RootTransparent Buffer, Tint $[BG_COLOR] 50, bg $[BORDER_INACTIVE], fg $[FG_COLOR], fgsh $[FGSHADOW], hi $[HILIGHT_FORE], sh $[SHADE]
 + I ReStyle
 
 AddToDecor DefaultDecor
