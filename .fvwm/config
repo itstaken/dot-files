@@ -213,7 +213,15 @@ AddToFunc DoColorSets
 + I Read "$[fvwm_color_scheme_preference]"
 + I Schedule 250 FinishColorUpdate
 
-#
+##
+# Colorset 0 - "Default".  Active title bar, hilight, icon hilight, menus.
+# Colorset 1 - Default inactive.  Inactive title bar, inactive buttons in the
+#              title.
+# Colorset 2 -  No longer used.
+# Colorset 3 -  Windows in the pager.
+# Colorset 4 -  Active window border
+# Colorset 5 -  Inactive window border
+# Colorset 6 -  Window pager itself.
 # Updates the ColorSets so that a restart isn't needed when
 # they are modified.
 DestroyFunc FinishColorUpdate
@@ -227,48 +235,51 @@ AddToFunc FinishColorUpdate
 + I ColorSet 6 RootTransparent Buffer, Tint $[BG_COLOR] 50, bg $[BORDER_INACTIVE], fg $[FG_COLOR], fgsh $[FGSHADOW], hi $[FGSHADOW], sh $[SHADE]
 + I ReStyle
 
+AddToDecor DefaultDecor
++ TitleStyle Inactive (Colorset 1 -- flat)
++ TitleStyle Active (Colorset 0 -- flat)
++ ButtonStyle All Active (Colorset 0 -- flat)
++ ButtonStyle All ActiveDown (Colorset 1 -- flat)
++ ButtonStyle All Inactive (Colorset 1 -- flat)
++ AddButtonStyle $[fvwm_title_button_miniicon] Active MiniIcon (HiddenHandles NoInset Hilight3Doff -- flat)
++ AddButtonStyle $[fvwm_title_button_clip] Active (Pixmap 206-attachment.svg:14x14 -- flat)
++ AddButtonStyle $[fvwm_title_button_arrow_up] Active (Pixmap 315-arrow-up2.svg:14x14 -- flat)
++ BorderStyle $[BORDER_STYLE]
+
+
 DestroyFunc ReStyle
 AddToFunc ReStyle
-+ I TitleStyle Inactive (Colorset 1 -- flat)
-+ I TitleStyle Active (Colorset 0 -- flat)
-+ I Style "*" Colorset 1
-+ I Style "*" HilightIconTitleColorset 0
-+ I Style "*" BorderWidth $[WINDOW_BORDER_SIZE], HandleWidth $[WINDOW_BORDER_SIZE]
-+ I Style "*" BorderColorset 5
-+ I Style "*" HilightBorderColorset 4
++ I Style DefaultStyle UseDecor DefaultDecor
++ I Style DefaultStyle Colorset 1
++ I Style DefaultStyle HilightIconTitleColorset 0
++ I Style DefaultStyle BorderWidth $[WINDOW_BORDER_SIZE], HandleWidth $[WINDOW_BORDER_SIZE]
++ I Style DefaultStyle BorderColorset 5
++ I Style DefaultStyle HilightBorderColorset 4
 + I MenuStyle "*" MenuColorset 0, BorderWidth $[MENU_BORDER_SIZE], ItemFormat "%s %| %i %l %|% %> ", \
           PopupOffset -0 100, Hilight3DOff, ActiveFore $[HILIGHT_FORE], ForeGround \
           $[FG_COLOR], HilightBack $[HILIGHT_BACK], Font "$[MENU_FONT]", \
           TrianglesSolid, PopdownDelay 500
-+ I BorderStyle $[BORDER_STYLE]
-+ I ButtonStyle All Active (Colorset 0 -- flat)
-+ I ButtonStyle All ActiveDown (Colorset 1 -- flat)
-+ I ButtonStyle All Inactive (Colorset 1 -- flat)
-+ I AddButtonStyle $[fvwm_title_button_miniicon] Active MiniIcon (HiddenHandles NoInset Hilight3Doff -- flat)
-# Put a paperclip icon (I-2) in the upper right of the active window
-+ I AddButtonStyle $[fvwm_title_button_clip] Active (Pixmap 206-attachment.svg:14x14 -- flat)
-# Put an up arrow (I-4) in the upper right of the active window
-+ I AddButtonStyle $[fvwm_title_button_arrow_up] Active (Pixmap 315-arrow-up2.svg:14x14 -- flat)
-+ I Style "*" HilightBack $[HILIGHT_BACK]
-+ I Style "*" HilightFore $[HILIGHT_FORE]
-+ I Style "*" IconBackgroundPadding 1
-+ I Style "*" IconBackgroundRelief 0
-+ I Style "*" IconBox $[ICONBOX_GEOMETRY], IconFill $[ICONFILL_UD] $[ICONFILL_LR]
-+ I Style "*" IconOverride
-+ I Style "*" IconTitleColorset 1
-+ I Style "*" HilightIconTitleColorset 0
-+ I Style "*" IconTitleRelief 0
-+ I Style "*" TileCascadePlacement
-+ I Style "*" SloppyFocus
-+ I Style "*" SnapAttraction 3 SameType Screen
-+ I Style "*" $[TITLE_POSITION]
-+ I Style "*" HilightColorset 0
++ I Style DefaultStyle HilightBack $[HILIGHT_BACK]
++ I Style DefaultStyle HilightFore $[HILIGHT_FORE]
++ I Style DefaultStyle IconBackgroundPadding 1
++ I Style DefaultStyle IconBackgroundRelief 0
++ I Style DefaultStyle IconBox $[ICONBOX_GEOMETRY], IconFill $[ICONFILL_UD] $[ICONFILL_LR]
++ I Style DefaultStyle IconOverride
++ I Style DefaultStyle IconTitleColorset 1
++ I Style DefaultStyle HilightIconTitleColorset 0
++ I Style DefaultStyle IconTitleRelief 0
++ I Style DefaultStyle TileCascadePlacement
++ I Style DefaultStyle SloppyFocus
++ I Style DefaultStyle SnapAttraction 3 SameType Screen
++ I Style DefaultStyle $[TITLE_POSITION]
++ I Style DefaultStyle HilightColorset 0
++ I Style DefaultStyle !FPGrabFocus, GrabFocusOff
++ I Style "*" UseStyle DefaultStyle
 + I Style "*Shroud of the Avatar*" NoTitle, BorderWidth 0, HandleWidth 0
 + I Style trayer NoTitle, WindowListSkip, NeverFocus, BorderWidth 0, HandleWidth 0
 + I Style tint2 NoTitle, WindowListSkip, NeverFocus, BorderWidth 0, HandleWidth 0
 + I Style "*" !FPGrabFocus, GrabFocusOff
 + I Style FvwmForm-QuitForm !Title
-+ I Style FvwmForm-QuitVerify !Title
 
 #
 #  Menu formats are a little tricky to describe, but the FVWM man page does a
@@ -293,33 +304,33 @@ AddToFunc ReStyle
 
 # Set up icons for stuff...
 AddToFunc ReStyle
-+ Style "Android SDK Manager" Icon 097-download.svg:$[ICON_SIZE], MiniIcon 097-download.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride, DecorateTransient
-+ Style "Apvlv" MiniIcon 475-file-pdf.svg:$[MINI_ICON_SIZE]
-+ Style "blobwars" Icon 343-radio-unchecked.svg:$[ICON_SIZE], MiniIcon 343-radio-unchecked.svg:$[MINI_ICON_SIZE]
-+ Style "* - Chat" MiniIcon 111-bubble2.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-+ Style "Chromium-browser" Icon 486-chrome.svg:$[ICON_SIZE], MiniIcon 486-chrome.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-+ Style "FightTheDragon" NoTitle
-+ Style "Firefox" MiniIcon 475-firefox.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-+ Style "Freeciv" Icon 004-office.svg:$[ICON_SIZE], MiniIcon 004-office.svg:$[MINI_ICON_SIZE]
-+ Style "Friends" MiniIcon 113-bubbles4.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-+ Style "FvwmIdent" Icon 266-question.svg:$[ICON_SIZE], MiniIcon 266-question.svg:$[MINI_ICON_SIZE]
-+ Style "Gimp" MiniIcon 014-image.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-+ Style "Inkscape" Icon 344-crop.svg:$[ICON_SIZE], MiniIcon 344-crop.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-+ Style "Layers - Brushes" MiniIcon 015-images.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-+ Style "Minetest*" NoTitle
-+ Style "MPlayer" Icon 278-play2.svg:$[ICON_SIZE], MiniIcon 278-play2.svg:$[MINI_ICON_SIZE]
-+ Style "*nautilus*" MiniIcon 048-folder.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-+ Style "oclock" NoTitle, StaysOnBottom, Sticky, WindowListSkip, NeverFocus, CirculateSkip
-+ Style "POWDER" Icon 152-magic-wand.svg:$[ICON_SIZE], MiniIcon 152-magic-wand.svg:$[MINI_ICON_SIZE]
-+ Style "*rox*" MiniIcon 048-folder.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-+ Style "*rxvt*" MiniIcon 386-terminal.svg:$[MINI_ICON_SIZE]
-+ Style "Steam" NoIcon, Icon 429-steam.svg:$[ICON_SIZE], MiniIcon 429-steam.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-+ Style "Toolbox*" MiniIcon 151-hammer.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-+ Style "URxvt" Icon 386-terminal.svg:$[ICON_SIZE], Icon 386-terminal.svg:$[ICON_SIZE], MiniIcon 386-terminal.svg:$[MINI_ICON_SIZE]
-+ Style "Vim" Icon 385-embed2.svg:$[ICON_SIZE], MiniIcon 385-embed2.svg:$[MINI_ICON_SIZE]
-+ Style "Vim *" MiniIcon 385-embed2.svg:$[MINI_ICON_SIZE]
-+ Style "xcalc" MiniIcon 065-calculator.svg:$[MINI_ICON_SIZE]
-+ Style "XClipboard" Icon 185-clipboard.svg:$[ICON_SIZE], MiniIcon 185-clipboard.svg:$[MINI_ICON_SIZE]
++ I Style "Android SDK Manager" Icon 097-download.svg:$[ICON_SIZE], MiniIcon 097-download.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride, DecorateTransient
++ I Style "Apvlv" MiniIcon 475-file-pdf.svg:$[MINI_ICON_SIZE]
++ I Style "blobwars" Icon 343-radio-unchecked.svg:$[ICON_SIZE], MiniIcon 343-radio-unchecked.svg:$[MINI_ICON_SIZE]
++ I Style "* - Chat" MiniIcon 111-bubble2.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
++ I Style "Chromium-browser" Icon 486-chrome.svg:$[ICON_SIZE], MiniIcon 486-chrome.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
++ I Style "FightTheDragon" NoTitle
++ I Style "Firefox" MiniIcon 475-firefox.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
++ I Style "Freeciv" Icon 004-office.svg:$[ICON_SIZE], MiniIcon 004-office.svg:$[MINI_ICON_SIZE]
++ I Style "Friends" MiniIcon 113-bubbles4.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
++ I Style "FvwmIdent" Icon 266-question.svg:$[ICON_SIZE], MiniIcon 266-question.svg:$[MINI_ICON_SIZE]
++ I Style "Gimp" MiniIcon 014-image.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
++ I Style "Inkscape" Icon 344-crop.svg:$[ICON_SIZE], MiniIcon 344-crop.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
++ I Style "Layers - Brushes" MiniIcon 015-images.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
++ I Style "Minetest*" NoTitle
++ I Style "MPlayer" Icon 278-play2.svg:$[ICON_SIZE], MiniIcon 278-play2.svg:$[MINI_ICON_SIZE]
++ I Style "*nautilus*" MiniIcon 048-folder.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
++ I Style "oclock" NoTitle, StaysOnBottom, Sticky, WindowListSkip, NeverFocus, CirculateSkip
++ I Style "POWDER" Icon 152-magic-wand.svg:$[ICON_SIZE], MiniIcon 152-magic-wand.svg:$[MINI_ICON_SIZE]
++ I Style "*rox*" MiniIcon 048-folder.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
++ I Style "*rxvt*" MiniIcon 386-terminal.svg:$[MINI_ICON_SIZE]
++ I Style "Steam" NoIcon, Icon 429-steam.svg:$[ICON_SIZE], MiniIcon 429-steam.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
++ I Style "Toolbox*" MiniIcon 151-hammer.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
++ I Style "URxvt" Icon 386-terminal.svg:$[ICON_SIZE], Icon 386-terminal.svg:$[ICON_SIZE], MiniIcon 386-terminal.svg:$[MINI_ICON_SIZE]
++ I Style "Vim" Icon 385-embed2.svg:$[ICON_SIZE], MiniIcon 385-embed2.svg:$[MINI_ICON_SIZE]
++ I Style "Vim *" MiniIcon 385-embed2.svg:$[MINI_ICON_SIZE]
++ I Style "xcalc" MiniIcon 065-calculator.svg:$[MINI_ICON_SIZE]
++ I Style "XClipboard" Icon 185-clipboard.svg:$[ICON_SIZE], MiniIcon 185-clipboard.svg:$[MINI_ICON_SIZE]
 
 # Bind left clicking I-1 to the options menu, but double-click should close the
 # window.  More specifically, double click will close, single clicking will
@@ -554,6 +565,8 @@ AddToMenu ColorMenu
 + "Fire/line"    ChangeColor white #cc0000 gray70 #a40000 white #ef2929 black black #a40000 #a40000
 + "Swirl"        ChangeColor white  #232323 gray70 #232323 white #565656 black  black black black
 + "Swirl/line"   ChangeColor white  #232323 gray70 #232323 white #565656 black  black #232323 #232323
++ "Weapon"       ChangeColor white  #1f1a17 gray70 #1f1a17 white #424d42 black  black black black
++ "Weapon/line"  ChangeColor white  #1f1a17 gray70 #1f1a17 white #424d42 black  black #1f1a17 #1f1a17
 + "Zombies"      ChangeColor white  #38512e gray70 #38512e white #6b846a black  black black black
 + "Zombies/line" ChangeColor white  #38512e gray70 #38512e white #6b846a black  black #38512e #38512e
 + "Purple"       ChangeColor white  #4b1338 gray70 #4b1338 white #7e466b black  black black black
@@ -656,7 +669,7 @@ Key Up A $[MOD_KEY] AnimatedMove keep 0 Warp
 Key Down A $[MOD_KEY] AnimatedMove keep -0 Warp
 
 # When Win+T is pressed, open a terminal
-Key t A $[MOD_KEY] LaunchWarp x-terminal-emulator +sb
+Key t A $[MOD_KEY] LaunchWarp x-terminal-emulator
 
 # When Win+S is pressed, shade the window (no, this is used for screenshot...
 #Key s A $[MOD_KEY] WindowShade
@@ -823,6 +836,7 @@ AddToFunc StartFunction
 + I LoadWallpaper
 + I Module FvwmCommandS
 + I Module FvwmEvent
++ I Test (init) Exec exec $[FVWM_USERDIR]/keyboard.sh
 + I Test (init, x ibus-daemon) Exec exec ibus-daemon -drx
 + I TestRc (NoMatch) Test (x fcitx) Exec exec fcitx
 + I Test (init, x nm-applet) Exec exec nm-applet
@@ -924,6 +938,7 @@ DestroyFunc DynamicWindowOpsMenuFunction
 AddToFunc DynamicWindowOpsMenuFunction
 + I DestroyMenu recreate DynamicWindowOpsMenu
 + I AddToMenu DynamicWindowOpsMenu "Window Options: $[w.name]" Title
++ I AddToMenu DynamicWindowOpsMenu Styles Popup StylesMenu
 + I ThisWindow ("Wine") AddToMenu DynamicWindowOpsMenu Focus Focus
 + I AddToMenu DynamicWindowOpsMenu "Toggle Title" ToggleTitle
 + I Test (x xcompmgr, x transset) AddToMenu DynamicWindowOpsMenu "Solidify" Exec exec transset -i $[w.id] 1.0
@@ -1127,6 +1142,14 @@ AddToFunc ToggleSticky
 + I ThisWindow (Sticky) WindowStyle !Sticky
 + I TestRc (NoMatch) WindowStyle Sticky
 
+AddToMenu StylesMenu "Default" SwapStyle DefaultStyle
+
+DestroyFunc SwapStyle
+AddToFunc SwapStyle
++ I WindowStyle UseStyle $0
++ I UpdateStyles
++ I Recapture
+
 # media keys
 Key XF86AudioMute A A Exec exec amixer set Master toggle
 #Key F6 A A Exec exec brightness.sh -d
@@ -1137,7 +1160,7 @@ Test (x amixer) Key F10 A A Exec exec amixer -D pulse sset Master 5%+
 Test (x amixer) Key XF86AudioRaiseVolume A A Exec exec amixer -D pulse sset Master 2%+
 Test (x amixer) Key XF86AudioLowerVolume A A Exec exec amixer -D pulse sset Master 2%-
 
-Key XF86PowerOff A A FvwmForm FvwmForm-QuitVerify
+Key XF86PowerOff A A FvwmForm FvwmForm-QuitForm
 
 PipeRead "echo Echo Config load ended at $(date)"
 
