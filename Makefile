@@ -37,10 +37,14 @@ install: $(INSTALLED_FILES)
 	mkdir -p ~/.vim/autoload
 
 ~/.vim/bundle:
-	mkdir -p ~/.vim/bundle &&
+	mkdir -p ~/.vim/bundle
 
 pathogen: ~/.vim/autoload ~/.vim/bundle
 	wget -O ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
+
+ale: ~/.vim/bundle
+	cd ~/.vim/bundle && \
+	git clone https://github.com/w0rp/ale
 
 syntastic: ~/.vim/bundle
 	cd ~/.vim/bundle && \
