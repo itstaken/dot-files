@@ -1,23 +1,26 @@
 
 ! RXVT settings
-*Rxvt*foreground: white
-*Rxvt*background: black
+!*Rxvt*foreground: white
+!*Rxvt*background: black
+*Rxvt*foreground: #bfbfb0
+*Rxvt*background: #2b2b28
 ! -- make scrollbars look like traditional xterm
 *Rxvt*scrollstyle: plain
 ! -- shortcut ctrl+b for big font
 ! -- shortcut ctrl+B for not as big font
 *Rxvt.iso14755 : false
 
-*Rxvt*font: xft:Ubuntu Mono:pixelsize=12,xft:WenQuanYi Micro Hei
+*Rxvt*font: xft:DejaVu Sans Mono:pixelsize=12,xft:WenQuanYi Zen Hei
 
-! -- shortcut ctlr b for bigger font
-*Rxvt.keysym.Control-b: command:\033]50;xft:Ubuntu Mono:pixelsize=16,xft:WenQuanYi Micro Hei:antialias=false\007
-! -- shortcut ctlr b for much bigger font
-*Rxvt.keysym.Control-B: command:\033]50;xft:Ubuntu Mono:pixelsize=20,xft:WenQuanYi Micro Hei:antialias=false\007
-! -- shortcut ctlr e for even bigger font
-*Rxvt.keysym.Control-e: command:\033]50;xft:Ubuntu Mono:pixelsize=24,xft:WenQuanYi Micro Hei:antialias=false\007
-! -- shortcut ctlr E for even more embiggened font
-*Rxvt.keysym.Control-E: command:\033]50;xft:Ubuntu Mono:pixelsize=30,xft:WenQuanYi Micro Hei:antialias=false\007
+! -- use ctlr 1 to whatever for font sizes
+*Rxvt.keysym.Control-1: command:\033]50;xft:DejaVu Sans Mono:pixelsize=10,xft:WenQuanYi Zen Hei:antialias=false\007
+*Rxvt.keysym.Control-2: command:\033]50;xft:DejaVu Sans Mono:pixelsize=12,xft:WenQuanYi Zen Hei:antialias=false\007
+*Rxvt.keysym.Control-3: command:\033]50;xft:DejaVu Sans Mono:pixelsize=14,xft:WenQuanYi Zen Hei:antialias=false\007
+*Rxvt.keysym.Control-4: command:\033]50;xft:DejaVu Sans Mono:pixelsize=16,xft:WenQuanYi Zen Hei:antialias=false\007
+*Rxvt.keysym.Control-5: command:\033]50;xft:DejaVu Sans Mono:pixelsize=18,xft:WenQuanYi Zen Hei:antialias=false\007
+*Rxvt.keysym.Control-6: command:\033]50;xft:DejaVu Sans Mono:pixelsize=20,xft:WenQuanYi Zen Hei:antialias=false\007
+*Rxvt.keysym.Control-7: command:\033]50;xft:DejaVu Sans Mono:pixelsize=22,xft:WenQuanYi Zen Hei:antialias=false\007
+*Rxvt.keysym.Control-0: command:\033]50;xft:DejaVu Sans Mono:pixelsize=14,xft:Droid Arabic Kufi:pixelsize=14,xft:WenQuanYi Zen Hei:antialias=false\007
 
 ! XTERM settings
 ! xterm ignores synthetic events, allow them:
