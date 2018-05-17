@@ -105,6 +105,9 @@ SetEnv fvwm_title_button_arrow_up 4
 # This puts the icons directory content in the image search path.
 ImagePath $[fvwm_icons_dir]:+
 
+SetEnv ACTIVE_GRADIENT VGradient
+SetEnv INACTIVE_GRADIENT VGradient
+
 # This is where I save/load the current wallpaper (SetEnv WALLPAPER path.png)
 SetEnv fvwm_wallpaper_preference "$[fvwm_preferences_dir]/wallpaper"
 
@@ -213,8 +216,6 @@ AddToFunc DoColorSets
 + I Read "$[fvwm_color_scheme_preference]"
 + I Schedule 250 FinishColorUpdate
 
-SetEnv ACTIVE_GRADIENT VGradient
-SetEnv INACTIVE_GRADIENT VGradient
 
 ##
 # Colorset 0 - "Default".  Active title bar, hilight, icon hilight, menus.
