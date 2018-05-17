@@ -26,7 +26,7 @@
 # different versions of ubuntu and no documented place of what it will be...
 fix_color(){
     VALUE=${1}
-    if [[ "${VALUE}" =~ "#[0-9A-Fa-f]{12}" ]] ; then
+    if [[ "${VALUE}" =~ \#[0-9A-Fa-f]{12} ]] ; then
         COLOR=$(echo $COLOR | sed 's/\(#\?..\)../\1/g')
     elif [[ "${VALUE}" =~ rgb\(([0-9]+),([0-9]+),([0-9]+)\) ]] ; then
         COLOR="$(printf "#%02x%02x%02x" ${BASH_REMATCH[1]} ${BASH_REMATCH[2]} ${BASH_REMATCH[3]})"
@@ -107,7 +107,7 @@ NV_COLOR["BG_COLOR_INACTIVE"]="Inactive Background"
 NV_COLOR["HILIGHT_FORE"]="Hilight Foreground"
 NV_COLOR["HILIGHT_BACK"]="Hilight Background"
 NV_COLOR["SHADE"]="Shade color"
-NV_COLOR["FGSHADOW"]="Shadow Color"
+NV_COLOR["FGSHADOW"]="Shadow color (text)"
 NV_COLOR["BORDER_ACTIVE"]="Active Window Border Color"
 NV_COLOR["BORDER_INACTIVE"]="Inactive Window Border Color"
 
