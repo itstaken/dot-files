@@ -16,7 +16,7 @@
 #
 #     AddToFunc StartFunction
 #     + I Module FvwmCommandS
-#     + I PipeRead bash $[FVWM_USERDIR]/theme_customize.sh -m ThemeMenu
+#     + I PipeRead bash $[FVWM_USERDIR]/theme_customize.sh -f ThemeMenu
 #     AddToMenu MenuFvwmRoot
 #     + "Change Color Settings" Popup ThemeMenu
 #
@@ -62,10 +62,20 @@ do_menu(){
 for KEY in FG_COLOR BG_COLOR FG_COLOR_INACTIVE BG_COLOR_INACTIVE HILIGHT_FORE HILIGHT_BACK SHADE FGSHADOW BORDER_ACTIVE BORDER_INACTIVE ; do
 
     cat << EOF
-AddToMenu ${MENU} "%/tmp/${KEY}.png%${NV_COLOR[${KEY}]}" Exec exec bash "$0" -p ${KEY}
+AddToMenu "${MENU}" "%/tmp/${KEY}.png%${NV_COLOR[${KEY}]}" Exec exec bash "$0" -p ${KEY}
 EOF
 
 done
+
+    #also look for some .fvwm/themes entries
+    if [ -f "${FVWM_USERDIR}/.theme" ] ; then
+        echo "AddToMenu \"${MENU}\" \"Saved Custom Themes\" Title"
+        echo Read \"${FVWM_USERDIR}/.theme\"
+    fi
+
+    cat << EOF
+AddToMenu "${MENU}" "Save Custom" Exec exec bash "\$[FVWM_USERDIR]/theme_customize.sh" -s "${MENU}"
+EOF
 }
 
 do_func(){
@@ -99,6 +109,17 @@ FvwmCommand and call ChangeColor to effect the change.
 EOF
 }
 
+do_save(){
+    local NEWNAME
+    NEWNAME=$(zenity --entry --text "Enter Custom Scheme name:")
+    if [ $? -eq 0 ] ; then
+        cat >> "${FVWM_USERDIR}/.theme" << EOF
+AddToMenu '$MENU' "$NEWNAME" ChangeColor ${FG_COLOR} ${BG_COLOR} ${FG_COLOR_INACTIVE} ${BG_COLOR_INACTIVE} ${HILIGHT_FORE} ${HILIGHT_BACK} ${SHADE} ${FGSHADOW} ${BORDER_ACTIVE} ${BORDER_INACTIVE}
+EOF
+        FvwmCommand "Read \"${FVWM_USERDIR}/.theme\""
+    fi
+}
+
 declare -A NV_COLOR
 NV_COLOR["FG_COLOR"]="Foreground"
 NV_COLOR["BG_COLOR"]="Background"
@@ -111,7 +132,7 @@ NV_COLOR["FGSHADOW"]="Shadow color (text)"
 NV_COLOR["BORDER_ACTIVE"]="Active Window Border Color"
 NV_COLOR["BORDER_INACTIVE"]="Inactive Window Border Color"
 
-while getopts "f:p:m:h" OPT ; do
+while getopts "f:p:m:hs:" OPT ; do
     case "${OPT}" in
         f) #generate the function for generating the menus
             ACTION=function
@@ -123,6 +144,10 @@ while getopts "f:p:m:h" OPT ; do
             ;;
         m)
             ACTION=menu
+            MENU=${OPTARG}
+            ;;
+        s)
+            ACTION=save
             MENU=${OPTARG}
             ;;
         \?)
@@ -141,6 +166,9 @@ case "${ACTION}" in
         ;;
     "function")
         do_func
+        ;;
+    "save")
+        do_save
         ;;
     *)
         do_help
