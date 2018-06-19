@@ -105,11 +105,10 @@ SetEnv fvwm_title_button_arrow_up 4
 # This puts the icons directory content in the image search path.
 ImagePath $[fvwm_icons_dir]:+
 
-SetEnv ACTIVE_GRADIENT VGradient
-SetEnv INACTIVE_GRADIENT VGradient
-
 # This is where I save/load the current wallpaper (SetEnv WALLPAPER path.png)
 SetEnv fvwm_wallpaper_preference "$[fvwm_preferences_dir]/wallpaper"
+
+DestroyFunc ReStyle
 
 # This block creates the directories needed for my config to function
 # correctly.
@@ -216,13 +215,15 @@ AddToFunc DoColorSets
 + I Read "$[fvwm_color_scheme_preference]"
 + I Schedule 250 FinishColorUpdate
 
+SetEnv ACTIVE_GRADIENT CGradient
+SetEnv INACTIVE_GRADIENT CGradient
 
 ##
 # Colorset 0 - "Default".  Active title bar, hilight, icon hilight, menus.
 # Colorset 1 - Default inactive.  Inactive title bar, inactive buttons in the
 #              title.
 # Colorset 2 -  No longer used.
-# Colorset 3 -  Windows in the pager.
+# Colorset 3 -  No longer used.
 # Colorset 4 -  Active window border
 # Colorset 5 -  Inactive window border
 # Colorset 6 -  Window pager itself.
@@ -231,9 +232,8 @@ AddToFunc DoColorSets
 DestroyFunc FinishColorUpdate
 AddToFunc FinishColorUpdate
 + I ColorSet 0 Tint $[BG_COLOR] 50, bg $[BG_COLOR], fg $[FG_COLOR], fgsh $[FGSHADOW], hi $[HILIGHT_FORE], sh $[SHADE], $[ACTIVE_GRADIENT] 40 $[HILIGHT_BACK] $[BG_COLOR]
-+ I ColorSet 1 bg $[BG_COLOR_INACTIVE], fg $[FG_COLOR_INACTIVE],fgsh $[FGSHADOW], hi $[HILIGHT_FORE], sh $[SHADE], $[INACTIVE_GRADIENT] 40 $[BG_COLOR] $[HILIGHT_BACK]
++ I ColorSet 1 bg $[BG_COLOR_INACTIVE], fg $[FG_COLOR_INACTIVE],fgsh $[FGSHADOW], hi $[HILIGHT_FORE], sh $[SHADE], $[INACTIVE_GRADIENT] 40 $[HILIGHT_BACK] $[BG_COLOR_INACTIVE]
 + I ColorSet 2 bg $[BG_COLOR_INACTIVE], fg $[FG_COLOR_INACTIVE], fgsh $[FGSHADOW], hi $[HILIGHT_FORE], sh $[SHADE]
-+ I ColorSet 3 bg $[HILIGHT_BACK], fg $[FG_COLOR]
 + I ColorSet 4 Tint $[BG_COLOR] 50, bg $[BORDER_ACTIVE], fg $[FG_COLOR], fgsh $[FGSHADOW], hi $[HILIGHT_FORE], sh $[SHADE]
 + I ColorSet 5 Tint $[BG_COLOR] 50, bg $[BORDER_INACTIVE], fg $[FG_COLOR], fgsh $[FGSHADOW], hi $[HILIGHT_FORE], sh $[SHADE]
 + I ColorSet 6 RootTransparent Buffer, Tint $[BG_COLOR] 50, bg $[BORDER_INACTIVE], fg $[FG_COLOR], fgsh $[FGSHADOW], hi $[HILIGHT_FORE], sh $[SHADE]
@@ -250,8 +250,6 @@ AddToDecor DefaultDecor
 + AddButtonStyle $[fvwm_title_button_arrow_up] Active (Pixmap 315-arrow-up2.svg:14x14 -- flat)
 + BorderStyle $[BORDER_STYLE]
 
-
-DestroyFunc ReStyle
 AddToFunc ReStyle
 + I Style DefaultStyle UseDecor DefaultDecor
 + I Style DefaultStyle Colorset 1
@@ -284,6 +282,7 @@ AddToFunc ReStyle
 + I Style tint2 NoTitle, WindowListSkip, NeverFocus, BorderWidth 0, HandleWidth 0
 + I Style "*" !FPGrabFocus, GrabFocusOff
 + I Style FvwmForm-QuitForm !Title
++ I Style FvwmForm-QuitVerify !Title
 
 #
 #  Menu formats are a little tricky to describe, but the FVWM man page does a
@@ -312,7 +311,7 @@ AddToFunc ReStyle
 + I Style "Apvlv" MiniIcon 475-file-pdf.svg:$[MINI_ICON_SIZE]
 + I Style "blobwars" Icon 343-radio-unchecked.svg:$[ICON_SIZE], MiniIcon 343-radio-unchecked.svg:$[MINI_ICON_SIZE]
 + I Style "* - Chat" MiniIcon 111-bubble2.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-+ I Style "Chromium-browser" Icon 486-chrome.svg:$[ICON_SIZE], MiniIcon 486-chrome.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
++ I Style "Chromium-browser" Icon 474-chrome.svg:$[ICON_SIZE], MiniIcon 474-chrome.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
 + I Style "FightTheDragon" NoTitle
 + I Style "Firefox" MiniIcon 475-firefox.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
 + I Style "Freeciv" Icon 004-office.svg:$[ICON_SIZE], MiniIcon 004-office.svg:$[MINI_ICON_SIZE]
@@ -404,7 +403,7 @@ AddToMenu SettingsMenu
 + "FVWM Settings" Title
 + MissingSubmenuFunction WallpaperBrowser
 + "%386-terminal.svg:$[MINI_ICON_SIZE]%Console" FvwmConsole
-+ "%013-paint-format.svg:$[MINI_ICON_SIZE]%Colors" Popup ColorMenu
++ "%013-paint-format.svg:$[MINI_ICON_SIZE]%Colors" Popup ThemeMenu
 + "%349-font.svg:$[MINI_ICON_SIZE]%Fonts" Popup FontsMenu
 + "Borders" Popup BordersMenu
 + "%086-keyboard.svg:$[MINI_ICON_SIZE]%Modifier Key" Popup KeysMenu
@@ -551,31 +550,6 @@ AddToFunc SetModifierKey
 + I Exec exec echo SetEnv MOD_KEY \"$0\" > "$[fvwm_key_preferences]"
 + I Schedule 250 Restart
 
-#
-# These colors are from various wallpapers, they are hideous, but they sort of
-# work.
-DestroyMenu ColorMenu
-AddToMenu ColorMenu
-+ "Gray"         ChangeColor gray90 gray20  gray70  gray20 white  gray30 gray80 gray80 gray80 gray80
-+ "Gray/line"    ChangeColor gray90 gray20  gray70  gray20 white  gray30 black  black  gray80 gray80
-+ "Blue/Gray"    ChangeColor gray90 #4A516A gray70 #4A516A white #7d849d gray80 gray80 gray80 gray80
-+ "Blue/Black"   ChangeColor gray90 #4A516A gray70 #4A516A white #7d849d black  black black black
-+ "Blue/line"    ChangeColor gray90 #4A516A gray70 #4A516A white #7d849d #000000 #000000 #4a516a #4a516a
-+ "Cake"         ChangeColor white  #6f4d10 gray70 #6f4d10 white #a28043 black  black black black
-+ "Cake/line"    ChangeColor white #6f4d10 gray70 #6f4d10 white #a28043 black black #8f5902 #8f5902
-+ "Clouds"       ChangeColor white  #236a64 gray70 #236a64 white #569d97 black  black black black
-+ "Clouds/line"  ChangeColor white  #236a64 gray70 #236a64 white #569d97 black  black #236164 #236164
-+ "Fire"         ChangeColor white #cc0000 gray70 #a40000 white #ef2929 black black black black
-+ "Fire/line"    ChangeColor white #cc0000 gray70 #a40000 white #ef2929 black black #a40000 #a40000
-+ "Swirl"        ChangeColor white  #232323 gray70 #232323 white #565656 black  black black black
-+ "Swirl/line"   ChangeColor white  #232323 gray70 #232323 white #565656 black  black #232323 #232323
-+ "Weapon"       ChangeColor white  #1f1a17 gray70 #1f1a17 white #424d42 black  black black black
-+ "Weapon/line"  ChangeColor white  #1f1a17 gray70 #1f1a17 white #424d42 black  black #1f1a17 #1f1a17
-+ "Zombies"      ChangeColor white  #38512e gray70 #38512e white #6b846a black  black black black
-+ "Zombies/line" ChangeColor white  #38512e gray70 #38512e white #6b846a black  black #38512e #38512e
-+ "Purple"       ChangeColor white  #4b1338 gray70 #4b1338 white #7e466b black  black black black
-+ "Purple/line"  ChangeColor white  #4b1338 gray70 #4b1338 white #7e466b black  black #4b1338 #4b1338
-+ "Custom" Popup ThemeMenu
 
 # Dynamic App Menu Generation
 # If they exist, put rxvt, xterm, rox, nautilus ... in Apps menu:
@@ -590,7 +564,7 @@ Test (x oclock) AddToMenu DynamicAppMenu "%079-clock.svg:$[MINI_ICON_SIZE]%ocloc
 Test (x elinks, x x-terminal-emulator) AddToMenu DynamicAppMenu "ELinks" LaunchWarp x-terminal-emulator -e elinks
 Test (x firefox) AddToMenu DynamicAppMenu "%475-firefox.svg:$[MINI_ICON_SIZE]%Firefox" LaunchWarp firefox
 Test (x finch, x x-terminal-emulator) AddToMenu DynamicAppMenu "%111-bubble2.svg:$[MINI_ICON_SIZE]%Finch" LaunchWarp x-terminal-emulator -tn rxvt -e finch
-Test (x chromium-browser) AddToMenu DynamicAppMenu "%486-chrome.svg:$[MINI_ICON_SIZE]%Chromium" LaunchWarp chromium-browser
+Test (x chromium-browser) AddToMenu DynamicAppMenu "%474-chrome.svg:$[MINI_ICON_SIZE]%Chromium" LaunchWarp chromium-browser
 Test (x mumble) AddToMenu DynamicAppMenu "%027-bullhorn.svg:$[MINI_ICON_SIZE]%Mumble" LaunchWarp mumble
 Test (x steam) AddToMenu DynamicAppMenu "%429-steam.svg:$[MINI_ICON_SIZE]%Steam" LaunchWarp steam
 Test (x steam) AddToMenu DynamicAppMenu "%113-bubbles4.svg:$[MINI_ICON_SIZE]%Steam Friends" LaunchWarp steam "steam://open/friends"
@@ -599,7 +573,7 @@ Test (x steam) AddToMenu DynamicAppMenu "%429-steam.svg:$[MINI_ICON_SIZE]%Steam 
 
 DestroyFunc DoGOGMenu
 AddToFunc DoGOGMenu
-+ I Test (! x "$[HOME]/GOG\ Games") Break
++ I Test (!x "$[HOME]/GOG Games") Break
 + I AddToMenu DynamicGameMenu "Gold Ole Games" Popup GoGGameMenu
 + I PipeRead 'for title in "$[HOME]/GOG\ Games/"* ; do echo AddToMenu GoGGameMenu \\\"\*${title}/support/icon.png\*${title##*/}\\\" LaunchWarp \\\"${title}/start.sh\\\" ; done'
 
@@ -652,7 +626,7 @@ AddToFunc PutDecorationsBack
 
 
 # Nice hinting, auto-complete app selecteor
-Key semicolon A $[MOD_KEY] Exec exec dmenu_run
+Key semicolon A $[MOD_KEY] Exec exec dmenu_run -l 5 -nb "$[BG_COLOR]" -nf "$[FG_COLOR]" -sf "$[HILIGHT_FORE]" -sb "$[HILIGHT_BACK]" -fn "$[MENU_FONT]"
 
 # Pop up the current window options on Win+o
 Key o A $[MOD_KEY] Current Popup DynamicWindowOpsMenu Window 0 0
@@ -667,10 +641,14 @@ Test (x touchpad.sh) Key F5 A $[MOD_KEY] Exec exec touchpad.sh
 Key p A $[MOD_KEY] PlaceAgain
 
 # When Win+Arrow is pressed, move to the corresponding edge of the screen
-Key Right A $[MOD_KEY] AnimatedMove -0 keep Warp
-Key Left A $[MOD_KEY] AnimatedMove 0 keep Warp
-Key Up A $[MOD_KEY] AnimatedMove keep 0 Warp
-Key Down A $[MOD_KEY] AnimatedMove keep -0 Warp
+Key Right A $[MOD_KEY] AnimatedMove Screen $[pointer.screen] -0 keep Warp
+Key Left A $[MOD_KEY] AnimatedMove Screen $[pointer.screen] 0 keep Warp
+Key Up A $[MOD_KEY] AnimatedMove Screen $[pointer.screen] keep 0 Warp
+Key Down A $[MOD_KEY] AnimatedMove Screen $[pointer.screen] keep -0 Warp
+#Key Right A $[MOD_KEY]M AnimatedMove  -0 keep Warp
+#Key Left A $[MOD_KEY]M AnimatedMove  0 keep Warp
+#Key Up A $[MOD_KEY]M AnimatedMove  keep 0 Warp
+#Key Down A $[MOD_KEY]M AnimatedMove  keep -0 Warp
 
 # When Win+T is pressed, open a terminal
 Key t A $[MOD_KEY] LaunchWarp x-terminal-emulator
@@ -842,7 +820,7 @@ AddToFunc StartFunction
 + I Module FvwmEvent
 + I Test (init) Exec exec $[FVWM_USERDIR]/keyboard.sh
 + I Test (init, x ibus-daemon) Exec exec ibus-daemon -drx
-+ I TestRc (NoMatch) Test (x fcitx) Exec exec fcitx
++ I TestRc (NoMatch) Test (x fcitx, init) Exec exec fcitx
 + I Test (init, x nm-applet) Exec exec nm-applet
 + I Test (init, x pasystray) Exec exec pasystray
 + I Test (init, x blueman-applet) Exec exec blueman-applet
@@ -908,8 +886,8 @@ printf "*FvwmPager: WindowLabelFormat \\"%%t\\"\\n"; \
 printf "*FvwmPager: Balloons \\n"; \
 printf "*FvwmPager: BalloonFont \\"xft:[DEFAULT_FONT_FAMILY]:size=12\\" \\n"; \
 printf "*FvwmPager: MiniIcons \\n"; \
-printf "*FvwmPager: WindowColorsets 0 3 \\n"; \
-printf "*FvwmPager: HilightColorset * 3 \\n"; \
+printf "*FvwmPager: WindowColorsets 0 1 \\n"; \
+printf "*FvwmPager: HilightColorset * 1 \\n"; \
 printf "*FvwmPager: Colorset * 6 \\n"; \
 printf "*FvwmPager: UseSkipList \\n"; \
 printf "*FvwmPager: DeskTopScale $[DESKTOP_SCALE] \\n"; \
@@ -1164,7 +1142,7 @@ Test (x amixer) Key F10 A A Exec exec amixer -D pulse sset Master 5%+
 Test (x amixer) Key XF86AudioRaiseVolume A A Exec exec amixer -D pulse sset Master 2%+
 Test (x amixer) Key XF86AudioLowerVolume A A Exec exec amixer -D pulse sset Master 2%-
 
-Key XF86PowerOff A A FvwmForm FvwmForm-QuitForm
+Key XF86PowerOff A A FvwmForm FvwmForm-QuitVerify
 
 PipeRead "echo Echo Config load ended at $(date)"
 
