@@ -105,6 +105,9 @@ SetEnv fvwm_title_button_arrow_up 4
 # This puts the icons directory content in the image search path.
 ImagePath $[fvwm_icons_dir]:+
 
+SetEnv ACTIVE_GRADIENT CGradient
+SetEnv INACTIVE_GRADIENT CGradient
+
 # This is where I save/load the current wallpaper (SetEnv WALLPAPER path.png)
 SetEnv fvwm_wallpaper_preference "$[fvwm_preferences_dir]/wallpaper"
 
@@ -215,8 +218,6 @@ AddToFunc DoColorSets
 + I Read "$[fvwm_color_scheme_preference]"
 + I Schedule 250 FinishColorUpdate
 
-SetEnv ACTIVE_GRADIENT CGradient
-SetEnv INACTIVE_GRADIENT CGradient
 
 ##
 # Colorset 0 - "Default".  Active title bar, hilight, icon hilight, menus.
@@ -282,7 +283,6 @@ AddToFunc ReStyle
 + I Style tint2 NoTitle, WindowListSkip, NeverFocus, BorderWidth 0, HandleWidth 0
 + I Style "*" !FPGrabFocus, GrabFocusOff
 + I Style FvwmForm-QuitForm !Title
-+ I Style FvwmForm-QuitVerify !Title
 
 #
 #  Menu formats are a little tricky to describe, but the FVWM man page does a
@@ -1142,7 +1142,7 @@ Test (x amixer) Key F10 A A Exec exec amixer -D pulse sset Master 5%+
 Test (x amixer) Key XF86AudioRaiseVolume A A Exec exec amixer -D pulse sset Master 2%+
 Test (x amixer) Key XF86AudioLowerVolume A A Exec exec amixer -D pulse sset Master 2%-
 
-Key XF86PowerOff A A FvwmForm FvwmForm-QuitVerify
+Key XF86PowerOff A A FvwmForm FvwmForm-QuitForm
 
 PipeRead "echo Echo Config load ended at $(date)"
 
