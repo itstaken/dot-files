@@ -24,6 +24,8 @@ SetEnv FGSHADOW #000000
 SetEnv BORDER_ACTIVE #4a516a
 SetEnv BORDER_INACTIVE #4a516a
 
+SetEnv DESK_COUNT 10
+
 ##
 # Valid options: -- flat NoInset
 SetEnv BORDER_STYLE "simple -- HiddenHandles"
@@ -92,15 +94,13 @@ SetEnv fvwm_font_preferences "$[fvwm_preferences_dir]/font"
 SetEnv fvwm_key_preferences "$[fvwm_preferences_dir]/modifier_key"
 SetEnv fvwm_title_preferences "$[fvwm_preferences_dir]/title_position"
 SetEnv fvwm_pager_preferences "$[fvwm_preferences_dir]/pager_settings"
+SetEnv fvwm_desk_preferences "$[fvwm_preferences_dir]/desk_settings"
 
 # These are so it's easier to change titlebar button positions
 SetEnv fvwm_title_button_miniicon 1
 SetEnv fvwm_title_button_clip 2
 SetEnv fvwm_title_button_arrow_up 4
 
-# Note: icons come from Keyamoon's IcoMoon free pack, grab it from here and
-# move/rename the SVG folder to ~/.fvwm/icons:
-# https://github.com/Keyamoon/IcoMoon-Free/archive/master.zip
 #
 # This puts the icons directory content in the image search path.
 ImagePath $[fvwm_icons_dir]:+
@@ -247,8 +247,8 @@ AddToDecor DefaultDecor
 + ButtonStyle All ActiveDown (Colorset 1 -- flat)
 + ButtonStyle All Inactive (Colorset 1 -- flat)
 + AddButtonStyle $[fvwm_title_button_miniicon] Active MiniIcon (HiddenHandles NoInset Hilight3Doff -- flat)
-+ AddButtonStyle $[fvwm_title_button_clip] Active (Pixmap 206-attachment.svg:14x14 -- flat)
-+ AddButtonStyle $[fvwm_title_button_arrow_up] Active (Pixmap 315-arrow-up2.svg:14x14 -- flat)
++ AddButtonStyle $[fvwm_title_button_clip] Active (Pixmap paperclip.svg:14x14 -- flat)
++ AddButtonStyle $[fvwm_title_button_arrow_up] Active (Pixmap arrow-up.svg:14x14 -- flat)
 + BorderStyle $[BORDER_STYLE]
 
 AddToFunc ReStyle
@@ -283,6 +283,7 @@ AddToFunc ReStyle
 + I Style tint2 NoTitle, WindowListSkip, NeverFocus, BorderWidth 0, HandleWidth 0
 + I Style "*" !FPGrabFocus, GrabFocusOff
 + I Style FvwmForm-QuitForm !Title
++ I Style bar !Title, NeverFocus, WindowListSkip
 
 #
 #  Menu formats are a little tricky to describe, but the FVWM man page does a
@@ -313,42 +314,38 @@ AddToFunc ReStyle
 + I Style "* - Chat" MiniIcon 111-bubble2.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
 + I Style "Chromium-browser" Icon 474-chrome.svg:$[ICON_SIZE], MiniIcon 474-chrome.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
 + I Style "FightTheDragon" NoTitle
-+ I Style "Firefox" MiniIcon 475-firefox.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
++ I Style "Firefox*" Icon firefox.svg:$[ICON_SIZE], MiniIcon firefox.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
 + I Style "Freeciv" Icon 004-office.svg:$[ICON_SIZE], MiniIcon 004-office.svg:$[MINI_ICON_SIZE]
 + I Style "Friends" MiniIcon 113-bubbles4.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-+ I Style "FvwmIdent" Icon 266-question.svg:$[ICON_SIZE], MiniIcon 266-question.svg:$[MINI_ICON_SIZE]
-+ I Style "Gimp" MiniIcon 014-image.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
++ I Style "FvwmIdent" Icon question.svg:$[ICON_SIZE], MiniIcon question.svg:$[MINI_ICON_SIZE]
++ I Style "Gimp" MiniIcon image.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
 + I Style "Inkscape" Icon 344-crop.svg:$[ICON_SIZE], MiniIcon 344-crop.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
 + I Style "Layers - Brushes" MiniIcon 015-images.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
 + I Style "Minetest*" NoTitle
 + I Style "MPlayer" Icon 278-play2.svg:$[ICON_SIZE], MiniIcon 278-play2.svg:$[MINI_ICON_SIZE]
-+ I Style "*nautilus*" MiniIcon 048-folder.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
++ I Style "*nautilus*" MiniIcon folder.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
 + I Style "oclock" NoTitle, StaysOnBottom, Sticky, WindowListSkip, NeverFocus, CirculateSkip
 + I Style "POWDER" Icon 152-magic-wand.svg:$[ICON_SIZE], MiniIcon 152-magic-wand.svg:$[MINI_ICON_SIZE]
-+ I Style "*rox*" MiniIcon 048-folder.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-+ I Style "*rxvt*" MiniIcon 386-terminal.svg:$[MINI_ICON_SIZE]
-+ I Style "Steam" NoIcon, Icon 429-steam.svg:$[ICON_SIZE], MiniIcon 429-steam.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-+ I Style "Toolbox*" MiniIcon 151-hammer.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
-+ I Style "URxvt" Icon 386-terminal.svg:$[ICON_SIZE], Icon 386-terminal.svg:$[ICON_SIZE], MiniIcon 386-terminal.svg:$[MINI_ICON_SIZE]
-+ I Style "Vim" Icon 385-embed2.svg:$[ICON_SIZE], MiniIcon 385-embed2.svg:$[MINI_ICON_SIZE]
-+ I Style "Vim *" MiniIcon 385-embed2.svg:$[MINI_ICON_SIZE]
++ I Style "*rox*" MiniIcon folder.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
++ I Style "*rxvt*" Icon terminal.svg:$[ICON_SIZE], MiniIcon terminal.svg:$[MINI_ICON_SIZE]
++ I Style "Steam" NoIcon, Icon steam.svg:$[ICON_SIZE], MiniIcon 429-steam.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
++ I Style "Toolbox*" Icon cudgel.svg:$[ICON_SIZE], MiniIcon cudgel.svg:$[MINI_ICON_SIZE], EWMHMiniIconOverride
++ I Style "URxvt" Icon terminal.svg:$[ICON_SIZE], Icon terminal.svg:$[ICON_SIZE], MiniIcon terminal.svg:$[MINI_ICON_SIZE]
++ I Style "Vim" Icon code.svg:$[ICON_SIZE], MiniIcon code.svg:$[MINI_ICON_SIZE]
++ I Style "Vim *" MiniIcon code.svg:$[MINI_ICON_SIZE]
 + I Style "xcalc" MiniIcon 065-calculator.svg:$[MINI_ICON_SIZE]
-+ I Style "XClipboard" Icon 185-clipboard.svg:$[ICON_SIZE], MiniIcon 185-clipboard.svg:$[MINI_ICON_SIZE]
++ I Style "XClipboard" Icon paste.svg:$[ICON_SIZE], MiniIcon paste.svg:$[MINI_ICON_SIZE]
 
 # Bind left clicking I-1 to the options menu, but double-click should close the
 # window.  More specifically, double click will close, single clicking will
 # display a menu, holding the mouse down will display a menu, and moving the
 # mouse while clicking it will move the window.
-Mouse 1 $[fvwm_title_button_miniicon] N Ops-or-Close
 DestroyFunc Ops-or-Close
 AddToFunc Ops-or-Close
 + D Close
 + C Menu DynamicWindowOpsMenu
 + H Menu DynamicWindowOpsMenu
 + M Move
-
-# Bind a middle click on the root window to pop up the settings menu.
-Mouse 2 R N Menu SettingsMenu
 
 # The root menu consists of the following:
 # ┌─────────────────┐
@@ -363,19 +360,19 @@ Mouse 2 R N Menu SettingsMenu
 # └─────────────────┘
 DestroyMenu MenuFvwmRoot
 AddToMenu MenuFvwmRoot
-+ "%276-enter.svg:$[MINI_ICON_SIZE]%Apps" Popup DynamicAppMenu
-+ "%224-happy.svg:$[MINI_ICON_SIZE]%Games" Popup DynamicGameMenu
++ "%enter.svg:$[MINI_ICON_SIZE]%Apps" Popup DynamicAppMenu
++ "%happy.svg:$[MINI_ICON_SIZE]%Games" Popup DynamicGameMenu
 + MissingSubmenuFunction ScreenshotBrowser
-+ "%087-display.svg:$[MINI_ICON_SIZE]%Screenshots" Popup "$[fvwm_screenshots_dir]"
-+ "%150-cogs.svg:$[MINI_ICON_SIZE]%Settings" Popup SettingsMenu
-+ "%147-equalizer.svg:$[MINI_ICON_SIZE]%Status" Popup StatusMenu
++ "%display.svg:$[MINI_ICON_SIZE]%Screenshots" Popup "$[fvwm_screenshots_dir]"
++ "%cogs.svg:$[MINI_ICON_SIZE]%Settings" Popup SettingsMenu
++ "%sliders.svg:$[MINI_ICON_SIZE]%Status" Popup StatusMenu
 + "" Nop
-+ "%303-loop2.svg:$[MINI_ICON_SIZE]%Reload" Restart
++ "%repeat.svg:$[MINI_ICON_SIZE]%Reload" Restart
 # Put a lock icon in the menu if xscreensaver is present
-Test (x xscreensaver) AddToMenu MenuFvwmRoot "%144-lock.svg:$[MINI_ICON_SIZE]%Lock" Exec exec xscreensaver-command -lock
+Test (x xscreensaver) AddToMenu MenuFvwmRoot "%unlock.svg:$[MINI_ICON_SIZE]%Lock" Exec exec xscreensaver-command -lock
 # Put the exit option at the end of the menu
 AddToMenu MenuFvwmRoot
-+ "%277-exit.svg:$[MINI_ICON_SIZE]%Exit" FvwmForm FvwmForm-QuitForm
++ "%sign-out.svg:$[MINI_ICON_SIZE]%Exit" FvwmForm FvwmForm-QuitForm
 
 
 #
@@ -402,18 +399,19 @@ DestroyMenu SettingsMenu
 AddToMenu SettingsMenu
 + "FVWM Settings" Title
 + MissingSubmenuFunction WallpaperBrowser
-+ "%386-terminal.svg:$[MINI_ICON_SIZE]%Console" FvwmConsole
-+ "%013-paint-format.svg:$[MINI_ICON_SIZE]%Colors" Popup ThemeMenu
-+ "%349-font.svg:$[MINI_ICON_SIZE]%Fonts" Popup FontsMenu
++ "%terminal.svg:$[MINI_ICON_SIZE]%Console" FvwmConsole
++ "%eyedropper.svg:$[MINI_ICON_SIZE]%Colors" Popup ThemeMenu
++ "%font.svg:$[MINI_ICON_SIZE]%Fonts" Popup FontsMenu
 + "Borders" Popup BordersMenu
-+ "%086-keyboard.svg:$[MINI_ICON_SIZE]%Modifier Key" Popup KeysMenu
-+ "%015-images.svg:$[MINI_ICON_SIZE]%Wallpaper" Popup "$[fvwm_wallpapers_dir]"
-+ "%268-minus.svg:$[MINI_ICON_SIZE]%Window Title Position" Popup TitlesMenu
-+ "%190-menu.svg:$[MINI_ICON_SIZE]%Configure Pager" Popup PagerMenu
++ "%keyboard.svg:$[MINI_ICON_SIZE]%Modifier Key" Popup KeysMenu
++ "%image.svg:$[MINI_ICON_SIZE]%Wallpaper" Popup "$[fvwm_wallpapers_dir]"
++ "%minus.svg:$[MINI_ICON_SIZE]%Window Title Position" Popup TitlesMenu
++ "%bars.svg:$[MINI_ICON_SIZE]%Configure Pager" Popup PagerMenu
++ "Configure Desks" Popup DesksMenu
 + "System" Title
-Test (x wifi.sh) AddToMenu SettingsMenu "%028-connection.svg:$[MINI_ICON_SIZE]%Wifi" Popup WifiMenu
-AddToMenu SettingsMenu "%087-display.svg:$[MINI_ICON_SIZE]%Displays" Popup DisplaysMenu
-AddToMenu SettingsMenu "%295-volume-high.svg:$[MINI_ICON_SIZE]%Volume Control" LaunchWarp "$[VOLUME_APP]"
+Test (x wifi.sh) AddToMenu SettingsMenu "%wifi.svg:$[MINI_ICON_SIZE]%Wifi" Popup WifiMenu
+AddToMenu SettingsMenu "%display.svg:$[MINI_ICON_SIZE]%Displays" Popup DisplaysMenu
+AddToMenu SettingsMenu "%volume-up.svg:$[MINI_ICON_SIZE]%Volume Control" LaunchWarp "$[VOLUME_APP]"
 
 DestroyMenu WifiMenu
 AddToMenu WifiMenu
@@ -505,12 +503,22 @@ DestroyMenu PagerMenu
 AddToMenu PagerMenu
 + DynamicPopupAction MakePagerMenu
 
+DestroyMenu DesksMenu
+AddToMenu DesksMenu
++ DynamicPopupAction MakeDesksMenu
+
 DestroyFunc MakePagerMenu
 AddToFunc MakePagerMenu
 + I DestroyMenu recreate PagerMenu
 + I AddToMenu PagerMenu "Desktop Size: $[PAGES_X]x$[PAGES_Y]" Popup PagerSizeMenu
 + I AddToMenu PagerMenu "Desktop Scale: $[DESKTOP_SCALE]" Popup PagerScaleMenu
-+ I AddToMenu PagerMenu "%190-menu.svg:$[MINI_ICON_SIZE]%Toggle Pager" TogglePager
++ I AddToMenu PagerMenu "%bars.svg:$[MINI_ICON_SIZE]%Toggle Pager" TogglePager
+
+DestroyFunc MakeDesksMenu
+AddToFunc MakeDesksMenu
++ I DestroyMenu recreate DesksMenu
++ I Test (x zenity) AddToMenu DesksMenu "Set Desk Count ($[DESK_COUNT])" PipeRead 'echo Echo Nop ; (N=$(zenity --entry --text "Desks") && FvwmCommand "UpdateDeskCount $$N" &) >/dev/null'
++ I TestRc (NoMatch) AddToMenu DesksMenu "Install zenity to enable."
 
 DestroyFunc MakePagerScaleMenu
 AddToFunc MakePagerScaleMenu
@@ -547,59 +555,65 @@ AddToFunc IncreasePages
 
 DestroyFunc SetModifierKey
 AddToFunc SetModifierKey
++ I UnbindKeys
 + I Exec exec echo SetEnv MOD_KEY \"$0\" > "$[fvwm_key_preferences]"
-+ I Schedule 250 Restart
++ I SetEnv MOD_KEY "$0"
++ I BindKeys
 
 
 # Dynamic App Menu Generation
 # If they exist, put rxvt, xterm, rox, nautilus ... in Apps menu:
-Test (x rxvt) AddToMenu DynamicAppMenu "%386-terminal.svg:$[MINI_ICON_SIZE]%RXvt" LaunchWarp rxvt
-Test (x xterm) AddToMenu DynamicAppMenu "%386-terminal.svg:$[MINI_ICON_SIZE]%XTerm" LaunchWarp xterm
-AddToMenu DynamicAppMenu "%049-folder-open.svg:$[MINI_ICON_SIZE]%File Browser" LaunchWarp $[FILEBROWSER_APP]
-Test (x password-gorilla) AddToMenu DynamicAppMenu "%142-key.svg:$[MINI_ICON_SIZE]%Password Gorilla" LaunchWarp password-gorilla
-Test (x oclock) AddToMenu DynamicAppMenu "%079-clock.svg:$[MINI_ICON_SIZE]%oclock" Exec exec oclock -geometry -0+0 -bg black -fg "$[HILIGHT_BACK]" -bd "$[BG_COLOR]" -transparent
+Test (x rxvt) AddToMenu DynamicAppMenu "%terminal.svg:$[MINI_ICON_SIZE]%RXvt" LaunchWarp rxvt
+Test (x xterm) AddToMenu DynamicAppMenu "%terminal.svg:$[MINI_ICON_SIZE]%XTerm" LaunchWarp xterm
+AddToMenu DynamicAppMenu "%folder-open.svg:$[MINI_ICON_SIZE]%File Browser" LaunchWarp $[FILEBROWSER_APP]
+Test (x password-gorilla) AddToMenu DynamicAppMenu "%key.svg:$[MINI_ICON_SIZE]%Password Gorilla" LaunchWarp password-gorilla
+Test (x oclock) AddToMenu DynamicAppMenu "%clock.svg:$[MINI_ICON_SIZE]%oclock" Exec exec oclock -geometry -0+0 -bg black -fg "$[HILIGHT_BACK]" -bd "$[BG_COLOR]" -transparent
 
 # Internet-related stuff
 # If they exist, put firefox, chromium, and steam into the Apps menu:
 Test (x elinks, x x-terminal-emulator) AddToMenu DynamicAppMenu "ELinks" LaunchWarp x-terminal-emulator -e elinks
-Test (x firefox) AddToMenu DynamicAppMenu "%475-firefox.svg:$[MINI_ICON_SIZE]%Firefox" LaunchWarp firefox
-Test (x finch, x x-terminal-emulator) AddToMenu DynamicAppMenu "%111-bubble2.svg:$[MINI_ICON_SIZE]%Finch" LaunchWarp x-terminal-emulator -tn rxvt -e finch
-Test (x chromium-browser) AddToMenu DynamicAppMenu "%474-chrome.svg:$[MINI_ICON_SIZE]%Chromium" LaunchWarp chromium-browser
-Test (x mumble) AddToMenu DynamicAppMenu "%027-bullhorn.svg:$[MINI_ICON_SIZE]%Mumble" LaunchWarp mumble
-Test (x steam) AddToMenu DynamicAppMenu "%429-steam.svg:$[MINI_ICON_SIZE]%Steam" LaunchWarp steam
-Test (x steam) AddToMenu DynamicAppMenu "%113-bubbles4.svg:$[MINI_ICON_SIZE]%Steam Friends" LaunchWarp steam "steam://open/friends"
-Test (x steam) AddToMenu DynamicAppMenu "%429-steam.svg:$[MINI_ICON_SIZE]%Steam Library" LaunchWarp steam "steam://open/games"
+Test (x firefox) AddToMenu DynamicAppMenu "%firefox.svg:$[MINI_ICON_SIZE]%Firefox" LaunchWarp firefox
+Test (x finch, x x-terminal-emulator) AddToMenu DynamicAppMenu "%comments.svg:$[MINI_ICON_SIZE]%Finch" LaunchWarp x-terminal-emulator -tn rxvt -e finch
+Test (x chromium-browser) AddToMenu DynamicAppMenu "%chrome.svg:$[MINI_ICON_SIZE]%Chromium" LaunchWarp chromium-browser
+Test (x mumble) AddToMenu DynamicAppMenu "%bullhorn.svg:$[MINI_ICON_SIZE]%Mumble" LaunchWarp mumble
+Test (x steam) AddToMenu DynamicAppMenu "%steam.svg:$[MINI_ICON_SIZE]%Steam" LaunchWarp steam
+Test (x steam) AddToMenu DynamicAppMenu "%comments-o.svg:$[MINI_ICON_SIZE]%Steam Friends" LaunchWarp steam "steam://open/friends"
+Test (x steam) AddToMenu DynamicAppMenu "%steam.svg:$[MINI_ICON_SIZE]%Steam Library" LaunchWarp steam "steam://open/games"
 
 
+##
+# Turns out the break in the DoGOGMenu causes the outer function to break, too.
+# So schedule it instead of running it.
 DestroyFunc DoGOGMenu
 AddToFunc DoGOGMenu
-+ I Test (!x "$[HOME]/GOG Games") Break
-+ I AddToMenu DynamicGameMenu "Gold Ole Games" Popup GoGGameMenu
-+ I PipeRead 'for title in "$[HOME]/GOG\ Games/"* ; do echo AddToMenu GoGGameMenu \\\"\*${title}/support/icon.png\*${title##*/}\\\" LaunchWarp \\\"${title}/start.sh\\\" ; done'
++ I Schedule 250 RealDoGogMenu
+
+Test (x "$[HOME]/GOG Games") AddToMenu DynamicGameMenu "Gold Ole Games" Popup GoGGameMenu
+Test (x "$[HOME]/GOG Games") PipeRead 'for title in "$[HOME]/GOG\ Games/"* ; do echo AddToMenu GoGGameMenu \\\"\*${title}/support/icon.png\*${title##*/}\\\" LaunchWarp \\\"${title}/start.sh\\\" ; done'
 
 # Games
 # If they exist, put various games in the Games menu:
-Test (x abe) AddToMenu DynamicGameMenu "%151-hammer.svg:$[MINI_ICON_SIZE]%Abe's Amazing Adventure" LaunchWarp abe
+Test (x abe) AddToMenu DynamicGameMenu "%gavel.svg:$[MINI_ICON_SIZE]%Abe's Amazing Adventure" LaunchWarp abe
 Test (x blobwars) AddToMenu DynamicGameMenu "%343-radio-unchecked.svg:$[MINI_ICON_SIZE]%Blobwars: Metal Blob Solid" LaunchWarp blobwars
 Test (x freeciv) AddToMenu DynamicGameMenu "%004-office.svg:$[MINI_ICON_SIZE]%FreeCiv" LaunchWarp freeciv
 Test (x freecol) AddToMenu DynamicGameMenu "%202-sphere.svg:$[MINI_ICON_SIZE]%FreeCol" LaunchWarp freecol
 Test (x freedink) AddToMenu DynamicGameMenu "%171-lab.svg:$[MINI_ICON_SIZE]%Dink Smallwood" LaunchWarp freedink
-Test (x freedroidRPG) AddToMenu DynamicGameMenu "%266-question.svg:$[MINI_ICON_SIZE]%FreeDroid RPG" LaunchWarp freedroidRPG
+Test (x freedroidRPG) AddToMenu DynamicGameMenu "%question.svg:$[MINI_ICON_SIZE]%FreeDroid RPG" LaunchWarp freedroidRPG
 Test (x nethack,x x-terminal-emulator) AddToMenu DynamicGameMenu "Nethack (console)" LaunchWarp x-terminal-emulator +sb -e nethack
 Test (x nexuiz) AddToMenu DynamicGameMenu "nexuiz" LaunchWarp nexuiz
 Test (x powder) AddToMenu DynamicGameMenu "%152-magic-wand.svg:$[MINI_ICON_SIZE]%Powder" LaunchWarp powder
 Test (x sauerbraten) AddToMenu DynamicGameMenu "sauerbraten" LaunchWarp sauerbraten
-Test (x slashem,x x-terminal-emulator) AddToMenu DynamicGameMenu "%154-bug.svg:!$[MINI_ICON_SIZE]%Slashem (console)" LaunchWarp x-terminal-emulator +sb -e slashem
-Test (x tmw) AddToMenu DynamicGameMenu "%266-question.svg:!$[MINI_ICON_SIZE]%The Mana World" LaunchWarp tmw
+Test (x slashem,x x-terminal-emulator) AddToMenu DynamicGameMenu "%bug.svg:!$[MINI_ICON_SIZE]%Slashem (console)" LaunchWarp x-terminal-emulator +sb -e slashem
+Test (x tmw) AddToMenu DynamicGameMenu "%question.svg:!$[MINI_ICON_SIZE]%The Mana World" LaunchWarp tmw
 Test (x minetest) AddToMenu DynamicGameMenu "Minetest" LaunchWarp minetest
 
 # Editors/Utilities
 # If they exist, put various editors into the Apps menu:
-Test (x vim,x x-terminal-emulator) AddToMenu DynamicAppMenu "%385-embed2.svg:$[MINI_ICON_SIZE]%Vim" LaunchWarp x-terminal-emulator +sb -T Vim -e vim
-Test (x gvim) AddToMenu DynamicAppMenu "%385-embed2.svg:$[MINI_ICON_SIZE]%GVim" LaunchWarp gvim
+Test (x vim,x x-terminal-emulator) AddToMenu DynamicAppMenu "%code.svg:$[MINI_ICON_SIZE]%Vim" LaunchWarp x-terminal-emulator +sb -T Vim -e vim
+Test (x gvim) AddToMenu DynamicAppMenu "%code.svg:$[MINI_ICON_SIZE]%GVim" LaunchWarp gvim
 Test (x gedit) AddToMenu DynamicAppMenu "%039-file-text2.svg:$[MINI_ICON_SIZE]%GEdit" LaunchWarp gedit
-Test (x xclipboard) AddToMenu DynamicAppMenu "%185-clipboard.svg:$[MINI_ICON_SIZE]%Clipboard" LaunchWarp xclipboard
-Test (x gimp) AddToMenu DynamicAppMenu "%014-image.svg:$[MINI_ICON_SIZE]%Gimp" LaunchWarp gimp
+Test (x xclipboard) AddToMenu DynamicAppMenu "%paste.svg:$[MINI_ICON_SIZE]%Clipboard" LaunchWarp xclipboard
+Test (x gimp) AddToMenu DynamicAppMenu "%image.svg:$[MINI_ICON_SIZE]%Gimp" LaunchWarp gimp
 Test (x inkscape) AddToMenu DynamicAppMenu "%344-crop.svg:$[MINI_ICON_SIZE]%Inkscape" LaunchWarp inkscape
 
 # Settings
@@ -607,7 +621,174 @@ Test (x inkscape) AddToMenu DynamicAppMenu "%344-crop.svg:$[MINI_ICON_SIZE]%Inks
 Test (x bluetooth-wizard) AddToMenu SettingsMenu "Bluetooth Wizard" LaunchWarp bluetooth-wizard
 Test (x blueman-manager) AddToMenu SettingsMenu "Bluetooth Manager" LaunchWarp blueman-manager
 
-Key b FSTW $[MOD_KEY] ToggleDecorations
+DestroyFunc UnbindKeys
+AddToFunc UnbindKeys
++ I Key e A $[MOD_KEY] -
++ I Key b FSTW $[MOD_KEY] -
++ I Key semicolon A $[MOD_KEY] -
++ I Key o A $[MOD_KEY] -
++ I Key r A $[MOD_KEY] -
++ I Key n A $[MOD_KEY] -
++ I Key p A $[MOD_KEY] -
++ I Key Right A $[MOD_KEY] -
++ I Key Left A $[MOD_KEY] -
++ I Key Up A $[MOD_KEY] -
++ I Key Down A $[MOD_KEY] -
++ I Key t A $[MOD_KEY] -
++ I Key Return A $[MOD_KEY] -
++ I Key V A $[MOD_KEY] -
++ I Key 1 A $[MOD_KEY] -
++ I Key 2 A $[MOD_KEY] -
++ I Key 3 A $[MOD_KEY] -
++ I Key 4 A $[MOD_KEY] -
++ I Key 5 A $[MOD_KEY] -
++ I Key 6 A $[MOD_KEY] -
++ I Key 7 A $[MOD_KEY] -
++ I Key 8 A $[MOD_KEY] -
++ I Key 9 A $[MOD_KEY] -
++ I Key M A $[MOD_KEY] -
++ I Key U A $[MOD_KEY] -
++ I Key D A $[MOD_KEY] -
++ I Key h A $[MOD_KEY] -
++ I Key j A $[MOD_KEY] -
++ I Key k A $[MOD_KEY] -
++ I Key l A $[MOD_KEY] -
++ I Key s A 4 -
++ I Key Print A A -
++ I Key Escape A $[MOD_KEY] -
++ I Key Tab A 4 -
++ I Key grave A $[MOD_KEY] -
++ I Key G A $[MOD_KEY] -
++ I Key W A $[MOD_KEY] -
++ I Key F A $[MOD_KEY] -
++ I Key s A $[MOD_KEY] -
++ I Key XF86AudioMute A A -
++ I Key XF86PowerOff A A -
++ I Key bracketleft A $[MOD_KEY] -
++ I Key bracketright A $[MOD_KEY] -
++ I Test (x mpc) Key XF86AudioPlay A A -
++ I Test (x mpc) Key XF86AudioNext A A -
++ I Test (x mpc) Key XF86AudioPrev A A -
++ I Test (x amixer) Key F8 A A -
++ I Test (x amixer) Key F9 A A -
++ I Test (x amixer) Key F10 A A -
++ I Test (x amixer) Key XF86AudioRaiseVolume A A -
++ I Test (x amixer) Key XF86AudioLowerVolume A A -
++ I Test (x touchpad.sh) Key F5 A $[MOD_KEY] -
++ I Mouse 1 $[fvwm_title_button_miniicon] N -
++ I Mouse 2 R N -
++ I Mouse 3 FSTW $[MOD_KEY] -
++ I Mouse 1 FSTW $[MOD_KEY] -
++ I Mouse 4 A $[MOD_KEY] -
++ I Mouse 5 A $[MOD_KEY] -
++ I Mouse 1 I A -
++ I Mouse 1 $[fvwm_title_button_arrow_up] N -
++ I Mouse 1 $[fvwm_title_button_clip] N -
+
+
+##
+# Execution order isn't guaranteed, so make sure we had time for unblind to
+# finish before binding anew:
+DestroyFunc BindKeys
+AddToFunc BindKeys
++ I Schedule 250 RealBind
+
+DestroyFunc RealBind
+AddToFunc RealBind
++ I Key e A $[MOD_KEY] Exec exec rofi -show
++ I Key b FSTW $[MOD_KEY] ToggleDecorations
+# Nice hinting, auto-complete app selecteor
+# Key semicolon A $[MOD_KEY] Exec exec dmenu_run -l 5 -nb "$[BG_COLOR]" -nf "$[FG_COLOR]" -sf "$[HILIGHT_FORE]" -sb "$[HILIGHT_BACK]" -fn "$[MENU_FONT]"
++ I Key semicolon A $[MOD_KEY] Exec exec rofi -show drun
+# Pop up the current window options on Win+o
++ I Key o A $[MOD_KEY] Current Popup DynamicWindowOpsMenu Window 0 0
+# Resize on win+r
++ I Key r A $[MOD_KEY] Resize Direction SE
+# Place again on win+p
++ I Key a A $[MOD_KEY] PlaceAgain
++ I Key p A $[MOD_KEY] Prev-page
++ I Key n A $[MOD_KEY] Next-page
+# When Win+Arrow is pressed, move to the corresponding edge of the screen
++ I Key Right A $[MOD_KEY] AnimatedMove Screen $[pointer.screen] -0 keep Warp
++ I Key Left A $[MOD_KEY] AnimatedMove Screen $[pointer.screen] 0 keep Warp
++ I Key Up A $[MOD_KEY] AnimatedMove Screen $[pointer.screen] keep 0 Warp
++ I Key Down A $[MOD_KEY] AnimatedMove Screen $[pointer.screen] keep -0 Warp
+# When Win+T is pressed, open a terminal
++ I Key t A $[MOD_KEY] LaunchWarp x-terminal-emulator
++ I Key Return A $[MOD_KEY] LaunchWarp x-terminal-emulator
+# Trying something new, display a pager on mod+V that's transient (try arrows)
++ I Key V A $[MOD_KEY] FvwmPager -transient ExposePager 0 $[DESK_COUNT]
+##
+# It would be nice to use numbers to address the pages, based on desktop size.
+# win + N to go to that page
++ I Key 1 A $[MOD_KEY] Go-to-page 1
++ I Key 2 A $[MOD_KEY] Go-to-page 2
++ I Key 3 A $[MOD_KEY] Go-to-page 3
++ I Key 4 A $[MOD_KEY] Go-to-page 4
++ I Key 5 A $[MOD_KEY] Go-to-page 5
++ I Key 6 A $[MOD_KEY] Go-to-page 6
++ I Key 7 A $[MOD_KEY] Go-to-page 7
++ I Key 8 A $[MOD_KEY] Go-to-page 8
++ I Key 9 A $[MOD_KEY] Go-to-page 9
+# Move on Win+M
++ I Key M A $[MOD_KEY] Move
+# Raise/Lower window on MOD+U/D
++ I Key U A $[MOD_KEY] Raise
++ I Key D A $[MOD_KEY] Lower
+# Try some vim movement to move between windows in those directions
++ I Key h A $[MOD_KEY] Direction West (AcceptsFocus, CurrentPage, !WindowListSkip) Warp-Focus
++ I Key j A $[MOD_KEY] Direction South (AcceptsFocus, CurrentPage, !WindowListSkip) Warp-Focus
++ I Key k A $[MOD_KEY] Direction North (AcceptsFocus, CurrentPage, !WindowListSkip) Warp-Focus
++ I Key l A $[MOD_KEY] Direction East (AcceptsFocus, CurrentPage, !WindowListSkip) Warp-Focus
++ I Key s A 4 Screenshot $[w.id]
++ I Key Print A A Screenshot root -screen
+# Win+Esc pop up the menu
++ I Key Escape A $[MOD_KEY] Menu MenuFvwmRoot
++ I Key Tab A 4 Menu NewAltTabMenu
++ I Key grave A $[MOD_KEY] Focus-Next-Class
+# Grow the current window until it hits something
++ I Key G A $[MOD_KEY] Maximize grow grow
+# Toggle between full screen width
++ I Key W A $[MOD_KEY] ToggleWide
+# Toggle a 3-state custom maximize
++ I Key F A $[MOD_KEY] CustomMax
+# When Win+S is pressed, shade the window (no, this is used for screenshot...
+#+I Key s A $[MOD_KEY] WindowShade
+# media keys
++ I Key XF86AudioMute A A Exec exec amixer set Master toggle
++ I Key XF86PowerOff A A FvwmForm FvwmForm-QuitForm
+# Move left or right a desk on mod+[ mod+]
++ I Key bracketleft A $[MOD_KEY] GoToDesk -1 0 $[DESK_COUNT]
++ I Key bracketright A $[MOD_KEY] GoToDesk 1 0 $[DESK_COUNT]
+#Use mpc for music controls
++ I Test (x mpc) Key XF86AudioPlay A A Exec exec mpc pause
++ I Test (x mpc) Key XF86AudioNext A A Exec exec mpc next
++ I Test (x mpc) Key XF86AudioPrev A A Exec exec mpc prev
++ I Test (x amixer) Key F8 A A Exec exec amixer -D pulse sset Master toggle
++ I Test (x amixer) Key F9 A A Exec exec amixer -D pulse sset Master 5%-
++ I Test (x amixer) Key F10 A A Exec exec amixer -D pulse sset Master 5%+
++ I Test (x amixer) Key XF86AudioRaiseVolume A A Exec exec amixer -D pulse sset Master 2%+
++ I Test (x amixer) Key XF86AudioLowerVolume A A Exec exec amixer -D pulse sset Master 2%-
+# Touchpad enable/disable
++ I Test (x touchpad.sh) Key F5 A $[MOD_KEY] Exec exec touchpad.sh
++ I Mouse 1 $[fvwm_title_button_miniicon] N Ops-or-Close
+# Bind a middle click on the root window to pop up the settings menu.
++ I Mouse 2 R N Menu SettingsMenu
+# Bind Win+Right Mouse to resize function
++ I Mouse 3 FSTW $[MOD_KEY] Resize-or-not
+# Bind Win+Left Mouse to Moving, raising, and lowering actions
++ I Mouse 1 FSTW $[MOD_KEY] Move-Raise-or-Lower
+# Move up or down with Win+Mouse Wheel Up/Down
++ I Mouse 4 A $[MOD_KEY] GoToPage +0p -1p
++ I Mouse 5 A $[MOD_KEY] GoToPage +0p +1p
+# Bind Mouse 1 on Icons to DynamicWindowOpsMenu
++ I Mouse 1 I A Menu DynamicWindowOpsMenu
+# Mouse click on the icon triggers CustomMax, too
++ I Mouse 1 $[fvwm_title_button_arrow_up] N CustomMax
+# Make clicking the paper clip (I-2) call the toggle sticky function
++ I Mouse 1 $[fvwm_title_button_clip] N ToggleSticky
+#Key F6 A A Exec exec brightness.sh -d
+#Key F7 A A Exec exec brightness.sh -u
 
 DestroyFunc ToggleDecorations
 AddToFunc ToggleDecorations
@@ -624,79 +805,33 @@ AddToFunc PutDecorationsBack
 + I State 3 off
 + I WindowStyle !NoTitle, HandleWidth $[WINDOW_BORDER_SIZE], BorderWidth $[WINDOW_BORDER_SIZE]
 
+##
+# This isn't FVWM terminology, but I'm calling it page number where I number
+# each page starting in the upper left, counting horizontally and then
+# vertically, regardless of pager dimensions starting at zero.  For example:
+# ┌─┬─┬─┐     ┌─┐
+# │1│2│3│     │1│
+# ├─┼─┼─┤ or  ├─┤  or ...
+# │4│5│6│     │2│
+# └─┴─┴─┘     └─┘
+# In FVWM terminology, the current number is:
+#    page.ny * desk.pagesx + page.nx + 1
+DestroyFunc Prev-page
+AddToFunc Prev-page
++ I PipeRead 'echo Go-to-page $(( ($[page.ny] * $[desk.pagesx]) + $[page.nx]))'
 
-# Nice hinting, auto-complete app selecteor
-Key semicolon A $[MOD_KEY] Exec exec dmenu_run -l 5 -nb "$[BG_COLOR]" -nf "$[FG_COLOR]" -sf "$[HILIGHT_FORE]" -sb "$[HILIGHT_BACK]" -fn "$[MENU_FONT]"
+DestroyFunc Next-page
+AddToFunc Next-page
++ I PipeRead 'echo Go-to-page $(( ($[page.ny] * $[desk.pagesx]) + $[page.nx] + 2))'
 
-# Pop up the current window options on Win+o
-Key o A $[MOD_KEY] Current Popup DynamicWindowOpsMenu Window 0 0
 
-# Resize on win+r
-Key r A $[MOD_KEY] Resize Direction SE
-
-# Touchpad enable/disable
-Test (x touchpad.sh) Key F5 A $[MOD_KEY] Exec exec touchpad.sh
-
-# Place again on win+p
-Key p A $[MOD_KEY] PlaceAgain
-
-# When Win+Arrow is pressed, move to the corresponding edge of the screen
-Key Right A $[MOD_KEY] AnimatedMove Screen $[pointer.screen] -0 keep Warp
-Key Left A $[MOD_KEY] AnimatedMove Screen $[pointer.screen] 0 keep Warp
-Key Up A $[MOD_KEY] AnimatedMove Screen $[pointer.screen] keep 0 Warp
-Key Down A $[MOD_KEY] AnimatedMove Screen $[pointer.screen] keep -0 Warp
-#Key Right A $[MOD_KEY]M AnimatedMove  -0 keep Warp
-#Key Left A $[MOD_KEY]M AnimatedMove  0 keep Warp
-#Key Up A $[MOD_KEY]M AnimatedMove  keep 0 Warp
-#Key Down A $[MOD_KEY]M AnimatedMove  keep -0 Warp
-
-# When Win+T is pressed, open a terminal
-Key t A $[MOD_KEY] LaunchWarp x-terminal-emulator
-
-# When Win+S is pressed, shade the window (no, this is used for screenshot...
-#Key s A $[MOD_KEY] WindowShade
-
-# Bind Win+Right Mouse to resize function
-Mouse 3 FSTW $[MOD_KEY] Resize-or-not
-
-# Bind Win+Left Mouse to Moving, raising, and lowering actions
-Mouse 1 FSTW $[MOD_KEY] Move-Raise-or-Lower
-
-# Move up or down with Win+Mouse Wheel Up/Down
-Mouse 4 A $[MOD_KEY] GoToPage +0p -1p
-Mouse 5 A $[MOD_KEY] GoToPage +0p +1p
-
-# Bind Mouse 1 on Icons to DynamicWindowOpsMenu
-Mouse 1 I A Menu DynamicWindowOpsMenu
-
-# Move on Win+M
-Key M A $[MOD_KEY] Move
-
-# Raise/Lower window on MOD+U/D
-Key U A $[MOD_KEY] Raise
-Key D A $[MOD_KEY] Lower
-
-# Move up or down by a page when win+k or win+j are held
-Key k A $[MOD_KEY] GoToPage +0p -1p
-Key j A $[MOD_KEY] GoToPage +0p +1p
-
-# Move between windows on the current page with Win+h/l
-Key h A $[MOD_KEY] Focus-Prev-Window
-Key l A $[MOD_KEY] Focus-Next-Window
-
-Key s A 4 Screenshot $[w.id]
-
-# Win+Esc pop up the menu
-Key Escape A $[MOD_KEY] Menu MenuFvwmRoot
-
-Key Print A A Screenshot root -screen
-
-Key Tab A 4 Menu NewAltTabMenu
-
-#Use mpc for music controls
-Test (x mpc) Key XF86AudioPlay A A Exec exec mpc pause
-Test (x mpc) Key XF86AudioNext A A Exec exec mpc next
-Test (x mpc) Key XF86AudioPrev A A Exec exec mpc prev
+##
+# No matter what the layout is (in terms of XxY pages, up to 3x3) go to a
+# target page when a number 1 to 9 is specified.
+DestroyFunc Go-to-page
+AddToFunc Go-to-page
++ I PipeRead "echo GoToPage $$((($0-1)%$[PAGES_X])) $$((($0-1)/$[PAGES_X]))"
+#+ I PipeRead "echo Echo GoToPage $$((($0-1)%$[PAGES_X])) $$((($0-1)/$[PAGES_X]))"
 
 # Click and release: start resizing the window on right and bottom edges, left
 # click to accept, right to cancel
@@ -733,12 +868,9 @@ AddToFunc Warp-Focus
 # cycle through other windows of the same class
 # similar to gnome/osx but without displaying an icon or list of other windows
 # of the same class
-Key grave A $[MOD_KEY] Focus-Next-Class
 DestroyFunc Focus-Next-Class
 AddToFunc Focus-Next-Class
 + I Next (!WindowListSkip, AcceptsFocus, CurrentPage, $[w.class]) Warp-Focus
-
-Key G A $[MOD_KEY] ToggleWide
 
 DestroyFunc ToggleWide
 AddToFunc ToggleWide
@@ -772,7 +904,7 @@ AddToFunc WallpaperBrowser
       echo AddToMenu \\"$0\\" \\"\*$0/.thumbs/$iname*$iname\\" ChangeWallpaper \\"$0/$iname\\" ;\
       done'
 # Add an option to browse the wallpaper directory with whatever filebrowser is installed
-+ I AddToMenu "$0" "\*049-folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory" LaunchWarp "$[FILEBROWSER_APP]" "$0"
++ I AddToMenu "$0" "\*folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory" LaunchWarp "$[FILEBROWSER_APP]" "$0"
 
 DestroyFunc ScreenshotBrowser
 AddToFunc ScreenshotBrowser
@@ -794,11 +926,19 @@ AddToFunc ScreenshotBrowser
       echo AddToMenu \\"$0\\" \\"\*$0/.thumbs/$iname*$iname\\" Exec exec display \\"$0/$iname\\" ;\
       done'
 # Add an option to browse the screenshots directory with whatever filebrowser is installed
-+ I AddToMenu "$0" "\*049-folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory" LaunchWarp "$[FILEBROWSER_APP]" "$0"
++ I AddToMenu "$0" "\*folder-open.svg:$[MINI_ICON_SIZE]*Browse Directory" LaunchWarp "$[FILEBROWSER_APP]" "$0"
 
 # The user can select different images to use as the wallpaper at any time.
 # Such selections are saved to and loaded from the wallpaper file in the
 # preferences folder.
+
+##
+# Update the desk count, requires reload of pager module....
+DestroyFunc UpdateDeskCount
+AddToFunc UpdateDeskCount
++ I Exec exec echo SetEnv DESK_COUNT "$0" > "$[fvwm_desk_preferences]"
++ I SetEnv DESK_COUNT "$0"
++ I Schedule 250 UpdatePager
 
 # This function changes the wallpaper preference to the image file it is passed
 DestroyFunc ChangeWallpaper
@@ -815,7 +955,9 @@ AddToFunc LoadWallpaper
 # Make sure wallpaper loading happens on startup:
 AddToFunc StartFunction
 + I DoColorSets
++ I BindKeys
 + I LoadWallpaper
++ I UpdatePager
 + I Module FvwmCommandS
 + I Module FvwmEvent
 + I Test (init) Exec exec $[FVWM_USERDIR]/keyboard.sh
@@ -833,7 +975,6 @@ AddToFunc StartFunction
 + I PipeRead 'python "$[FVWM_USERDIR]"/display.py -f'
 + I PipeRead 'bash $[FVWM_USERDIR]/theme_customize.sh -f ThemeMenu'
 + I Test (init, x steam) Exec exec steam
-+ I UpdatePager
 + I DoGOGMenu
 
 *FvwmEvent: Cmd
@@ -866,10 +1007,8 @@ DestroyFunc MakeTrans
 AddToFunc MakeTrans
 + I Exec exec transset -i $[w.id] 0.9
 
-
-
 AddToFunc StartFunction
-+ I FvwmPager
++ I FvwmPager * *
 + I Test (!x tint2, x trayer, init) Exec exec trayer --widthtype request --heighttype request --align left 2>/dev/null
 + I Test (x tint2, init) Exec exec tint2 2>/dev/null
 + I Test (x nm-applet, init) Exec exec nm-applet 2>/dev/null
@@ -878,7 +1017,7 @@ AddToFunc StartFunction
 DestroyFunc UpdatePager
 AddToFunc UpdatePager
 + I PipeRead ' \
-printf "Style FvwmPager NoTitle, WindowListSkip, NeverFocus, Sticky, StaysOnBottom\\n" ; \
+printf "Style FvwmPager WindowListSkip, NeverFocus, Sticky, StaysOnBottom\\n" ; \
 printf "*FvwmPager: Geometry $[RIGHT_BAR_GEOMETRY]\\n" ; \
 printf "*FvwmPager: Font none\\n" ; \
 printf "*FvwmPager: SmallFont \\"xft:$[DEFAULT_FONT_FAMILY]:size=6\\"\\n" ; \
@@ -901,12 +1040,12 @@ echo SetEnv PAGES_Y "$[PAGES_Y]" >> "$[fvwm_preferences_dir]"/pager_settings ; '
 DestroyFunc RelaunchPager
 AddToFunc RelaunchPager
 + I All (FvwmPager) Close
-+ I Schedule 250 FvwmPager
++ I Schedule 250 FvwmPager * *
 
 DestroyFunc TogglePager
 AddToFunc TogglePager
 + I All (FvwmPager) Close
-+ I TestRc (NoMatch) FvwmPager
++ I TestRc (NoMatch) FvwmPager * *
 
 Test (x $[FVWM_USERDIR]/font_helper.sh) PipeRead '$[FVWM_USERDIR]/font_helper.sh'
 Test (x $[FVWM_USERDIR]/border_helper.sh) PipeRead '$[FVWM_USERDIR]/border_helper.sh'
@@ -929,30 +1068,31 @@ AddToFunc DynamicWindowOpsMenuFunction
 + I ThisWindow ("Firefox*") AddToMenu DynamicWindowOpsMenu "Paste && go (selection)" Exec exec firefox --new-tab "$(xclip -o)"
 + I ThisWindow ("Firefox*") AddToMenu DynamicWindowOpsMenu "Paste && go (clipboard)" Exec exec firefox --new-tab "$(xclip -o -selection clipboard)"
 + I TestRc (Match) AddToMenu DynamicWindowOpsMenu "" Nop
-+ I AddToMenu DynamicWindowOpsMenu "%266-question.svg:$[MINI_ICON_SIZE]%Identify" FvwmIdent
-+ I ThisWindow (!Iconic) AddToMenu DynamicWindowOpsMenu "%016-camera.svg:$[MINI_ICON_SIZE]%Get Screenshot" Screenshot $[w.id]
-+ I ThisWindow (!Iconic) AddToMenu DynamicWindowOpsMenu "%015-images.svg:$[MINI_ICON_SIZE]%Get Screenshot (with borders)" Screenshot $[w.id] -frame
++ I AddToMenu DynamicWindowOpsMenu "%question.svg:$[MINI_ICON_SIZE]%Identify" FvwmIdent
++ I ThisWindow (!Iconic) AddToMenu DynamicWindowOpsMenu "%camera.svg:$[MINI_ICON_SIZE]%Get Screenshot" Screenshot $[w.id]
++ I ThisWindow (!Iconic) AddToMenu DynamicWindowOpsMenu "%image.svg:$[MINI_ICON_SIZE]%Get Screenshot (with borders)" Screenshot $[w.id] -frame
 + I AddToMenu DynamicWindowOpsMenu "" Nop
 + I ThisWindow (Iconic) AddToMenu DynamicWindowOpsMenu "%$[w.miniiconfile]:$[MINI_ICON_SIZE]%Deiconify" Iconify off
 + I ThisWindow (!Iconic) AddToMenu DynamicWindowOpsMenu "%$[w.miniiconfile]:$[MINI_ICON_SIZE]%Iconify" Iconify
-+ I TestRc (Match) AddToMenu DynamicWindowOpsMenu "%318-arrow-down-right2.svg:$[MINI_ICON_SIZE]%Resize" Resize
-+ I AddToMenu DynamicWindowOpsMenu "%317-arrow-right2.svg:$[MINI_ICON_SIZE]%Move" Move
++ I TestRc (Match) AddToMenu DynamicWindowOpsMenu "%expand.svg:$[MINI_ICON_SIZE]%Resize" Resize
++ I AddToMenu DynamicWindowOpsMenu "%arrows.svg:$[MINI_ICON_SIZE]%Move" Move
 + I ThisWindow (Maximized) AddToMenu DynamicWindowOpsMenu "%139-shrink.svg:$[MINI_ICON_SIZE]%Un-Maximize" Maximize
 + I TestRc (NoMatch) AddToMenu DynamicWindowOpsMenu "%138-enlarge.svg:$[MINI_ICON_SIZE]%Maximize" Maximize
 + I ThisWindow (Shaded) AddToMenu DynamicWindowOpsMenu "Un-Shade" WindowShade
 + I TestRc (NoMatch) AddToMenu DynamicWindowOpsMenu "%268-minus.svg:$[MINI_ICON_SIZE]%Shade" WindowShade
-+ I ThisWindow (Sticky) AddToMenu DynamicWindowOpsMenu "%071-pushpin.svg:$[MINI_ICON_SIZE]%Un-Stick" WindowStyle !Sticky
-+ I TestRc (NoMatch) AddToMenu DynamicWindowOpsMenu "%071-pushpin.svg:$[MINI_ICON_SIZE]%Stick" WindowStyle Sticky
++ I ThisWindow (Sticky) AddToMenu DynamicWindowOpsMenu "%tack.svg:$[MINI_ICON_SIZE]%Un-Stick" WindowStyle !Sticky
++ I TestRc (NoMatch) AddToMenu DynamicWindowOpsMenu "%tack.svg:$[MINI_ICON_SIZE]%Stick" WindowStyle Sticky
 + I AddToMenu DynamicWindowOpsMenu "" Nop
-+ I AddToMenu DynamicWindowOpsMenu "%183-switch.svg:$[MINI_ICON_SIZE]%Close" Close
-+ I AddToMenu DynamicWindowOpsMenu "%151-hammer.svg:$[MINI_ICON_SIZE]%Kill" Destroy
++ I AddToMenu DynamicWindowOpsMenu "%power.svg:$[MINI_ICON_SIZE]%Close" Close
++ I AddToMenu DynamicWindowOpsMenu "%cudgel.svg:$[MINI_ICON_SIZE]%Kill" Destroy
 + I AddToMenu DynamicWindowOpsMenu "" Nop
-+ I AddToMenu DynamicWindowOpsMenu "%048-folder.svg:$[MINI_ICON_SIZE]%Group Actions" Popup DynamicGroupMenuThingy
++ I AddToMenu DynamicWindowOpsMenu "%folder.svg:$[MINI_ICON_SIZE]%Group Actions" Popup DynamicGroupMenuThingy
 
 # Function to do screenshots and save them to the screenshot pref dir using
 # date/time as the name.
 DestroyFunc Screenshot
 AddToFunc Screenshot
++ I Raise
 + I Exec exec import -window $0 $1 "$[fvwm_screenshots_dir]"/`date +%Y_%m_%d_%b_%H:%M:%S.png`
 + I Schedule 250 ScreenshotBrowser "$[fvwm_screenshots_dir]"
 
@@ -1046,10 +1186,6 @@ AddToFunc WindowListSelectFunction
 #  1 0  -> FullMax and set (0 1)
 #  0 1  -> Restore and set (0 0)
 #
-Key F A $[MOD_KEY] CustomMax
-
-# Mouse click on the icon triggers CustomMax, too
-Mouse 1 $[fvwm_title_button_arrow_up] N CustomMax
 
 # Entry-point to custom maximization state machine
 # Transition from initial state to half max (2)
@@ -1115,9 +1251,6 @@ DestroyFunc Retransit
 AddToFunc Retransit
 + I All WindowAdded $[w.id]
 
-# Make clicking the paper clip (I-2) call the toggle sticky function
-Mouse 1 $[fvwm_title_button_clip] N ToggleSticky
-
 # Makes the window sticky (or removes stickyness)
 DestroyFunc ToggleSticky
 AddToFunc ToggleSticky
@@ -1132,21 +1265,7 @@ AddToFunc SwapStyle
 + I UpdateStyles
 + I Recapture
 
-# media keys
-Key XF86AudioMute A A Exec exec amixer set Master toggle
-#Key F6 A A Exec exec brightness.sh -d
-#Key F7 A A Exec exec brightness.sh -u
-Test (x amixer) Key F8 A A Exec exec amixer -D pulse sset Master toggle
-Test (x amixer) Key F9 A A Exec exec amixer -D pulse sset Master 5%-
-Test (x amixer) Key F10 A A Exec exec amixer -D pulse sset Master 5%+
-Test (x amixer) Key XF86AudioRaiseVolume A A Exec exec amixer -D pulse sset Master 2%+
-Test (x amixer) Key XF86AudioLowerVolume A A Exec exec amixer -D pulse sset Master 2%-
-
-Key XF86PowerOff A A FvwmForm FvwmForm-QuitForm
-
 PipeRead "echo Echo Config load ended at $(date)"
-
-
 
 # The following snippet creates a logout/reboot/shutdown form.
 DestroyModuleConfig FvwmForm-QuitForm
