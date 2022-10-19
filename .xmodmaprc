@@ -1,7 +1,3 @@
-
-! Make fn+Enter = insert on OS X keyboards (in vmware)
-keysym KP_Enter = Insert Insert Insert Insert
-
 ! Make the Caps lock a windows key (Super_L)
 clear lock
 keycode 0x42 = Super_L
