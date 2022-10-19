@@ -105,18 +105,26 @@ else
     set background=dark
 endif
 
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
+set ruler
 
 let g:airline_theme='angr'
 
-"" Had to include an initial version of the statusline, otherwise on one of my
-"" systems there would be no status line.
-"set statusline=%<%f\ %h%m%r%=%-14.(%l,%c%V%)\ %P
-"set statusline+=%#warningmsg#
-"set statusline+=%{SyntasticStatuslineFlag()}
-"set statusline+=%*
+" Hide warning from snipmate
+let g:snipMate = { 'snippet_version' : 1 }
 
+" Hide some characters in normal mode (particularly with markdown)
+set concealcursor=n
+set conceallevel=2
 
+" Don't hide fences around code bocks, it makes it hard to edit/read
+let g:vim_markdown_conceal_code_blocks = 0
+
+" I like to specify bash when it's bash, as opposed to sh
+" for code fence languages
+let g:vim_markdown_fenced_languages = ['bash=bash']
+
+" Follow named anchors - foo.md#anchor with ge
+let g:vim_markdown_follow_anchor = 1
+
+" Make strikethroughs highlight and hide
+let g:vim_markdown_strikethrough = 1
