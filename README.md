@@ -46,7 +46,7 @@ The `Makefile` has a target for `vim-plugins`, use `make vim-plugins` to get
 all of them.
 
  * [ale](https://github.com/w0rp/ale) for syntax checking while editing
- * [snipmate](clone https://github.com/garbas/vim-snipmate) for templates
+ * [snipmate](https://github.com/garbas/vim-snipmate) for templates
     - [mw-utils](https://github.com/marcweber/vim-addon-mw-utils) dep of snipmate
     - [tlib](https://github.com/tomtom/tlib_vim) dep of snipmate
  * [vim-snippets](https://github.com/honza/vim-snippets) to provide snippets for snipmate
