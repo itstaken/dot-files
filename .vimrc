@@ -89,9 +89,6 @@ set lcs=eol:◀,tab:▷◁,extends:▶,trail:ﬆ
 " if text extends beyond the right side of the screen show right arrow
 " trailing whitespace shows ﬆ character
 
-" Enable bundles
-execute pathogen#infect()
-
 " Always show status bar
 set laststatus=2
 
