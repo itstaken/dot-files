@@ -12,15 +12,9 @@
 
 *Rxvt*font: xft:DejaVu Sans Mono:pixelsize=12,xft:WenQuanYi Zen Hei
 
-! -- use ctlr 1 to whatever for font sizes
-*Rxvt.keysym.Control-1: command:\033]50;xft:DejaVu Sans Mono:pixelsize=10,xft:WenQuanYi Zen Hei:antialias=false\007
-*Rxvt.keysym.Control-2: command:\033]50;xft:DejaVu Sans Mono:pixelsize=12,xft:WenQuanYi Zen Hei:antialias=false\007
-*Rxvt.keysym.Control-3: command:\033]50;xft:DejaVu Sans Mono:pixelsize=14,xft:WenQuanYi Zen Hei:antialias=false\007
-*Rxvt.keysym.Control-4: command:\033]50;xft:DejaVu Sans Mono:pixelsize=16,xft:WenQuanYi Zen Hei:antialias=false\007
-*Rxvt.keysym.Control-5: command:\033]50;xft:DejaVu Sans Mono:pixelsize=18,xft:WenQuanYi Zen Hei:antialias=false\007
-*Rxvt.keysym.Control-6: command:\033]50;xft:DejaVu Sans Mono:pixelsize=20,xft:WenQuanYi Zen Hei:antialias=false\007
-*Rxvt.keysym.Control-7: command:\033]50;xft:DejaVu Sans Mono:pixelsize=22,xft:WenQuanYi Zen Hei:antialias=false\007
-*Rxvt.keysym.Control-0: command:\033]50;xft:DejaVu Sans Mono:pixelsize=14,xft:Droid Arabic Kufi:pixelsize=14,xft:WenQuanYi Zen Hei:antialias=false\007
+URxvt.keysym.C-minus:     resize-font:smaller
+URxvt.keysym.C-plus:      resize-font:bigger
+URxvt.keysym.C-equal:     resize-font:reset
 
 ! XTERM settings
 ! xterm ignores synthetic events, allow them:
