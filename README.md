@@ -37,7 +37,7 @@ And keys to shove windows left or right by a desk:
 
  * *Mod* + *left brace* (*shift* + *[*)
      - shoves the focused node left a desk
- * *Mod* + right brace* (*shift* + *]*)
+ * *Mod* + *right brace* (*shift* + *]*)
      - shoves the focused node left a desk
 
 ### Vim plugins
