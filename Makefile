@@ -33,19 +33,40 @@ install: $(INSTALLED_FILES)
 ~/%: %
 	@$(call copy_if_dne,$<,$@)
 
-~/.vim/autoload:
-	mkdir -p ~/.vim/autoload
+PACK=~/.vim/pack/
+$(PACK):
+	mkdir -p $(PACK)
 
-~/.vim/bundle:
-	mkdir -p ~/.vim/bundle
+vim-plugins: ale snipmate vim-markdown vim-fugitive
 
-pathogen: ~/.vim/autoload ~/.vim/bundle
-	wget -O ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
+define prepare
+	cd $(PACK) && mkdir -p $@/start && cd $@/start && \
+	echo -ne 'Installing $@... ' ;
+endef
 
-ale: ~/.vim/bundle
-	cd ~/.vim/bundle && \
-	git clone https://github.com/w0rp/ale
+define already-installed
+	echo 'Already installed $@'
+endef
 
-syntastic: ~/.vim/bundle
-	cd ~/.vim/bundle && \
-	git clone https://github.com/scrooloose/syntastic.git
+ale: $(PACK)
+	@$(call prepare) \
+	git clone https://github.com/w0rp/ale || \
+	$(call already-installed)
+
+snipmate: $(PACK)
+	@$(call prepare) \
+	(git clone https://github.com/garbas/vim-snipmate && \
+	git clone https://github.com/marcweber/vim-addon-mw-utils && \
+	git clone https://github.com/tomtom/tlib_vim && \
+	git clone https://github.com/honza/vim-snippets ) || \
+	$(call already-installed)
+
+vim-markdown: $(PACK)
+	@$(call prepare) \
+	git clone https://github.com/preservim/vim-markdown || \
+	$(call already-installed)
+
+vim-fugitive: $(PACK)
+	@$(call prepare) \
+	git clone https://github.com/tpope/vim-fugitive || \
+	$(call already-installed)
