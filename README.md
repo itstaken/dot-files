@@ -7,38 +7,57 @@ the place, so I'm using this as a semi-convenient location for them.
 Features
 --------
 
-* FVWM
-    - Config - see comments, too many to mention
-    - Scripts for font selection, XRandR display menu, ...
 * Vim Config
     - Too many to mention, see comments in .vimrc and contents of .vim
       directory
-* Xresources (RXVT Settings)
-    - Foreground/background of white/black
-    - Plain scrollbar style (xtermish)
-    - Ubuntu Mono and WenQuanYi fonts
-    - Key bindings for ctrl+1 to ctrl+0 (change fonts)
 * Xmodmap Settings
-    - Converts `KP_Enter` into Insert Key (I like Shift+Insert pasting)
     - Converts Caps lock into `Super_L`
     - Convers Windows key into Escape
 
 Installation
 ------------
 
-Copy the various dot-files to your home directory. (or use make install)
+Copy the various dot-files to your home directory. (or use `make install`)
 
-In addition, the FVWM config requires FVWM, ImageMagick for generating
-thumbnail menus, and some sort of x-terminal-emulator package.  For Ubuntu,
-`sudo apt-get install imagemagick rxvt-unicode`.
+### BSPWM/SXHKD
 
-The FVWM configuration optionally supports `xcompmgr`, `pavucontrol`,
-`blueman-manager`, `bluetooth-wizard`, and any other applications that appear
-with a `Test (x foo) ...` entry in the config file.
+Requires:
 
-There are some scripts that I use on my laptop that can be found in the
-[scripts](https://github.com/itstaken/scripts) repository.  They should all be
-copletely optional...
+ * rofi
+ * kitty (terminal)
+
+The keybindings (see sxhkdrc) are fairly standard, but I also incorporate rofi:
+
+ * *Mod* + *space* or *Mod* + *semicolon*
+    - like finder, displays a sort of run dialog
+ * *Mod* + *backslash*
+    - Show the window dialog, a bit like *alt* + *tab* with substring search
+
+And keys to shove windows left or right by a desk:
+
+ * *Mod* + *left brace* (*shift* + *[*)
+     - shoves the focused node left a desk
+ * *Mod* + right brace* (*shift* + *]*)
+     - shoves the focused node left a desk
+
+### Vim plugins
+
+The `Makefile` has a target for `vim-plugins`, use `make vim-plugins` to get
+all of them.
+
+ * [ale](https://github.com/w0rp/ale) for syntax checking while editing
+ * [snipmate](clone https://github.com/garbas/vim-snipmate) for templates
+    - [mw-utils](https://github.com/marcweber/vim-addon-mw-utils) dep of snipmate
+    - [tlib](https://github.com/tomtom/tlib_vim) dep of snipmate
+ * [vim-snippets](https://github.com/honza/vim-snippets) to provide snippets for snipmate
+ * [vim-markdown](https://github.com/preservim/vim-markdown) niceties for markdown
+ * [vim-fugitive](https://github.com/tpope/vim-fugitive) great for git commands
+
+After installing plugins, run `:helptags ~/.vim/pack` for updated `:help`.
+
+You may want to look at `:help vim-markdown-disable-folding` or even `set
+nofold` if you're not accustomed to folding in markdown files.  Also, `zR` to
+unfold all the folds in a markdown file.  See `:help vim-markdown`.
 
 Support
 -------
