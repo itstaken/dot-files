@@ -92,28 +92,6 @@ set lcs=eol:◀,tab:▷◁,extends:▶,trail:ﬆ
 " Always show status bar
 set laststatus=2
 
-" This requires tagbar
-let g:tagbar_type_markdown = {
-    \ 'ctagstype': 'markdown',
-    \ 'ctagsbin' : '~/.vim/markdown2ctags.py',
-    \ 'ctagsargs' : '-f - --sort=yes',
-    \ 'kinds' : [
-        \ 's:sections',
-        \ 'i:images'
-    \ ],
-    \ 'sro' : '|',
-    \ 'kind2scope' : {
-        \ 's' : 'section',
-    \ },
-    \ 'sort': 0,
-\ }
-
-" Toggle the tag bar with F5
-cnoremap <F5> :Tagbar<CR>
-
-" Toggle the tag bar with F5, from insert mode, but go back to insert after
-inoremap <F5> <Esc>:Tagbar<CR>a
-
 set modeline
 
 if has("gui_running")
