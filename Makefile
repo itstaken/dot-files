@@ -41,7 +41,7 @@ vim-plugins: ale snipmate vim-markdown vim-fugitive
 
 define prepare
 	cd $(PACK) && mkdir -p $@/start && cd $@/start && \
-	echo -ne 'Installing $@... ' ;
+	echo -n 'Installing $@... ' ;
 endef
 
 define already-installed
