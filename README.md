@@ -55,7 +55,7 @@ all of them.
 
 After installing plugins, run `:helptags ~/.vim/pack` for updated `:help`.
 
-You may want to look at `:help vim-markdown-disable-folding` or even `set
+You may want to look at `:help vim-markdown-disable-folding` or even `:set
 nofold` if you're not accustomed to folding in markdown files.  Also, `zR` to
 unfold all the folds in a markdown file.  See `:help vim-markdown`.
 
